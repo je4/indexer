@@ -1,0 +1,26 @@
+headersize = 100000
+headertimeout = "10s"
+logfile = "" # log file location
+loglevel = "DEBUG" # CRITICAL|ERROR|WARNING|NOTICE|INFO|DEBUG
+accesslog = "" # http access log file
+addr = "localhost:81"
+certpem = "" # tls client certificate file in PEM format
+keypem = "" # tls client key file in PEM format
+jwtkey = "swordfish"
+jwtalg = ["HS256", "HS384", "HS512"] # "hs256" "hs384" "hs512" "es256" "es384" "es512" "ps256" "ps384" "ps512"
+errorTemplate = "C:/daten/go/src/github.com/je4/indexer/error.gohtml" # error message for memoHandler
+tempDir = "C:/temp/"
+
+[Siegfried]
+    address = "http://localhost:5138/identify/[[PATH]]?format=json"
+
+[FFMPEG]
+    ffprobe = "/usr/local/bin/ffprobe2"
+    wsl = true  # true, if executable is within linux subsystem on windows
+    timeout = "10s"
+
+[ImageMagick]
+    identify = "/usr/bin/identify"
+    convert = "/usr/bin/convert"
+    wsl = true  # true, if executable is within linux subsystem on windows
+    timeout = "10s"
