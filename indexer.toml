@@ -1,5 +1,7 @@
 headersize = 100000
 headertimeout = "10s"
+downloadmime = "^image/.*$"  # regexp with mimetypes, which will be downloaded
+maxdownloadsize = 4294967295 # max. 4GB downloads
 logfile = "" # log file location
 loglevel = "DEBUG" # CRITICAL|ERROR|WARNING|NOTICE|INFO|DEBUG
 accesslog = "" # http access log file
@@ -24,3 +26,8 @@ tempDir = "C:/temp/"
     convert = "/usr/bin/convert"
     wsl = true  # true, if executable is within linux subsystem on windows
     timeout = "10s"
+
+[Tika]
+    address = "http://localhost:9997/meta"
+    timeout = "10s"
+    regexpMime = "^.*$" # ""^application/.*$"  # regexp for mimetype, which are used for tika queries

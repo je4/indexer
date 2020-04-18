@@ -58,6 +58,8 @@ func main() {
 	srv := indexer.NewServer(
 		config.HeaderTimeout.Duration,
 		config.HeaderSize,
+		config.DownloadMime,
+		config.MaxDownloadSize,
 		config.JwtKey,
 		config.JwtAlg,
 		log,
@@ -81,6 +83,9 @@ func main() {
 		config.ImageMagick.Wsl,
 		config.ImageMagick.Timeout.Duration)
 	srv.AddAction(identify)
+
+	tika := indexer.NewActionTika(config.Tika.Address, config.Tika.Timeout.Duration, config.Tika.RegexpMime)
+	srv.AddAction(tika)
 
 	go func() {
 		if err := srv.ListenAndServe(config.Addr, config.CertPEM, config.KeyPEM); err != nil {

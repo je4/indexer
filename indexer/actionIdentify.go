@@ -29,7 +29,7 @@ func NewActionIdentify(identify, convert string, wsl bool, timeout time.Duration
 }
 
 func (ai *ActionIdentify) GetCaps() ActionCapability {
-	return ACTALLPROTO
+	return ACTFILEHEAD
 }
 
 func (ai *ActionIdentify) GetName() string {

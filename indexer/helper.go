@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/op/go-logging"
+	"mime"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -39,6 +40,19 @@ func CreateLogger(module string, logfile string, loglevel string) (log *logging.
 	return
 }
 
+func ClearMime( mimetype string ) string {
+	// try to get a clean mimetype
+	for _, v := range strings.Split(mimetype, ",") {
+		t, _, err := mime.ParseMediaType(v)
+		if err != nil {
+			continue
+		}
+		return t
+		break
+	}
+	return mimetype
+
+}
 
 /*
 holistic function to give some mimetypes a relevance

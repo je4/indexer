@@ -13,36 +13,40 @@ import (
 	"io"
 	"io/ioutil"
 	"math"
-	"mime"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
-	"strings"
+	"regexp"
 	"time"
 )
 
 type ActionParam struct {
-	Url     string   `json:url`
-	Actions []string `json:actions,omitempty`
+	Url          string   `json:"url"`
+	Actions      []string `json:"actions,omitempty"`
+	DownloadMime string   `json:"downloadmime,omitempty"`
 }
 
 type Server struct {
-	srv           *http.Server
-	jwtSecret     string
-	jwtAlg        []string
-	log           *logging.Logger
-	accesslog     io.Writer
-	errorTemplate *template.Template
-	actions       map[string]Action
-	headerTimeout time.Duration
-	headerSize    uint
-	tempDir       string
+	srv             *http.Server
+	jwtSecret       string
+	jwtAlg          []string
+	log             *logging.Logger
+	accesslog       io.Writer
+	errorTemplate   *template.Template
+	actions         map[string]Action
+	headerTimeout   time.Duration
+	headerSize      int64
+	downloadMime    string
+	maxDownloadSize int64
+	tempDir         string
 }
 
 func NewServer(
 	headerTimeout time.Duration,
-	headerSize uint,
+	headerSize int64,
+	downloadMime string,
+	maxDownloadSize int64,
 	jwtSecret string,
 	jwtAlg []string,
 	log *logging.Logger,
@@ -51,15 +55,17 @@ func NewServer(
 	tempDir string,
 ) *Server {
 	srv := &Server{
-		headerTimeout: headerTimeout,
-		headerSize:    headerSize,
-		jwtSecret:     jwtSecret,
-		jwtAlg:        jwtAlg,
-		log:           log,
-		accesslog:     accesslog,
-		tempDir:       tempDir,
-		errorTemplate: template.Must(template.ParseFiles(errorTemplate)),
-		actions:       map[string]Action{},
+		headerTimeout:   headerTimeout,
+		headerSize:      headerSize,
+		downloadMime:    downloadMime,
+		maxDownloadSize: maxDownloadSize,
+		jwtSecret:       jwtSecret,
+		jwtAlg:          jwtAlg,
+		log:             log,
+		accesslog:       accesslog,
+		tempDir:         tempDir,
+		errorTemplate:   template.Must(template.ParseFiles(errorTemplate)),
+		actions:         map[string]Action{},
 	}
 	return srv
 }
@@ -95,66 +101,94 @@ func (s *Server) DoPanic(writer http.ResponseWriter, status int, message string)
 /*
 loads part of data and gets mime type
 */
-func (s *Server) getContentHeader(uri *url.URL) (buf []byte, mimetype string, err error) {
+func (s *Server) getContentHeader(uri *url.URL, downloadMime string, writer io.Writer) (mimetype string, fulldownload bool, err error) {
 	s.log.Infof("loading header from %s", uri.String())
 
+	dlRegexp, err := regexp.Compile(downloadMime)
+	if err != nil {
+		return "", false, emperror.Wrapf(err, "cannot compile download mime regexp %s", downloadMime)
+	}
+
 	if uri.Scheme != "file" {
+		res, err := http.Head(uri.String())
+		if err != nil {
+			return "", false, emperror.Wrapf(err, "error getting head request for %s", uri.String())
+		}
+		if res.StatusCode == http.StatusMethodNotAllowed {
+			ctx, cancel := context.WithTimeout(context.Background(), s.headerTimeout)
+			defer cancel() // The cancel should be deferred so resources are cleaned up
+			req, err := http.NewRequestWithContext(ctx, "GET", uri.String(), nil)
+			if err != nil {
+				return "", false, emperror.Wrapf(err, "error creating request for %s", uri.String())
+			}
+			req.Header.Set("Range", fmt.Sprintf("bytes=0-%d", 64))
+			var client http.Client
+			res, err = client.Do(req)
+			if err != nil {
+				return "", false, emperror.Wrapf(err, "error querying uri")
+			}
+			res.Body.Close()
+			if res.StatusCode >= 400 {
+				return "", false, emperror.Wrapf(err, "error querying %s: %s", uri.String(), res.Status)
+			}
+		}
+		// ************************************
+		// * get mimetype from response header
+		// ************************************
+		mimetype = ClearMime(res.Header.Get("Content-type"))
+		fulldownload = dlRegexp.MatchString(mimetype)
+
 		ctx, cancel := context.WithTimeout(context.Background(), s.headerTimeout)
 		defer cancel() // The cancel should be deferred so resources are cleaned up
 
 		// build range request. we do not want to load more than needed
 		req, err := http.NewRequestWithContext(ctx, "GET", uri.String(), nil)
 		if err != nil {
-			return nil, "", emperror.Wrapf(err, "error creating request for uri", uri.String())
+			return "", false, emperror.Wrapf(err, "error creating request for %s", uri.String())
 		}
-		req.Header.Set("Range", fmt.Sprintf("bytes=0-%d", s.headerSize-1))
+		if !fulldownload {
+			req.Header.Set("Range", fmt.Sprintf("bytes=0-%d", s.headerSize-1))
+		}
 		var client http.Client
 		resp, err := client.Do(req)
 		if err != nil {
-			return nil, "", emperror.Wrapf(err, "error querying uri")
+			return "", false, emperror.Wrapf(err, "error querying uri")
 		}
 		// default should follow redirects
 		defer resp.Body.Close()
 
-		// read head of content
-		buf = make([]byte, s.headerSize)
-		num, err := io.ReadFull(resp.Body, buf)
+		maxSize := s.headerSize
+		if fulldownload {
+			maxSize = s.maxDownloadSize // 2 ^ 32 - 1 max. 4GB
+		}
+		num, err := io.CopyN(writer, resp.Body, maxSize)
 		if err != nil && err != io.ErrUnexpectedEOF {
-			return nil, "", emperror.Wrapf(err, "cannot read content from url %s", uri.String())
+			if err.Error() != "EOF" {
+				return "", false, emperror.Wrapf(err, "cannot read content from url %s", uri.String())
+			}
 		}
 		if num == 0 {
-			return nil, "", errors.New(fmt.Sprintf("no content from url %s", uri.String()))
+			return "", false, errors.New(fmt.Sprintf("no content from url %s", uri.String()))
 		}
 
-		// ************************************
-		// * get mimetype from response header
-		// ************************************
-		mimetype = resp.Header.Get("Content-type")
 	} else {
 		path, err := getFilePath(uri)
 		if err != nil {
-			return nil, "", emperror.Wrapf(err, "cannot map uri %s ", uri.String())
+			return "", false, emperror.Wrapf(err, "cannot map uri %s ", uri.String())
 		}
 		f, err := os.Open(path)
 		if err != nil {
-			return nil, "", emperror.Wrapf(err, "cannot open file %s", path)
+			return "", false, emperror.Wrapf(err, "cannot open file %s", path)
 		}
-		buf = make([]byte, s.headerSize)
+		defer f.Close()
+		buf := make([]byte, 512)
 		if _, err := f.Read(buf); err != nil {
-			return nil, "", emperror.Wrapf(err, "cannot read from file %s", path)
+			return "", false, emperror.Wrapf(err, "cannot read from file %s", path)
 		}
 		mimetype = http.DetectContentType(buf)
 	}
 
-	// try to get a clean mimetype
-	for _, v := range strings.Split(mimetype, ",") {
-		t, _, err := mime.ParseMediaType(v)
-		if err != nil {
-			continue
-		}
-		mimetype = t
-		break
-	}
+	mimetype = ClearMime(mimetype)
 	return
 }
 
@@ -164,7 +198,7 @@ func (s *Server) HandleDefault(w http.ResponseWriter, r *http.Request) {
 		s.DoPanicf(w, http.StatusInternalServerError, "cannot read body: %v", err)
 		return
 	}
-	param := ActionParam{}
+	param := ActionParam{DownloadMime: s.downloadMime}
 	if err := json.Unmarshal(body, &param); err != nil {
 		s.DoPanicf(w, http.StatusBadRequest, "cannot unmarshal json - %s: %v", string(body), err)
 		return
@@ -177,45 +211,52 @@ func (s *Server) HandleDefault(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	result, err := s.doIndex(param)
+	if err != nil {
+		result = map[string]interface{}{}
+		errors := map[string]string{}
+		errors["index"] = err.Error()
+		result["errors"] = errors
+	}
+
+	js, err := json.Marshal(result)
+	if err != nil {
+		s.DoPanicf(w, http.StatusInternalServerError, "cannot marshal result %v: %v", result, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+
+}
+
+func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
+
 	uri, err := url.ParseRequestURI(param.Url)
 	if err != nil {
-		s.DoPanicf(w, http.StatusBadRequest, "cannot parse url - %s: %v", param.Url, err)
-		return
+		return nil, emperror.Wrapf(err, "cannot parse url %s", param.Url)
 	}
 
 	var duration time.Duration
 	var width, height uint
 
-	buf, mimetype, err := s.getContentHeader(uri)
-	if err != nil {
-		s.DoPanicf(w, http.StatusInternalServerError, "cannot get content header of %s: %v", uri.String(), err)
-		return
-	}
-	// ************************************
-	// * write data into file
-	// ************************************
-	// write buf to temp file
 	tmpfile, err := ioutil.TempFile(s.tempDir, "indexer")
 	if err != nil {
-		s.DoPanicf(w, http.StatusInternalServerError, "cannot create tempfile: %v", err)
-		return
+		return nil, emperror.Wrap(err, "cannot create tempfile")
 	}
 	defer os.Remove(tmpfile.Name()) // clean up
 
-	if _, err := tmpfile.Write(buf); err != nil {
-		s.DoPanicf(w, http.StatusInternalServerError, "cannot write to tempfile %s: %v", tmpfile.Name(), err)
-		return
+	mimetype, fulldownload, err := s.getContentHeader(uri, param.DownloadMime, tmpfile)
+	if err != nil {
+		return nil, emperror.Wrapf(err, "cannot get content header of %s", uri.String())
 	}
 	if err := tmpfile.Close(); err != nil {
-		s.DoPanicf(w, http.StatusInternalServerError, "cannot close tempfile %s: %v", tmpfile.Name(), err)
-		return
+		return nil, emperror.Wrapf(err, "cannot close tempfile %s", tmpfile.Name())
 	}
 	tmpUri, err := url.Parse(fmt.Sprintf("file:///%s", filepath.ToSlash(tmpfile.Name())))
 	if err != nil {
-		s.DoPanicf(w, http.StatusInternalServerError, "cannot create uri for tempfile %s: %v", tmpfile.Name(), err)
-		return
+		return nil, emperror.Wrapf(err, "cannot create uri for tempfile %s", tmpfile.Name())
 	}
-
 
 	result := map[string]interface{}{}
 	errors := map[string]string{}
@@ -224,13 +265,14 @@ func (s *Server) HandleDefault(w http.ResponseWriter, r *http.Request) {
 		s.log.Infof("Action %v: %s", key, actionstr)
 		action, ok := s.actions[actionstr]
 		if !ok {
-			s.DoPanicf(w, http.StatusBadRequest, "invalid action: %s", actionstr)
-			return
+			// return nil, emperror.Wrapf(err, "invalid action: %s", actionstr)
+			errors[actionstr] = "action not available"
+			continue
 		}
 		theUri := uri
 		caps := action.GetCaps()
 		// can only deal with files
-		if  caps & ACTFILEHEAD > 0 && caps & (ACTHTTP | ACTHTTPS) == 0 {
+		if fulldownload || (caps&ACTFILEHEAD > 0 && caps&(ACTHTTP|ACTHTTPS) == 0) {
 			if uri.Scheme != "file" {
 				theUri = tmpUri
 			}
@@ -253,18 +295,9 @@ func (s *Server) HandleDefault(w http.ResponseWriter, r *http.Request) {
 		result["height"] = height
 	}
 	if duration > 0 {
-		result["duration"] = math.Round(float64(duration)/float64(time.Second))
+		result["duration"] = math.Round(float64(duration) / float64(time.Second))
 	}
-
-
-	js, err := json.Marshal(result)
-	if err != nil {
-		s.DoPanicf(w, http.StatusInternalServerError, "cannot marshal result %v: %v", result, err)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
+	return result, nil
 }
 
 func (s *Server) ListenAndServe(addr, cert, key string) error {
