@@ -36,10 +36,15 @@ type ActionIdentify struct {
 	convert string
 	wsl     bool
 	timeout time.Duration
+	caps ActionCapability
 }
 
-func NewActionIdentify(identify, convert string, wsl bool, timeout time.Duration) Action {
-	return &ActionIdentify{name: "identify", identify: identify, convert: convert, wsl: wsl, timeout: timeout}
+func NewActionIdentify(identify, convert string, wsl bool, timeout time.Duration, online bool) Action {
+	var caps ActionCapability = ACTFILEHEAD
+	if online {
+		caps |= ACTALLPROTO
+	}
+	return &ActionIdentify{name: "identify", identify: identify, convert: convert, wsl: wsl, timeout: timeout, caps: caps}
 }
 
 func (ai *ActionIdentify) GetCaps() ActionCapability {

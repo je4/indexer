@@ -20,14 +20,17 @@ tempDir = "C:/temp/"
     ffprobe = "/usr/local/bin/ffprobe2"
     wsl = true  # true, if executable is within linux subsystem on windows
     timeout = "10s"
+    online = true
 
 [ImageMagick]
     identify = "/usr/bin/identify"
     convert = "/usr/bin/convert"
     wsl = true  # true, if executable is within linux subsystem on windows
     timeout = "10s"
+    online = true
 
 [Tika]
     address = "http://localhost:9997/meta"
     timeout = "10s"
     regexpMime = "^.*$" # ""^application/.*$"  # regexp for mimetype, which are used for tika queries
+    online = true

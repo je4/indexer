@@ -88,17 +88,23 @@ func main() {
 	ffprobe := indexer.NewActionFFProbe(
 		config.FFMPEG.FFProbe,
 		config.FFMPEG.Wsl,
-		config.FFMPEG.Timeout.Duration)
+		config.FFMPEG.Timeout.Duration,
+		config.FFMPEG.Online)
 	srv.AddAction(ffprobe)
 
 	identify := indexer.NewActionIdentify(
 		config.ImageMagick.Identify,
 		config.ImageMagick.Convert,
 		config.ImageMagick.Wsl,
-		config.ImageMagick.Timeout.Duration)
+		config.ImageMagick.Timeout.Duration,
+		config.ImageMagick.Online)
 	srv.AddAction(identify)
 
-	tika := indexer.NewActionTika(config.Tika.Address, config.Tika.Timeout.Duration, config.Tika.RegexpMime)
+	tika := indexer.NewActionTika(
+		config.Tika.Address,
+		config.Tika.Timeout.Duration,
+		config.Tika.RegexpMime,
+		config.Tika.Online)
 	srv.AddAction(tika)
 
 	go func() {

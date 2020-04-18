@@ -32,19 +32,24 @@ import (
 // java -jar tika-server-1.24.jar -enableUnsecureFeatures -enableFileUrl --port=9997
 
 type ActionTika struct {
-	name string
-	url  string
-	timeout time.Duration
+	name       string
+	url        string
+	timeout    time.Duration
 	regexpMime *regexp.Regexp
+	caps       ActionCapability
 }
 
-func NewActionTika(uri string, timeout time.Duration, regexpMime string) Action {
-
+func NewActionTika(uri string, timeout time.Duration, regexpMime string, online bool) Action {
+	var caps ActionCapability = ACTFILEHEAD
+	if online {
+		caps |= ACTALLPROTO
+	}
 	return &ActionTika{
-		name: "tika",
-		url: uri,
-		timeout: timeout,
+		name:       "tika",
+		url:        uri,
+		timeout:    timeout,
 		regexpMime: regexp.MustCompile(regexpMime),
+		caps: caps,
 	}
 }
 
@@ -84,7 +89,6 @@ func (at *ActionTika) Do(uri *url.URL, mimetype *string, width *uint, height *ui
 		dataOut = resp.Body
 	}
 
-
 	client := &http.Client{}
 	ctx, cancel := context.WithTimeout(context.Background(), at.timeout)
 	defer cancel()
@@ -115,5 +119,3 @@ func (at *ActionTika) Do(uri *url.URL, mimetype *string, width *uint, height *ui
 	}
 	return result, nil
 }
-
-

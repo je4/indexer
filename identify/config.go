@@ -38,12 +38,14 @@ type ConfigTika struct {
 	Address    string
 	Timeout    duration
 	RegexpMime string
+	Online     bool
 }
 
 type ConfigFFMPEG struct {
 	FFProbe string
 	Wsl     bool
 	Timeout duration
+	Online  bool
 }
 
 type ConfigImageMagick struct {
@@ -51,6 +53,7 @@ type ConfigImageMagick struct {
 	Convert  string
 	Wsl      bool
 	Timeout  duration
+	Online   bool
 }
 
 type Config struct {

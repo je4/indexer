@@ -68,14 +68,19 @@ type ActionFFProbe struct {
 	ffprobe string
 	wsl     bool
 	timeout time.Duration
+	caps ActionCapability
 }
 
-func NewActionFFProbe(ffprobe string, wsl bool, timeout time.Duration) Action {
-	return &ActionFFProbe{name: "ffprobe", ffprobe: ffprobe, wsl: wsl, timeout: timeout}
+func NewActionFFProbe(ffprobe string, wsl bool, timeout time.Duration, online bool) Action {
+	var caps ActionCapability = ACTFILEHEAD
+	if online {
+		caps |= ACTALLPROTO
+	}
+	return &ActionFFProbe{name: "ffprobe", ffprobe: ffprobe, wsl: wsl, timeout: timeout, caps: caps}
 }
 
 func (as *ActionFFProbe) GetCaps() ActionCapability {
-	return ACTALLPROTO
+	return as.caps
 }
 
 func (as *ActionFFProbe) GetName() string {
