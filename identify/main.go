@@ -27,7 +27,6 @@ import (
 	"time"
 )
 
-// Start-Process -FilePath c:/daten/go/bin/sf.exe -Args "-serve localhost:5138" -Wait -NoNewWindow
 
 func main() {
 	configFile := flag.String("cfg", "./indexer.toml", "config file location")
@@ -82,30 +81,38 @@ func main() {
 		config.TempDir,
 		)
 
-	sf := indexer.NewActionSiegfried(config.Siegfried.Address)
-	srv.AddAction(sf)
+	if config.Siegfried.Enabled {
+		sf := indexer.NewActionSiegfried(config.Siegfried.Address)
+		srv.AddAction(sf)
+	}
 
-	ffprobe := indexer.NewActionFFProbe(
-		config.FFMPEG.FFProbe,
-		config.FFMPEG.Wsl,
-		config.FFMPEG.Timeout.Duration,
-		config.FFMPEG.Online)
-	srv.AddAction(ffprobe)
+	if config.FFMPEG.Enabled {
+		ffprobe := indexer.NewActionFFProbe(
+			config.FFMPEG.FFProbe,
+			config.FFMPEG.Wsl,
+			config.FFMPEG.Timeout.Duration,
+			config.FFMPEG.Online)
+		srv.AddAction(ffprobe)
+	}
 
-	identify := indexer.NewActionIdentify(
-		config.ImageMagick.Identify,
-		config.ImageMagick.Convert,
-		config.ImageMagick.Wsl,
-		config.ImageMagick.Timeout.Duration,
-		config.ImageMagick.Online)
-	srv.AddAction(identify)
+	if config.ImageMagick.Enabled {
+		identify := indexer.NewActionIdentify(
+			config.ImageMagick.Identify,
+			config.ImageMagick.Convert,
+			config.ImageMagick.Wsl,
+			config.ImageMagick.Timeout.Duration,
+			config.ImageMagick.Online)
+		srv.AddAction(identify)
+	}
 
-	tika := indexer.NewActionTika(
-		config.Tika.Address,
-		config.Tika.Timeout.Duration,
-		config.Tika.RegexpMime,
-		config.Tika.Online)
-	srv.AddAction(tika)
+	if config.Tika.Enabled {
+		tika := indexer.NewActionTika(
+			config.Tika.Address,
+			config.Tika.Timeout.Duration,
+			config.Tika.RegexpMime,
+			config.Tika.Online)
+		srv.AddAction(tika)
+	}
 
 	go func() {
 		if err := srv.ListenAndServe(config.Addr, config.CertPEM, config.KeyPEM); err != nil {

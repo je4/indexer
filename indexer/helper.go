@@ -31,6 +31,13 @@ var _logformat = logging.MustStringFormatter(
 	`%{time:2006-01-02T15:04:05.000} %{module}::%{shortfunc} [%{shortfile}] > %{level:.5s} - %{message}`,
 )
 
+func Max( a, b int64) int64 {
+	if a > b {
+		return a
+	}
+	return b
+}
+
 func CreateLogger(module string, logfile string, loglevel string) (log *logging.Logger, lf *os.File) {
 	log = logging.MustGetLogger(module)
 	var err error

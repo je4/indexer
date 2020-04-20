@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+
+// Start-Process -FilePath c:/daten/go/bin/sf.exe -Args "-serve localhost:5138" -Wait -NoNewWindow
+// c:/daten/go/bin/sf.exe -serve localhost:5138
+
 package indexer
 
 import (

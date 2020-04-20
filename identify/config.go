@@ -32,6 +32,7 @@ func (d *duration) UnmarshalText(text []byte) error {
 
 type ConfigSiegfried struct {
 	Address string
+	Enabled bool
 }
 
 type ConfigTika struct {
@@ -39,6 +40,7 @@ type ConfigTika struct {
 	Timeout    duration
 	RegexpMime string
 	Online     bool
+	Enabled    bool
 }
 
 type ConfigFFMPEG struct {
@@ -46,6 +48,7 @@ type ConfigFFMPEG struct {
 	Wsl     bool
 	Timeout duration
 	Online  bool
+	Enabled bool
 }
 
 type ConfigImageMagick struct {
@@ -54,6 +57,7 @@ type ConfigImageMagick struct {
 	Wsl      bool
 	Timeout  duration
 	Online   bool
+	Enabled  bool
 }
 
 type Config struct {

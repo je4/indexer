@@ -39,6 +39,7 @@ type ActionParam struct {
 	Url          string   `json:"url"`
 	Actions      []string `json:"actions,omitempty"`
 	DownloadMime string   `json:"downloadmime,omitempty"`
+	HeaderSize   int64    `json:"headersize,omitempty"`
 }
 
 type Server struct {
@@ -115,8 +116,8 @@ func (s *Server) DoPanic(writer http.ResponseWriter, status int, message string)
 /*
 loads part of data and gets mime type
 */
-func (s *Server) getContentHeader(uri *url.URL, downloadMime string, writer io.Writer) (mimetype string, fulldownload bool, err error) {
-	s.log.Infof("loading header from %s", uri.String())
+func (s *Server) getContent(uri *url.URL, downloadMime string, headerSize int64, writer io.Writer) (mimetype string, fulldownload bool, err error) {
+	s.log.Infof("loading from %s", uri.String())
 
 	dlRegexp, err := regexp.Compile(downloadMime)
 	if err != nil {
@@ -129,6 +130,7 @@ func (s *Server) getContentHeader(uri *url.URL, downloadMime string, writer io.W
 			return "", false, emperror.Wrapf(err, "error getting head request for %s", uri.String())
 		}
 		if res.StatusCode == http.StatusMethodNotAllowed {
+			s.log.Debugf("HEAD not allowed")
 			ctx, cancel := context.WithTimeout(context.Background(), s.headerTimeout)
 			defer cancel() // The cancel should be deferred so resources are cleaned up
 			req, err := http.NewRequestWithContext(ctx, "GET", uri.String(), nil)
@@ -150,7 +152,14 @@ func (s *Server) getContentHeader(uri *url.URL, downloadMime string, writer io.W
 		// * get mimetype from response header
 		// ************************************
 		mimetype = ClearMime(res.Header.Get("Content-type"))
+		s.log.Debugf("mimetype from server: %v", mimetype)
 		fulldownload = dlRegexp.MatchString(mimetype)
+
+		if fulldownload {
+			s.log.Infof("full download of %s", uri.String())
+		} else {
+			s.log.Infof("downloading %v byte from %s", headerSize, uri.String())
+		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), s.headerTimeout)
 		defer cancel() // The cancel should be deferred so resources are cleaned up
@@ -161,7 +170,7 @@ func (s *Server) getContentHeader(uri *url.URL, downloadMime string, writer io.W
 			return "", false, emperror.Wrapf(err, "error creating request for %s", uri.String())
 		}
 		if !fulldownload {
-			req.Header.Set("Range", fmt.Sprintf("bytes=0-%d", s.headerSize-1))
+			req.Header.Set("Range", fmt.Sprintf("bytes=0-%d", headerSize-1))
 		}
 		var client http.Client
 		resp, err := client.Do(req)
@@ -171,7 +180,7 @@ func (s *Server) getContentHeader(uri *url.URL, downloadMime string, writer io.W
 		// default should follow redirects
 		defer resp.Body.Close()
 
-		maxSize := s.headerSize
+		maxSize := headerSize
 		if fulldownload {
 			maxSize = s.maxDownloadSize // 2 ^ 32 - 1 max. 4GB
 		}
@@ -260,7 +269,11 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 	}
 	defer os.Remove(tmpfile.Name()) // clean up
 
-	mimetype, fulldownload, err := s.getContentHeader(uri, param.DownloadMime, tmpfile)
+	headerSize := param.HeaderSize
+	if headerSize == 0 {
+		headerSize = s.headerSize
+	}
+	mimetype, fulldownload, err := s.getContent(uri, param.DownloadMime, headerSize, tmpfile)
 	if err != nil {
 		return nil, emperror.Wrapf(err, "cannot get content header of %s", uri.String())
 	}
@@ -276,7 +289,6 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 	errors := map[string]string{}
 	// todo: download once, start concurrent identifiers...
 	for key, actionstr := range param.Actions {
-		s.log.Infof("Action %v: %s", key, actionstr)
 		action, ok := s.actions[actionstr]
 		if !ok {
 			// return nil, emperror.Wrapf(err, "invalid action: %s", actionstr)
@@ -291,6 +303,7 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 				theUri = tmpUri
 			}
 		}
+		s.log.Infof("Action [%v] %s: %s", key, actionstr, theUri.String())
 		actionresult, err := action.Do(theUri, &mimetype, &width, &height, &duration)
 		if err == ErrMimeNotApplicable {
 			s.log.Infof("%s: mime %s not applicable", actionstr, mimetype)
