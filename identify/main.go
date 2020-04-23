@@ -27,8 +27,11 @@ import (
 	"time"
 )
 
+const INDEXER = "indexer v0.1, info-age GmbH Basel"
 
 func main() {
+	println(INDEXER)
+
 	configFile := flag.String("cfg", "./indexer.toml", "config file location")
 	flag.Parse()
 
