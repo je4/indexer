@@ -6,7 +6,7 @@ of the identification cascade
 
 ## Installation
     go get github.com/je4/indexer
-    go build github.com/je4/indexer/identify
+    go build github.com/je4/indexer/cmd/identify
     
 ## Usage
 ### Start service

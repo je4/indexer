@@ -68,7 +68,11 @@ func NewServer(
 	accesslog io.Writer,
 	errorTemplate string,
 	tempDir string,
-) *Server {
+) (*Server, error) {
+	errorTpl, err := template.ParseFiles(errorTemplate)
+	if err != nil {
+		return nil, emperror.Wrapf(err, "cannot parse error template %s", errorTemplate)
+	}
 	srv := &Server{
 		headerTimeout:   headerTimeout,
 		headerSize:      headerSize,
@@ -79,10 +83,10 @@ func NewServer(
 		log:             log,
 		accesslog:       accesslog,
 		tempDir:         tempDir,
-		errorTemplate:   template.Must(template.ParseFiles(errorTemplate)),
+		errorTemplate:   errorTpl,
 		actions:         map[string]Action{},
 	}
-	return srv
+	return srv, nil
 }
 
 func (s *Server) AddAction(a Action) {

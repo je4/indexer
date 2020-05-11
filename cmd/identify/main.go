@@ -17,7 +17,7 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/je4/indexer/indexer"
+	"github.com/je4/indexer/pkg/indexer"
 	"io"
 	"log"
 	"os"
@@ -71,7 +71,7 @@ func main() {
 		accesslog = f
 	}
 
-	srv := indexer.NewServer(
+	srv, err := indexer.NewServer(
 		config.HeaderTimeout.Duration,
 		config.HeaderSize,
 		config.DownloadMime,
@@ -83,6 +83,10 @@ func main() {
 		config.ErrorTemplate,
 		config.TempDir,
 		)
+	if err != nil {
+		log.Panicf("cannot initialize server: %v", err)
+		return
+	}
 
 	if config.Siegfried.Enabled {
 		sf := indexer.NewActionSiegfried(config.Siegfried.Address)
