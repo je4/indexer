@@ -15,14 +15,14 @@ tempDir = "C:/temp/"
 
 [Siegfried]
     address = "http://localhost:5138/identify/[[PATH]]?format=json"
-    enabled = true
+    enabled = false
 
 [FFMPEG]
     ffprobe = "/usr/local/bin/ffprobe2"
     wsl = true  # true, if executable is within linux subsystem on windows
     timeout = "10s"
     online = true
-    enabled = true
+    enabled = false
 
 [ImageMagick]
     identify = "/usr/bin/identify"
@@ -30,11 +30,11 @@ tempDir = "C:/temp/"
     wsl = true  # true, if executable is within linux subsystem on windows
     timeout = "10s"
     online = true
-    enabled = true
+    enabled = false
 
 [Tika]
     address = "http://localhost:9997/meta"
     timeout = "10s"
     regexpMime = "^.*$" # ""^application/.*$"  # regexp for mimetype, which are used for tika queries
     online = true
-    enabled = true
+    enabled = false

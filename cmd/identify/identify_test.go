@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 )
@@ -73,7 +74,7 @@ func TestMain( m *testing.M) {
 
 func TestIndexer(t *testing.T) {
 	requestBody, err := json.Marshal(map[string]string{
-		"url": fmt.Sprintf("file:///%s/../../web/static/memoriav_logo_400x400.jpg", workingDirectory),
+		"url": "file:///"+filepath.Clean(fmt.Sprintf("%s/../../web/static/memoriav_logo_400x400.jpg", workingDirectory)),
 	})
 	if err != nil {
 		t.Error("cannot marshal request body")
@@ -103,7 +104,7 @@ func TestIndexer(t *testing.T) {
 		return
 	}
 	if mimetype != "image/jpeg" {
-		t.Errorf("invalid mimetype: %s", mimetype)
+		t.Errorf("mimetype is not image/jpeg: %s", mimetype)
 		return
 	}
 }
