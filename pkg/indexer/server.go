@@ -152,6 +152,9 @@ func (s *Server) getContent(uri *url.URL, downloadMime string, headerSize int64,
 				return "", false, emperror.Wrapf(err, "error querying %s: %s", uri.String(), res.Status)
 			}
 		}
+		if res.StatusCode > 300  {
+			return "", false,  errors.New(fmt.Sprintf("invalid status %v - %v for %s", res.StatusCode, res.StatusCode, uri.String()))
+		}
 		// ************************************
 		// * get mimetype from response header
 		// ************************************

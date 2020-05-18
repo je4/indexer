@@ -18,7 +18,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/goph/emperror"
+	"github.com/pkg/errors"
 	"io"
 	"net/http"
 	"net/url"
@@ -84,6 +86,9 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 			return nil, emperror.Wrapf(err, "cannot load url: %s", uri.String())
 		}
 		defer resp.Body.Close()
+		if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+			return nil, errors.New(fmt.Sprintf("invalid status %v - %v for %s", resp.StatusCode, resp.StatusCode, uri.String()))
+		}
 		dataOut = resp.Body
 	}
 
