@@ -60,6 +60,8 @@ func (ai *ActionIdentify) GetName() string {
 
 func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration) (interface{}, error) {
 	var metadata = make(map[string]interface{})
+	var metadataInt interface{}
+//	var metadatalist = []map[string]interface{}{}
 	var filename string
 	var err error
 
@@ -113,9 +115,18 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 		return nil, emperror.Wrapf(err, "error executing (%s %s): %v", cmdfile, cmdparam, out.String())
 	}
 
-	if err = json.Unmarshal([]byte(out.String()), &metadata); err != nil {
+	if err = json.Unmarshal([]byte(out.String()), &metadataInt); err != nil {
 		return nil, emperror.Wrapf(err, "cannot unmarshall metadata: %s", out.String())
 	}
+
+	switch val := metadataInt.(type) {
+	case []interface{}:
+		// todo: check for content and type
+		metadata = val[0].(map[string]interface{})
+	case map[string]interface{}:
+		metadata = val
+	}
+
 
 	_image, ok := metadata["image"]
 	if !ok {
