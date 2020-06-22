@@ -108,7 +108,7 @@ func FileExists(filename string) bool {
 	return !info.IsDir()
 }
 
-func getFilePath(uri *url.URL) (string, error) {
+func _getFilePath(uri *url.URL) (string, error) {
 	if uri.Scheme != "file" {
 		return "", errors.New(fmt.Sprintf("invalid url scheme: %s", uri.Scheme))
 	}

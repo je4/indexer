@@ -39,14 +39,15 @@ type ActionIdentify struct {
 	wsl     bool
 	timeout time.Duration
 	caps ActionCapability
+	fm *FileMapper
 }
 
-func NewActionIdentify(identify, convert string, wsl bool, timeout time.Duration, online bool) Action {
+func NewActionIdentify(identify, convert string, wsl bool, timeout time.Duration, online bool, fm *FileMapper) Action {
 	var caps ActionCapability = ACTFILEHEAD
 	if online {
 		caps |= ACTALLPROTO
 	}
-	return &ActionIdentify{name: "identify", identify: identify, convert: convert, wsl: wsl, timeout: timeout, caps: caps}
+	return &ActionIdentify{name: "identify", identify: identify, convert: convert, wsl: wsl, timeout: timeout, caps: caps, fm: fm}
 }
 
 func (ai *ActionIdentify) GetCaps() ActionCapability {
@@ -69,7 +70,7 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 	var dataOut io.Reader
 	// local files need some adjustments...
 	if uri.Scheme == "file" {
-		filename, err = getFilePath(uri)
+		filename, err = ai.fm.Get(uri)
 		if err != nil {
 			return nil, emperror.Wrapf(err, "invalid file uri %s", uri.String())
 		}

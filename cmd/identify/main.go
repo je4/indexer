@@ -23,11 +23,12 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 )
 
-const INDEXER = "indexer v0.1, info-age GmbH Basel"
+const INDEXER = "indexer v0.2, info-age GmbH Basel"
 
 func main() {
 	println(INDEXER)
@@ -71,6 +72,12 @@ func main() {
 		accesslog = f
 	}
 
+	mapping := map[string]string{}
+	for _, val := range config.FileMap {
+		mapping[strings.ToLower(val.Alias)] = val.Folder
+	}
+	fm := indexer.NewFileMapper(mapping)
+
 	srv, err := indexer.NewServer(
 		config.HeaderTimeout.Duration,
 		config.HeaderSize,
@@ -82,6 +89,7 @@ func main() {
 		accesslog,
 		config.ErrorTemplate,
 		config.TempDir,
+		fm,
 		)
 	if err != nil {
 		log.Panicf("cannot initialize server: %v", err)
@@ -89,7 +97,7 @@ func main() {
 	}
 
 	if config.Siegfried.Enabled {
-		sf := indexer.NewActionSiegfried(config.Siegfried.Address)
+		sf := indexer.NewActionSiegfried(config.Siegfried.Address, fm)
 		srv.AddAction(sf)
 	}
 
@@ -98,7 +106,8 @@ func main() {
 			config.FFMPEG.FFProbe,
 			config.FFMPEG.Wsl,
 			config.FFMPEG.Timeout.Duration,
-			config.FFMPEG.Online)
+			config.FFMPEG.Online,
+			fm)
 		srv.AddAction(ffprobe)
 	}
 
@@ -108,7 +117,8 @@ func main() {
 			config.ImageMagick.Convert,
 			config.ImageMagick.Wsl,
 			config.ImageMagick.Timeout.Duration,
-			config.ImageMagick.Online)
+			config.ImageMagick.Online,
+			fm)
 		srv.AddAction(identify)
 	}
 
@@ -117,8 +127,18 @@ func main() {
 			config.Tika.Address,
 			config.Tika.Timeout.Duration,
 			config.Tika.RegexpMime,
-			config.Tika.Online)
+			config.Tika.Online,
+			fm)
 		srv.AddAction(tika)
+	}
+
+	for _, eaconfig := range config.External {
+		var caps indexer.ActionCapability
+		for _, c := range eaconfig.ActionCapabilities {
+			caps |= c
+		}
+		ea := indexer.NewActionExternal(eaconfig.Name, eaconfig.Address, caps, eaconfig.CallType, fm)
+		srv.AddAction(ea)
 	}
 
 	go func() {

@@ -69,14 +69,15 @@ type ActionFFProbe struct {
 	wsl     bool
 	timeout time.Duration
 	caps ActionCapability
+	fm *FileMapper
 }
 
-func NewActionFFProbe(ffprobe string, wsl bool, timeout time.Duration, online bool) Action {
+func NewActionFFProbe(ffprobe string, wsl bool, timeout time.Duration, online bool, fm *FileMapper) Action {
 	var caps ActionCapability = ACTFILEHEAD
 	if online {
 		caps |= ACTALLPROTO
 	}
-	return &ActionFFProbe{name: "ffprobe", ffprobe: ffprobe, wsl: wsl, timeout: timeout, caps: caps}
+	return &ActionFFProbe{name: "ffprobe", ffprobe: ffprobe, wsl: wsl, timeout: timeout, caps: caps, fm: fm}
 }
 
 func (as *ActionFFProbe) GetCaps() ActionCapability {
@@ -98,7 +99,7 @@ func (as *ActionFFProbe) Do(uri *url.URL, mimetype *string, width *uint, height 
 
 	// local files need some adjustments...
 	if uri.Scheme == "file" {
-		filename, err = getFilePath(uri)
+		filename, err = as.fm.Get(uri)
 		if err != nil {
 			return nil, emperror.Wrapf(err, "invalid file uri %s", uri.String())
 		}

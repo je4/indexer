@@ -16,6 +16,7 @@ package indexer
 
 import (
 	"errors"
+	"fmt"
 	"net/url"
 	"time"
 )
@@ -33,6 +34,31 @@ const (
 	ACTALL      = ACTALLPROTO | ACTHEAD
 	ACTFILEHEAD = ACTFILE | ACTHEAD
 )
+
+var ACTString map[ActionCapability]string = map[ActionCapability]string{
+	ACTFILE:  "ACTFILE",
+	ACTHTTP:  "ACTHTTP",
+	ACTHTTPS: "ACTHTTPS",
+	ACTHEAD:  "ACTHEAD",
+}
+
+var ACTAction map[string]ActionCapability = map[string]ActionCapability{
+	"ACTFILE":  ACTFILE,
+	"ACTHTTP":  ACTHTTP,
+	"ACTHTTPS": ACTHTTPS,
+	"ACTHEAD":  ACTHEAD,
+}
+
+// for toml decoding
+func (a *ActionCapability) UnmarshalText(text []byte) error {
+	var ok bool
+	*a, ok =  ACTAction[string(text)]
+	if !ok {
+		return fmt.Errorf("invalid action capability: %s", string(text))
+	}
+	return nil
+}
+
 
 var ErrMimeNotApplicable = errors.New("mime type not applicable for action")
 

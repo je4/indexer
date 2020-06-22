@@ -1,6 +1,6 @@
 headersize = 100000
 headertimeout = "10s"
-downloadmime = "^image/.*$"  # regexp with mimetypes, which will be downloaded
+forcedownload = "^image/.*$"  # regexp with mimetypes, which will be downloaded
 maxdownloadsize = 4294967295 # max. 4GB downloads
 logfile = "" # log file location
 loglevel = "DEBUG" # CRITICAL|ERROR|WARNING|NOTICE|INFO|DEBUG
@@ -13,6 +13,14 @@ jwtalg = ["HS256", "HS384", "HS512"] # "hs256" "hs384" "hs512" "es256" "es384" "
 errorTemplate = "C:/daten/go/dev/indexer/web/template/error.gohtml" # error message for memoHandler
 tempDir = "C:/temp/"
 
+[[filemap]]
+alias = "c"
+folder = "c:/"
+
+[[filemap]]
+alias = "blah"
+folder = "c:/temp"
+
 [Siegfried]
     address = "http://localhost:5138/identify/[[PATH]]?format=json"
     enabled = false
@@ -22,7 +30,7 @@ tempDir = "C:/temp/"
     wsl = true  # true, if executable is within linux subsystem on windows
     timeout = "10s"
     online = true
-    enabled = false
+    enabled = true
 
 [ImageMagick]
     identify = "/usr/bin/identify"
@@ -30,7 +38,7 @@ tempDir = "C:/temp/"
     wsl = true  # true, if executable is within linux subsystem on windows
     timeout = "10s"
     online = true
-    enabled = false
+    enabled = true
 
 [Tika]
     address = "http://localhost:9997/meta"
@@ -38,3 +46,25 @@ tempDir = "C:/temp/"
     regexpMime = "^.*$" # ""^application/.*$"  # regexp for mimetype, which are used for tika queries
     online = true
     enabled = false
+
+
+[[External]]
+    name = "validateav"
+    address = "http://localhost:83/validateav/[[PATH]]"
+    calltype = "EACTURL"
+    datatype = "(video|audio)"
+    ActionCapabilities = ["ACTFILE"]
+
+[[External]]
+    name = "validateimage"
+    address = "http://localhost:83/validateimage/[[PATH]]"
+    calltype = "EACTURL"
+    datatype = "image"
+    ActionCapabilities = ["ACTFILE"]
+
+[[External]]
+    name = "histogram"
+    address = "http://localhost:83/histogram/[[PATH]]"
+    calltype = "EACTURL"
+    datatype = "^image$"
+    ActionCapabilities = ["ACTFILE"]

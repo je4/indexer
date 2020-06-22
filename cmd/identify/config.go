@@ -16,6 +16,7 @@ package main
 
 import (
 	"github.com/BurntSushi/toml"
+	"github.com/je4/indexer/pkg/indexer"
 	"log"
 	"time"
 )
@@ -60,6 +61,19 @@ type ConfigImageMagick struct {
 	Enabled  bool
 }
 
+type ExternalAction struct {
+	Name,
+	Address,
+	Datatype string
+	ActionCapabilities []indexer.ActionCapability
+	CallType           indexer.ExternalActionCalltype
+}
+
+type FileMap struct {
+	Alias  string
+	Folder string
+}
+
 type Config struct {
 	ErrorTemplate   string
 	Logfile         string
@@ -79,6 +93,8 @@ type Config struct {
 	FFMPEG          ConfigFFMPEG
 	ImageMagick     ConfigImageMagick
 	Tika            ConfigTika
+	External        []ExternalAction
+	FileMap         []FileMap
 }
 
 func LoadConfig(filepath string) Config {

@@ -36,10 +36,10 @@ import (
 )
 
 type ActionParam struct {
-	Url          string   `json:"url"`
-	Actions      []string `json:"actions,omitempty"`
-	DownloadMime string   `json:"downloadmime,omitempty"`
-	HeaderSize   int64    `json:"headersize,omitempty"`
+	Url           string   `json:"url"`
+	Actions       []string `json:"actions,omitempty"`
+	ForceDownload string   `json:"forcedownload,omitempty"`
+	HeaderSize    int64    `json:"headersize,omitempty"`
 }
 
 type Server struct {
@@ -52,9 +52,10 @@ type Server struct {
 	actions         map[string]Action
 	headerTimeout   time.Duration
 	headerSize      int64
-	downloadMime    string
+	forceDownload   string
 	maxDownloadSize int64
 	tempDir         string
+	fm              *FileMapper
 }
 
 func NewServer(
@@ -68,6 +69,7 @@ func NewServer(
 	accesslog io.Writer,
 	errorTemplate string,
 	tempDir string,
+	fm *FileMapper,
 ) (*Server, error) {
 	errorTpl, err := template.ParseFiles(errorTemplate)
 	if err != nil {
@@ -76,7 +78,7 @@ func NewServer(
 	srv := &Server{
 		headerTimeout:   headerTimeout,
 		headerSize:      headerSize,
-		downloadMime:    downloadMime,
+		forceDownload:   downloadMime,
 		maxDownloadSize: maxDownloadSize,
 		jwtSecret:       jwtSecret,
 		jwtAlg:          jwtAlg,
@@ -85,6 +87,7 @@ func NewServer(
 		tempDir:         tempDir,
 		errorTemplate:   errorTpl,
 		actions:         map[string]Action{},
+		fm:              fm,
 	}
 	return srv, nil
 }
@@ -120,12 +123,12 @@ func (s *Server) DoPanic(writer http.ResponseWriter, status int, message string)
 /*
 loads part of data and gets mime type
 */
-func (s *Server) getContent(uri *url.URL, downloadMime string, headerSize int64, writer io.Writer) (mimetype string, fulldownload bool, err error) {
+func (s *Server) getContent(uri *url.URL, forceDownload string, headerSize int64, writer io.Writer) (mimetype string, fulldownload bool, err error) {
 	s.log.Infof("loading from %s", uri.String())
 
-	dlRegexp, err := regexp.Compile(downloadMime)
+	dlRegexp, err := regexp.Compile(forceDownload)
 	if err != nil {
-		return "", false, emperror.Wrapf(err, "cannot compile download mime regexp %s", downloadMime)
+		return "", false, emperror.Wrapf(err, "cannot compile download mime regexp %s", forceDownload)
 	}
 
 	if uri.Scheme != "file" {
@@ -152,8 +155,8 @@ func (s *Server) getContent(uri *url.URL, downloadMime string, headerSize int64,
 				return "", false, emperror.Wrapf(err, "error querying %s: %s", uri.String(), res.Status)
 			}
 		}
-		if res.StatusCode > 300  {
-			return "", false,  errors.New(fmt.Sprintf("invalid status %v - %v for %s", res.StatusCode, res.StatusCode, uri.String()))
+		if res.StatusCode > 300 {
+			return "", false, errors.New(fmt.Sprintf("invalid status %v - %v for %s", res.StatusCode, res.StatusCode, uri.String()))
 		}
 		// ************************************
 		// * get mimetype from response header
@@ -202,7 +205,7 @@ func (s *Server) getContent(uri *url.URL, downloadMime string, headerSize int64,
 		}
 
 	} else {
-		path, err := getFilePath(uri)
+		path, err := s.fm.Get(uri)
 		if err != nil {
 			return "", false, emperror.Wrapf(err, "cannot map uri %s ", uri.String())
 		}
@@ -228,7 +231,7 @@ func (s *Server) HandleDefault(w http.ResponseWriter, r *http.Request) {
 		s.DoPanicf(w, http.StatusInternalServerError, "cannot read body: %v", err)
 		return
 	}
-	param := ActionParam{DownloadMime: s.downloadMime}
+	param := ActionParam{ForceDownload: s.forceDownload}
 	if err := json.Unmarshal(body, &param); err != nil {
 		s.DoPanicf(w, http.StatusBadRequest, "cannot unmarshal json - %s: %v", string(body), err)
 		return
@@ -280,7 +283,7 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 	if headerSize == 0 {
 		headerSize = s.headerSize
 	}
-	mimetype, fulldownload, err := s.getContent(uri, param.DownloadMime, headerSize, tmpfile)
+	mimetype, fulldownload, err := s.getContent(uri, param.ForceDownload, headerSize, tmpfile)
 	if err != nil {
 		return nil, emperror.Wrapf(err, "cannot get content header of %s", uri.String())
 	}
