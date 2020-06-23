@@ -63,17 +63,19 @@ type ActionExternal struct {
 	url        string
 	capability ActionCapability
 	callType   ExternalActionCalltype
-	fm *FileMapper
+	server     *Server
 }
 
-func NewActionExternal(name, address string, capability ActionCapability, callType ExternalActionCalltype, fm *FileMapper) Action {
-	return &ActionExternal{
+func NewActionExternal(name, address string, capability ActionCapability, callType ExternalActionCalltype, server *Server) Action {
+	ae := &ActionExternal{
 		name:       name,
 		url:        address,
 		capability: capability,
 		callType:   callType,
-		fm:fm,
+		server:     server,
 	}
+	server.AddAction(ae)
+	return ae
 }
 
 func (as *ActionExternal) GetCaps() ActionCapability {
@@ -87,22 +89,22 @@ func (as *ActionExternal) GetName() string {
 func (as *ActionExternal) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration) (interface{}, error) {
 	switch uri.Scheme {
 	case "file":
-		if as.capability & ACTFILE != ACTFILE {
+		if as.capability&ACTFILE != ACTFILE {
 			return nil, fmt.Errorf("invalid capability for file url scheme")
 		}
 	case "http":
-		if as.capability & ACTHTTP != ACTHTTP {
+		if as.capability&ACTHTTP != ACTHTTP {
 			return nil, fmt.Errorf("invalid capability for http url scheme")
 		}
 	case "https":
-		if as.capability & ACTHTTPS != ACTHTTPS {
+		if as.capability&ACTHTTPS != ACTHTTPS {
 			return nil, fmt.Errorf("invalid capability for https url scheme")
 		}
 	}
 
 	var resp *http.Response
 	if as.callType == EACTURL {
-		filename, err := as.fm.Get(uri)
+		filename, err := as.server.fm.Get(uri)
 		if err != nil {
 			return nil, emperror.Wrapf(err, "no file url")
 		}

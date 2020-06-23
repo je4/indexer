@@ -97,39 +97,39 @@ func main() {
 	}
 
 	if config.Siegfried.Enabled {
-		sf := indexer.NewActionSiegfried(config.Siegfried.Address, fm)
-		srv.AddAction(sf)
+		indexer.NewActionSiegfried(config.Siegfried.Address, srv)
+		//srv.AddAction(sf)
 	}
 
 	if config.FFMPEG.Enabled {
-		ffprobe := indexer.NewActionFFProbe(
+		indexer.NewActionFFProbe(
 			config.FFMPEG.FFProbe,
 			config.FFMPEG.Wsl,
 			config.FFMPEG.Timeout.Duration,
 			config.FFMPEG.Online,
-			fm)
-		srv.AddAction(ffprobe)
+			srv)
+		//srv.AddAction(ffprobe)
 	}
 
 	if config.ImageMagick.Enabled {
-		identify := indexer.NewActionIdentify(
+		indexer.NewActionIdentify(
 			config.ImageMagick.Identify,
 			config.ImageMagick.Convert,
 			config.ImageMagick.Wsl,
 			config.ImageMagick.Timeout.Duration,
 			config.ImageMagick.Online,
-			fm)
-		srv.AddAction(identify)
+			srv)
+		//srv.AddAction(identify)
 	}
 
 	if config.Tika.Enabled {
-		tika := indexer.NewActionTika(
+		indexer.NewActionTika(
 			config.Tika.Address,
 			config.Tika.Timeout.Duration,
 			config.Tika.RegexpMime,
 			config.Tika.Online,
-			fm)
-		srv.AddAction(tika)
+			srv)
+		//srv.AddAction(tika)
 	}
 
 	for _, eaconfig := range config.External {
@@ -137,8 +137,8 @@ func main() {
 		for _, c := range eaconfig.ActionCapabilities {
 			caps |= c
 		}
-		ea := indexer.NewActionExternal(eaconfig.Name, eaconfig.Address, caps, eaconfig.CallType, fm)
-		srv.AddAction(ea)
+		indexer.NewActionExternal(eaconfig.Name, eaconfig.Address, caps, eaconfig.CallType, srv)
+		//srv.AddAction(ea)
 	}
 
 	go func() {

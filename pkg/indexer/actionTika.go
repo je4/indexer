@@ -37,22 +37,24 @@ type ActionTika struct {
 	timeout    time.Duration
 	regexpMime *regexp.Regexp
 	caps       ActionCapability
-	fm *FileMapper
+	server *Server
 }
 
-func NewActionTika(uri string, timeout time.Duration, regexpMime string, online bool, fm *FileMapper) Action {
+func NewActionTika(uri string, timeout time.Duration, regexpMime string, online bool, server *Server) Action {
 	var caps ActionCapability = ACTFILEHEAD
 	if online {
 		caps |= ACTALLPROTO
 	}
-	return &ActionTika{
+	at := &ActionTika{
 		name:       "tika",
 		url:        uri,
 		timeout:    timeout,
 		regexpMime: regexp.MustCompile(regexpMime),
 		caps: caps,
-		fm: fm,
+		server: server,
 	}
+	server.AddAction(at)
+	return at
 }
 
 func (at *ActionTika) GetCaps() ActionCapability {
@@ -71,7 +73,7 @@ func (at *ActionTika) Do(uri *url.URL, mimetype *string, width *uint, height *ui
 	var dataOut io.Reader
 	// local files need some adjustments...
 	if uri.Scheme == "file" {
-		filename, err := at.fm.Get(uri)
+		filename, err := at.server.fm.Get(uri)
 		if err != nil {
 			return nil, emperror.Wrapf(err, "invalid file uri %s", uri.String())
 		}

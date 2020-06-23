@@ -39,15 +39,25 @@ type ActionIdentify struct {
 	wsl     bool
 	timeout time.Duration
 	caps ActionCapability
-	fm *FileMapper
+	server *Server
 }
 
-func NewActionIdentify(identify, convert string, wsl bool, timeout time.Duration, online bool, fm *FileMapper) Action {
+func NewActionIdentify(identify, convert string, wsl bool, timeout time.Duration, online bool, server *Server) Action {
 	var caps ActionCapability = ACTFILEHEAD
 	if online {
 		caps |= ACTALLPROTO
 	}
-	return &ActionIdentify{name: "identify", identify: identify, convert: convert, wsl: wsl, timeout: timeout, caps: caps, fm: fm}
+	ai := &ActionIdentify{
+		name: "identify",
+		identify: identify,
+		convert: convert,
+		wsl: wsl,
+		timeout: timeout,
+		caps: caps,
+		server: server,
+	}
+	server.AddAction(ai)
+	return ai
 }
 
 func (ai *ActionIdentify) GetCaps() ActionCapability {
@@ -72,7 +82,7 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 	var dataOut io.Reader
 	// local files need some adjustments...
 	if uri.Scheme == "file" {
-		filename, err = ai.fm.Get(uri)
+		filename, err = ai.server.fm.Get(uri)
 		if err != nil {
 			return nil, emperror.Wrapf(err, "invalid file uri %s", uri.String())
 		}
@@ -122,9 +132,18 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 	switch val := metadataInt.(type) {
 	case []interface{}:
 		// todo: check for content and type
-		metadata = val[0].(map[string]interface{})
+		if len(val) != 1 {
+			return nil, fmt.Errorf("wrong number of objects in image magick result list - %v", len(val))
+		}
+		var ok bool
+		metadata, ok = val[0].(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("wrong object type in image magick result - %T", val[0])
+		}
 	case map[string]interface{}:
 		metadata = val
+	default:
+		return nil, fmt.Errorf("invalid return type from image magick - %T", val)
 	}
 
 

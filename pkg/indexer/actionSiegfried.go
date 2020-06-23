@@ -66,11 +66,13 @@ type SF struct {
 type ActionSiegfried struct {
 	name string
 	url  string
-	fm *FileMapper
+	server *Server
 }
 
-func NewActionSiegfried(uri string, fm *FileMapper) Action {
-	return &ActionSiegfried{name: "siegfried", url: uri, fm: fm}
+func NewActionSiegfried(uri string, server *Server) Action {
+	as := &ActionSiegfried{name: "siegfried", url: uri, server: server}
+	server.AddAction(as)
+	return as
 }
 
 func (as *ActionSiegfried) GetCaps() ActionCapability {
@@ -82,7 +84,7 @@ func (as *ActionSiegfried) GetName() string {
 }
 
 func (as *ActionSiegfried) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration) (interface{}, error) {
-	filename, err := as.fm.Get(uri)
+	filename, err := as.server.fm.Get(uri)
 	if err != nil {
 		return nil, emperror.Wrapf(err, "no file url")
 	}

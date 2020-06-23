@@ -56,6 +56,13 @@ folder = "c:/temp"
     ActionCapabilities = ["ACTFILE"]
 
 [[External]]
+    name = "exif"
+    address = "http://localhost:83/exif/[[PATH]]"
+    calltype = "EACTURL"
+    datatype = ".*"
+    ActionCapabilities = ["ACTFILE"]
+
+[[External]]
     name = "validateimage"
     address = "http://localhost:83/validateimage/[[PATH]]"
     calltype = "EACTURL"
