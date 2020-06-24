@@ -129,7 +129,7 @@ func (as *ActionExternal) Do(uri *url.URL, mimetype *string, width *uint, height
 		return nil, errors.New(fmt.Sprintf("status not ok - %v: %s", resp.Status, string(bodyBytes)))
 	}
 
-	result := map[string]interface{}{}
+	var result interface{}
 	err = json.Unmarshal(bodyBytes, &result)
 	if err != nil {
 		return nil, emperror.Wrapf(err, "error decoding json - %v", string(bodyBytes))
