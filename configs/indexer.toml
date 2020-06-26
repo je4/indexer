@@ -13,6 +13,11 @@ jwtalg = ["HS256", "HS384", "HS512"] # "hs256" "hs384" "hs512" "es256" "es384" "
 errorTemplate = "C:/daten/go/dev/indexer/web/template/error.gohtml" # error message for memoHandler
 tempDir = "C:/temp/"
 
+[sftp]
+    knownhosts = "C:/temp/known_hosts" # if empty, IgnoreHostKey is true
+    password = "blubb" # if not empty enable password login (ENV: SFTPPWD)
+    privatekey = [""] # path to private keys (z.B. /home/<user>/.ssh/id_rsa
+
 [[filemap]]
 alias = "c"
 folder = "c:/"

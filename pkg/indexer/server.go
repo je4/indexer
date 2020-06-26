@@ -56,6 +56,7 @@ type Server struct {
 	maxDownloadSize int64
 	tempDir         string
 	fm              *FileMapper
+	sftp            *SFTP
 }
 
 func NewServer(
@@ -70,6 +71,7 @@ func NewServer(
 	errorTemplate string,
 	tempDir string,
 	fm *FileMapper,
+	sftp *SFTP,
 ) (*Server, error) {
 	errorTpl, err := template.ParseFiles(errorTemplate)
 	if err != nil {
@@ -88,6 +90,7 @@ func NewServer(
 		errorTemplate:   errorTpl,
 		actions:         map[string]Action{},
 		fm:              fm,
+		sftp:            sftp,
 	}
 	return srv, nil
 }
@@ -120,10 +123,87 @@ func (s *Server) DoPanic(writer http.ResponseWriter, status int, message string)
 	return
 }
 
+func (s *Server) getMimeHTTP(uri *url.URL) (string, error) {
+	res, err := http.Head(uri.String())
+	if err != nil {
+		return "", emperror.Wrapf(err, "error getting head request for %s", uri.String())
+	}
+	if res.StatusCode == http.StatusMethodNotAllowed {
+		s.log.Debugf("HEAD not allowed")
+		ctx, cancel := context.WithTimeout(context.Background(), s.headerTimeout)
+		defer cancel() // The cancel should be deferred so resources are cleaned up
+		req, err := http.NewRequestWithContext(ctx, "GET", uri.String(), nil)
+		if err != nil {
+			return "", emperror.Wrapf(err, "error creating request for %s", uri.String())
+		}
+		req.Header.Set("Range", fmt.Sprintf("bytes=0-%d", 64))
+		var client http.Client
+		res, err = client.Do(req)
+		if err != nil {
+			return "", emperror.Wrapf(err, "error querying uri")
+		}
+		res.Body.Close()
+		if res.StatusCode >= 400 {
+			return "", emperror.Wrapf(err, "error querying %s: %s", uri.String(), res.Status)
+		}
+	}
+	if res.StatusCode > 300 {
+		return "", errors.New(fmt.Sprintf("invalid status %v - %v for %s", res.StatusCode, res.StatusCode, uri.String()))
+	}
+	// ************************************
+	// * get mimetype from response header
+	// ************************************
+	return ClearMime(res.Header.Get("Content-type")), nil
+}
+
+func (s *Server) loadHTTP(uri *url.URL, writer io.Writer, fulldownload bool) (int64, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), s.headerTimeout)
+	defer cancel() // The cancel should be deferred so resources are cleaned up
+
+	// build range request. we do not want to load more than needed
+	req, err := http.NewRequestWithContext(ctx, "GET", uri.String(), nil)
+	if err != nil {
+		return 0, emperror.Wrapf(err, "error creating request for %s", uri.String())
+	}
+	if !fulldownload {
+		req.Header.Set("Range", fmt.Sprintf("bytes=0-%d", s.headerSize-1))
+	}
+	var client http.Client
+	resp, err := client.Do(req)
+	if err != nil {
+		return 0, emperror.Wrapf(err, "error querying uri")
+	}
+	// default should follow redirects
+	defer resp.Body.Close()
+
+	maxSize := s.headerSize
+	if fulldownload {
+		maxSize = s.maxDownloadSize // 2 ^ 32 - 1 max. 4GB
+	}
+	num, err := io.CopyN(writer, resp.Body, maxSize)
+	if err != nil && err != io.ErrUnexpectedEOF {
+		if err.Error() != "EOF" {
+			return 0, emperror.Wrapf(err, "cannot read content from url %s", uri.String())
+		}
+	}
+	if num == 0 {
+		return 0, errors.New(fmt.Sprintf("no content from url %s", uri.String()))
+	}
+	return num, nil
+}
+
+/*
+func (s *Server) loadSFTP(uri *url.URL, writer io.Writer) (int64, error) {
+
+}
+
+ */
+
 /*
 loads part of data and gets mime type
 */
-func (s *Server) getContent(uri *url.URL, forceDownload string, headerSize int64, writer io.Writer) (mimetype string, fulldownload bool, err error) {
+func (s *Server) getContent(uri *url.URL, forceDownload string, writer io.Writer) (mimetype string, fulldownload bool, err error) {
 	s.log.Infof("loading from %s", uri.String())
 
 	dlRegexp, err := regexp.Compile(forceDownload)
@@ -131,79 +211,28 @@ func (s *Server) getContent(uri *url.URL, forceDownload string, headerSize int64
 		return "", false, emperror.Wrapf(err, "cannot compile download mime regexp %s", forceDownload)
 	}
 
-	if uri.Scheme != "file" {
-		res, err := http.Head(uri.String())
+	if uri.Scheme == "http" || uri.Scheme == "https" {
+		mimetype, err := s.getMimeHTTP(uri)
 		if err != nil {
-			return "", false, emperror.Wrapf(err, "error getting head request for %s", uri.String())
+			return "", false, emperror.Wrapf(err, "error loading mime from %s", uri.String())
 		}
-		if res.StatusCode == http.StatusMethodNotAllowed {
-			s.log.Debugf("HEAD not allowed")
-			ctx, cancel := context.WithTimeout(context.Background(), s.headerTimeout)
-			defer cancel() // The cancel should be deferred so resources are cleaned up
-			req, err := http.NewRequestWithContext(ctx, "GET", uri.String(), nil)
-			if err != nil {
-				return "", false, emperror.Wrapf(err, "error creating request for %s", uri.String())
-			}
-			req.Header.Set("Range", fmt.Sprintf("bytes=0-%d", 64))
-			var client http.Client
-			res, err = client.Do(req)
-			if err != nil {
-				return "", false, emperror.Wrapf(err, "error querying uri")
-			}
-			res.Body.Close()
-			if res.StatusCode >= 400 {
-				return "", false, emperror.Wrapf(err, "error querying %s: %s", uri.String(), res.Status)
-			}
-		}
-		if res.StatusCode > 300 {
-			return "", false, errors.New(fmt.Sprintf("invalid status %v - %v for %s", res.StatusCode, res.StatusCode, uri.String()))
-		}
-		// ************************************
-		// * get mimetype from response header
-		// ************************************
-		mimetype = ClearMime(res.Header.Get("Content-type"))
 		s.log.Debugf("mimetype from server: %v", mimetype)
 		fulldownload = dlRegexp.MatchString(mimetype)
 
 		if fulldownload {
 			s.log.Infof("full download of %s", uri.String())
 		} else {
-			s.log.Infof("downloading %v byte from %s", headerSize, uri.String())
+			s.log.Infof("downloading %v byte from %s", s.headerSize, uri.String())
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), s.headerTimeout)
-		defer cancel() // The cancel should be deferred so resources are cleaned up
-
-		// build range request. we do not want to load more than needed
-		req, err := http.NewRequestWithContext(ctx, "GET", uri.String(), nil)
+		if _, err = s.loadHTTP(uri, writer, fulldownload); err != nil {
+			return "", false, emperror.Wrapf(err, "error loading from web %s", uri.String())
+		}
+	} else if uri.Scheme == "sftp" {
+		_, err := s.sftp.Get(*uri, "", writer)
 		if err != nil {
-			return "", false, emperror.Wrapf(err, "error creating request for %s", uri.String())
+			return "", false, emperror.Wrapf(err, "error loading from sftp %s", uri.String())
 		}
-		if !fulldownload {
-			req.Header.Set("Range", fmt.Sprintf("bytes=0-%d", headerSize-1))
-		}
-		var client http.Client
-		resp, err := client.Do(req)
-		if err != nil {
-			return "", false, emperror.Wrapf(err, "error querying uri")
-		}
-		// default should follow redirects
-		defer resp.Body.Close()
-
-		maxSize := headerSize
-		if fulldownload {
-			maxSize = s.maxDownloadSize // 2 ^ 32 - 1 max. 4GB
-		}
-		num, err := io.CopyN(writer, resp.Body, maxSize)
-		if err != nil && err != io.ErrUnexpectedEOF {
-			if err.Error() != "EOF" {
-				return "", false, emperror.Wrapf(err, "cannot read content from url %s", uri.String())
-			}
-		}
-		if num == 0 {
-			return "", false, errors.New(fmt.Sprintf("no content from url %s", uri.String()))
-		}
-
 	} else {
 		path, err := s.fm.Get(uri)
 		if err != nil {
@@ -283,7 +312,7 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 	if headerSize == 0 {
 		headerSize = s.headerSize
 	}
-	mimetype, fulldownload, err := s.getContent(uri, param.ForceDownload, headerSize, tmpfile)
+	mimetype, fulldownload, err := s.getContent(uri, param.ForceDownload, tmpfile)
 	if err != nil {
 		return nil, emperror.Wrapf(err, "cannot get content header of %s", uri.String())
 	}
