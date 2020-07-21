@@ -204,13 +204,8 @@ func (s *Server) loadSFTP(uri *url.URL, writer io.Writer) (int64, error) {
 /*
 loads part of data and gets mime type
 */
-func (s *Server) getContent(uri *url.URL, forceDownload string, writer io.Writer) (mimetype string, fulldownload bool, err error) {
+func (s *Server) getContent(uri *url.URL, forceDownloadRegexp *regexp.Regexp, writer io.Writer) (mimetype string, fulldownload bool, err error) {
 	s.log.Infof("loading from %s", uri.String())
-
-	dlRegexp, err := regexp.Compile(forceDownload)
-	if err != nil {
-		return "", false, emperror.Wrapf(err, "cannot compile download mime regexp %s", forceDownload)
-	}
 
 	if uri.Scheme == "http" || uri.Scheme == "https" {
 		mimetype, err = s.getMimeHTTP(uri)
@@ -218,7 +213,7 @@ func (s *Server) getContent(uri *url.URL, forceDownload string, writer io.Writer
 			return "", false, emperror.Wrapf(err, "error loading mime from %s", uri.String())
 		}
 		s.log.Debugf("mimetype from server: %v", mimetype)
-		fulldownload = dlRegexp.MatchString(mimetype)
+		fulldownload = forceDownloadRegexp.MatchString(mimetype)
 
 		if fulldownload {
 			s.log.Infof("full download of %s", uri.String())
@@ -316,7 +311,11 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 	if headerSize == 0 {
 		headerSize = s.headerSize
 	}
-	mimetype, fulldownload, err := s.getContent(uri, param.ForceDownload, tmpfile)
+	forceDownloadRegexp, err := regexp.Compile(param.ForceDownload)
+	if err != nil {
+		return nil, emperror.Wrapf(err, "cannot compile forcedownload regexp %v", param.ForceDownload)
+	}
+	mimetype, fulldownload, err := s.getContent(uri, forceDownloadRegexp, tmpfile)
 	if err != nil {
 		return nil, emperror.Wrapf(err, "cannot get content header of %s", uri.String())
 	}
