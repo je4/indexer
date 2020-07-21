@@ -108,10 +108,13 @@ func (sc *SFTPClient) WriteFile(path string, r io.Reader) (int64, error)  {
 	return written, nil
 }
 
-
-func (s *SFTP) Get(uri url.URL, user string, w io.Writer) (int64, error) {
+func (s *SFTP) Get(uri url.URL, w io.Writer) (int64, error) {
 	if uri.Scheme != "sftp" {
 		return 0, fmt.Errorf("invalid uri scheme %s for sftp", uri.Scheme)
+	}
+	user := ""
+	if uri.User != nil {
+		user = uri.User.Username()
 	}
 	client, err := s.Connect(uri.Host, user)
 	if err != nil {
@@ -132,7 +135,7 @@ func (s *SFTP) GetFile(uri url.URL, user string, target string) (int64, error) {
 		return 0, emperror.Wrapf(err, "cannot create file %s", target)
 	}
 	defer f.Close()
-	return s.Get(uri, user, f)
+	return s.Get(uri, f)
 }
 
 func (s *SFTP) PutFile(uri url.URL, user string, source string) (int64, error) {

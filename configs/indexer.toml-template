@@ -14,9 +14,9 @@ errorTemplate = "C:/daten/go/dev/indexer/web/template/error.gohtml" # error mess
 tempDir = "C:/temp/"
 
 [sftp]
-    knownhosts = "C:/temp/known_hosts" # if empty, IgnoreHostKey is true
+    knownhosts = "" # if empty, IgnoreHostKey is true
     password = "blubb" # if not empty enable password login (ENV: SFTPPWD)
-    privatekey = [""] # path to private keys (z.B. /home/<user>/.ssh/id_rsa
+    privatekey = [] # path to private keys (z.B. /home/<user>/.ssh/id_rsa
 
 [[filemap]]
 alias = "c"

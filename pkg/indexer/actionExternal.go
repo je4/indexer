@@ -27,6 +27,7 @@ import (
 	"net/http"
 	"net/url"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -64,14 +65,21 @@ type ActionExternal struct {
 	capability ActionCapability
 	callType   ExternalActionCalltype
 	server     *Server
+	mimetype   *regexp.Regexp
 }
 
-func NewActionExternal(name, address string, capability ActionCapability, callType ExternalActionCalltype, server *Server) Action {
+func NewActionExternal(
+	name, address string,
+	capability ActionCapability,
+	callType ExternalActionCalltype,
+	mimetype string,
+	server *Server) Action {
 	ae := &ActionExternal{
 		name:       name,
 		url:        address,
 		capability: capability,
 		callType:   callType,
+		mimetype:   regexp.MustCompile(mimetype),
 		server:     server,
 	}
 	server.AddAction(ae)
@@ -86,7 +94,11 @@ func (as *ActionExternal) GetName() string {
 	return as.name
 }
 
-func (as *ActionExternal) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration) (interface{}, error) {
+func (as *ActionExternal) Do(
+	uri *url.URL,
+	mimetype *string,
+	width *uint, height *uint,
+	duration *time.Duration) (interface{}, error) {
 	switch uri.Scheme {
 	case "file":
 		if as.capability&ACTFILE != ACTFILE {
@@ -100,6 +112,10 @@ func (as *ActionExternal) Do(uri *url.URL, mimetype *string, width *uint, height
 		if as.capability&ACTHTTPS != ACTHTTPS {
 			return nil, fmt.Errorf("invalid capability for https url scheme")
 		}
+	}
+
+	if !as.mimetype.MatchString(*mimetype) {
+		return nil, ErrMimeNotApplicable
 	}
 
 	var resp *http.Response

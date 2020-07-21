@@ -65,7 +65,7 @@ type ConfigImageMagick struct {
 type ExternalAction struct {
 	Name,
 	Address,
-	Datatype string
+	Mimetype string
 	ActionCapabilities []indexer.ActionCapability
 	CallType           indexer.ExternalActionCalltype
 }
@@ -76,9 +76,9 @@ type FileMap struct {
 }
 
 type SFTP struct {
-	Knownhosts    string
-	Password      string
-	PrivateKey    []string
+	Knownhosts string
+	Password   string
+	PrivateKey []string
 }
 
 type Config struct {

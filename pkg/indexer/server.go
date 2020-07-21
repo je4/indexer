@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	mime "github.com/gabriel-vasile/mimetype"
 	"github.com/goph/emperror"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -212,7 +213,7 @@ func (s *Server) getContent(uri *url.URL, forceDownload string, writer io.Writer
 	}
 
 	if uri.Scheme == "http" || uri.Scheme == "https" {
-		mimetype, err := s.getMimeHTTP(uri)
+		mimetype, err = s.getMimeHTTP(uri)
 		if err != nil {
 			return "", false, emperror.Wrapf(err, "error loading mime from %s", uri.String())
 		}
@@ -229,7 +230,8 @@ func (s *Server) getContent(uri *url.URL, forceDownload string, writer io.Writer
 			return "", false, emperror.Wrapf(err, "error loading from web %s", uri.String())
 		}
 	} else if uri.Scheme == "sftp" {
-		_, err := s.sftp.Get(*uri, "", writer)
+		_, err := s.sftp.Get(*uri, writer)
+		fulldownload = true
 		if err != nil {
 			return "", false, emperror.Wrapf(err, "error loading from sftp %s", uri.String())
 		}
@@ -249,6 +251,7 @@ func (s *Server) getContent(uri *url.URL, forceDownload string, writer io.Writer
 		}
 		mimetype = http.DetectContentType(buf)
 	}
+
 
 	mimetype = ClearMime(mimetype)
 	return
@@ -279,6 +282,7 @@ func (s *Server) HandleDefault(w http.ResponseWriter, r *http.Request) {
 		errors := map[string]string{}
 		errors["index"] = err.Error()
 		result["errors"] = errors
+		s.log.Errorf("error on indexing: %v", err)
 	}
 
 	js, err := json.Marshal(result)
@@ -318,6 +322,13 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 	}
 	if err := tmpfile.Close(); err != nil {
 		return nil, emperror.Wrapf(err, "cannot close tempfile %s", tmpfile.Name())
+	}
+	if mimetype == "" && fulldownload {
+		m, err := mime.DetectFile(tmpfile.Name())
+		if err != nil {
+			return nil, emperror.Wrapf(err, "cannot detect mimetype of %v", tmpfile.Name())
+		}
+		mimetype = ClearMime(m.String())
 	}
 	tmpUri, err := url.Parse(fmt.Sprintf("file:///%s", filepath.ToSlash(tmpfile.Name())))
 	if err != nil {
