@@ -28,7 +28,7 @@ folder = "c:/temp"
 
 [Siegfried]
     address = "http://localhost:5138/identify/[[PATH]]?format=json"
-    enabled = false
+    enabled = true
 
 [FFMPEG]
     ffprobe = "/usr/local/bin/ffprobe2"
@@ -57,26 +57,26 @@ folder = "c:/temp"
     name = "validateav"
     address = "http://localhost:83/validateav/[[PATH]]"
     calltype = "EACTURL"
-    datatype = "(video|audio)"
+    mimetype = "^(video|audio)/.*"
     ActionCapabilities = ["ACTFILE"]
 
 [[External]]
     name = "exif"
     address = "http://localhost:83/exif/[[PATH]]"
     calltype = "EACTURL"
-    datatype = ".*"
+    mimetype = ".*"
     ActionCapabilities = ["ACTFILE"]
 
 [[External]]
     name = "validateimage"
     address = "http://localhost:83/validateimage/[[PATH]]"
     calltype = "EACTURL"
-    datatype = "image"
+    mimetype = "^image/.*"
     ActionCapabilities = ["ACTFILE"]
 
 [[External]]
     name = "histogram"
     address = "http://localhost:83/histogram/[[PATH]]"
     calltype = "EACTURL"
-    datatype = "^image$"
+    mimetype = "^image/.*"
     ActionCapabilities = ["ACTFILE"]
