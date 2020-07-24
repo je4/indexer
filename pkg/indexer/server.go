@@ -252,6 +252,8 @@ func (s *Server) getContent(uri *url.URL, forceDownloadRegexp *regexp.Regexp, wr
 	return
 }
 
+var unibasSFTPRegexp = regexp.MustCompile("^sftp:/([^/].+)$")
+
 func (s *Server) HandleDefault(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
@@ -269,6 +271,12 @@ func (s *Server) HandleDefault(w http.ResponseWriter, r *http.Request) {
 		for name, _ := range s.actions {
 			param.Actions = append(param.Actions, name)
 		}
+	}
+
+	// todo: bad code. make it configurable
+	str := unibasSFTPRegexp.FindStringSubmatch(param.Url)
+	if len(str) > 1 {
+		param.Url = fmt.Sprintf("sftp://mb_sftp@mb-wf2.memobase.unibas.ch:80/%s", str[1])
 	}
 
 	result, err := s.doIndex(param)

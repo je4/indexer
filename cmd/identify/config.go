@@ -103,6 +103,7 @@ type Config struct {
 	External        []ExternalAction
 	FileMap         []FileMap
 	SFTP            SFTP
+	URLRegexp       []string
 }
 
 func LoadConfig(filepath string) Config {
