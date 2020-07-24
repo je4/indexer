@@ -111,7 +111,7 @@ func LoadConfig(filepath string) Config {
 	if err != nil {
 		log.Fatalln("Error on loading config: ", err)
 	}
-	pwd := os.Getenv("SFTPPWD")
+	pwd := os.Getenv("SFTP_PASSWORD")
 	if pwd != "" {
 		conf.SFTP.Password = pwd
 	}

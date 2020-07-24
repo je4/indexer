@@ -1,5 +1,5 @@
 headersize = 100000
-headertimeout = "10s"
+headertimeout = "100s"
 forcedownload = "^image/.*$"  # regexp with mimetypes, which will be downloaded
 maxdownloadsize = 4294967295 # max. 4GB downloads
 logfile = "" # log file location
@@ -15,7 +15,7 @@ tempDir = "C:/temp/"
 
 [sftp]
     knownhosts = "" # if empty, IgnoreHostKey is true
-    password = "blubb" # if not empty enable password login (ENV: SFTPPWD)
+    password = "blubb" # if not empty enable password login (ENV: SFTP_PASSWORD)
     privatekey = [] # path to private keys (z.B. /home/<user>/.ssh/id_rsa
 
 [[filemap]]
