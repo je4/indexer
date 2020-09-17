@@ -35,6 +35,7 @@ func (cp *SSHConnectionPool) GetConnection(address, user string, config *ssh.Cli
 		return conn, nil
 	}
 	var err error
+	cp.log.Infof("new ssh connection to %v", id)
 	conn, err = NewSSHConnection(address, user, config, cp.log)
 	if err != nil {
 		return nil, emperror.Wrapf(err, "cannot open ssh connection")

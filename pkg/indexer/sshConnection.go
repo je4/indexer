@@ -58,6 +58,7 @@ func (sc *SSHConnection) Close() {
 func (sc *SSHConnection) GetSFTPClient() (*sftp.Client, error) {
 	sftpclient, err := sftp.NewClient(sc.client)
 	if err != nil {
+		sc.log.Infof("cannot get sftp subsystem - reconnecting to %s@%s", sc.client.User(), sc.address)
 		if err := sc.Connect(); err != nil {
 			return nil, emperror.Wrapf(err, "cannot connect with ssh to %s@%s", sc.client.User(), sc.address)
 		}
