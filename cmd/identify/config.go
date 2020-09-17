@@ -18,6 +18,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/je4/indexer/pkg/indexer"
 	"log"
+	"os"
 	"time"
 )
 
@@ -64,7 +65,7 @@ type ConfigImageMagick struct {
 type ExternalAction struct {
 	Name,
 	Address,
-	Datatype string
+	Mimetype string
 	ActionCapabilities []indexer.ActionCapability
 	CallType           indexer.ExternalActionCalltype
 }
@@ -72,6 +73,12 @@ type ExternalAction struct {
 type FileMap struct {
 	Alias  string
 	Folder string
+}
+
+type SFTP struct {
+	Knownhosts string
+	Password   string
+	PrivateKey []string
 }
 
 type Config struct {
@@ -95,6 +102,8 @@ type Config struct {
 	Tika            ConfigTika
 	External        []ExternalAction
 	FileMap         []FileMap
+	SFTP            SFTP
+	URLRegexp       []string
 }
 
 func LoadConfig(filepath string) Config {
@@ -102,6 +111,10 @@ func LoadConfig(filepath string) Config {
 	_, err := toml.DecodeFile(filepath, &conf)
 	if err != nil {
 		log.Fatalln("Error on loading config: ", err)
+	}
+	pwd := os.Getenv("SFTP_PASSWORD")
+	if pwd != "" {
+		conf.SFTP.Password = pwd
 	}
 	return conf
 }

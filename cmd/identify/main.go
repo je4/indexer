@@ -78,6 +78,12 @@ func main() {
 	}
 	fm := indexer.NewFileMapper(mapping)
 
+	sftp, err := indexer.NewSFTP(config.SFTP.PrivateKey, config.SFTP.Password, config.SFTP.Knownhosts, log)
+	if err != nil {
+		log.Panicf("cannot initialize sftp client: %v", err)
+		return
+	}
+
 	srv, err := indexer.NewServer(
 		config.HeaderTimeout.Duration,
 		config.HeaderSize,
@@ -90,6 +96,7 @@ func main() {
 		config.ErrorTemplate,
 		config.TempDir,
 		fm,
+		sftp,
 		)
 	if err != nil {
 		log.Panicf("cannot initialize server: %v", err)
@@ -137,7 +144,7 @@ func main() {
 		for _, c := range eaconfig.ActionCapabilities {
 			caps |= c
 		}
-		indexer.NewActionExternal(eaconfig.Name, eaconfig.Address, caps, eaconfig.CallType, srv)
+		indexer.NewActionExternal(eaconfig.Name, eaconfig.Address, caps, eaconfig.CallType, eaconfig.Mimetype, srv)
 		//srv.AddAction(ea)
 	}
 
