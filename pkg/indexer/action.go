@@ -33,6 +33,7 @@ const (
 	ACTALLPROTO = ACTFILE | ACTHTTP | ACTHTTPS
 	ACTALL      = ACTALLPROTO | ACTHEAD
 	ACTFILEHEAD = ACTFILE | ACTHEAD
+	ACTFILEFULL = ACTFILE & ^ACTHEAD
 )
 
 var ACTString map[ActionCapability]string = map[ActionCapability]string{
@@ -52,13 +53,12 @@ var ACTAction map[string]ActionCapability = map[string]ActionCapability{
 // for toml decoding
 func (a *ActionCapability) UnmarshalText(text []byte) error {
 	var ok bool
-	*a, ok =  ACTAction[string(text)]
+	*a, ok = ACTAction[string(text)]
 	if !ok {
 		return fmt.Errorf("invalid action capability: %s", string(text))
 	}
 	return nil
 }
-
 
 var ErrMimeNotApplicable = errors.New("mime type not applicable for action")
 
