@@ -199,7 +199,7 @@ func (s *Server) loadSFTP(uri *url.URL, writer io.Writer) (int64, error) {
 
 }
 
- */
+*/
 
 /*
 loads part of data and gets mime type
@@ -246,7 +246,6 @@ func (s *Server) getContent(uri *url.URL, forceDownloadRegexp *regexp.Regexp, wr
 		}
 		mimetype = http.DetectContentType(buf)
 	}
-
 
 	mimetype = ClearMime(mimetype)
 	return
@@ -359,6 +358,11 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 			if uri.Scheme != "file" {
 				theUri = tmpUri
 			}
+		}
+		if !fulldownload && (caps&(^ACTFILEFULL)) == 0 {
+			s.log.Infof("%s: no full download. action not applicable", actionstr)
+			errors[actionstr] = fmt.Errorf("no full download. action not applicable").Error()
+			continue
 		}
 		s.log.Infof("Action [%v] %s: %s", key, actionstr, theUri.String())
 		actionresult, err := action.Do(theUri, &mimetype, &width, &height, &duration)

@@ -116,5 +116,6 @@ func LoadConfig(filepath string) Config {
 	if pwd != "" {
 		conf.SFTP.Password = pwd
 	}
+
 	return conf
 }
