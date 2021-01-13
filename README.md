@@ -2,7 +2,9 @@
 
 based on the idea of https://github.com/dla-marbach/indexer the go indexer 
 can be used to extract metadata from files while speeding up the whole process 
-of the identification cascade
+of the identification cascade.
+
+Validation of Mediafiles with ffmpeg and imagemagick is supported too.
 
 ## Installation
     go get github.com/je4/indexer
