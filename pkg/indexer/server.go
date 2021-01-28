@@ -129,7 +129,7 @@ func (s *Server) getMimeHTTP(uri *url.URL) (string, error) {
 	if err != nil {
 		return "", emperror.Wrapf(err, "error getting head request for %s", uri.String())
 	}
-	if res.StatusCode == http.StatusMethodNotAllowed {
+	if res.StatusCode == http.StatusMethodNotAllowed || res.StatusCode == http.StatusForbidden {
 		s.log.Debugf("HEAD not allowed")
 		ctx, cancel := context.WithTimeout(context.Background(), s.headerTimeout)
 		defer cancel() // The cancel should be deferred so resources are cleaned up
