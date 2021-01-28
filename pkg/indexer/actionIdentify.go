@@ -33,13 +33,13 @@ import (
 var regexIdentifyMime = regexp.MustCompile("^image/")
 
 type ActionIdentify struct {
-	name    string
+	name     string
 	identify string
-	convert string
-	wsl     bool
-	timeout time.Duration
-	caps ActionCapability
-	server *Server
+	convert  string
+	wsl      bool
+	timeout  time.Duration
+	caps     ActionCapability
+	server   *Server
 }
 
 func NewActionIdentify(identify, convert string, wsl bool, timeout time.Duration, online bool, server *Server) Action {
@@ -48,13 +48,13 @@ func NewActionIdentify(identify, convert string, wsl bool, timeout time.Duration
 		caps |= ACTALLPROTO
 	}
 	ai := &ActionIdentify{
-		name: "identify",
+		name:     "identify",
 		identify: identify,
-		convert: convert,
-		wsl: wsl,
-		timeout: timeout,
-		caps: caps,
-		server: server,
+		convert:  convert,
+		wsl:      wsl,
+		timeout:  timeout,
+		caps:     caps,
+		server:   server,
 	}
 	server.AddAction(ai)
 	return ai
@@ -71,7 +71,7 @@ func (ai *ActionIdentify) GetName() string {
 func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration) (interface{}, error) {
 	var metadata = make(map[string]interface{})
 	var metadataInt interface{}
-//	var metadatalist = []map[string]interface{}{}
+	//	var metadatalist = []map[string]interface{}{}
 	var filename string
 	var err error
 
@@ -93,7 +93,7 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 		defer f.Close()
 		dataOut = f
 	} else {
-//		filename = uri.String()
+		//		filename = uri.String()
 		resp, err := http.Get(uri.String())
 		if err != nil {
 			return nil, emperror.Wrapf(err, "cannot load url: %s", uri.String())
@@ -113,7 +113,7 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 	}
 
 	var out bytes.Buffer
-	out.Grow(1024*1024)  // 1MB size
+	out.Grow(1024 * 1024) // 1MB size
 	ctx, cancel := context.WithTimeout(context.Background(), ai.timeout)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, cmdfile, cmdparam...)
@@ -145,7 +145,6 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 	default:
 		return nil, fmt.Errorf("invalid return type from image magick - %T", val)
 	}
-
 
 	_image, ok := metadata["image"]
 	if !ok {
