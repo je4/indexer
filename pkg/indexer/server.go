@@ -16,6 +16,7 @@ package indexer
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -58,6 +59,7 @@ type Server struct {
 	tempDir         string
 	fm              *FileMapper
 	sftp            *SFTP
+	insecureCert    bool
 }
 
 func NewServer(
@@ -67,6 +69,7 @@ func NewServer(
 	maxDownloadSize int64,
 	jwtSecret string,
 	jwtAlg []string,
+	insecureCert bool,
 	log *logging.Logger,
 	accesslog io.Writer,
 	errorTemplate string,
@@ -81,6 +84,7 @@ func NewServer(
 	srv := &Server{
 		headerTimeout:   headerTimeout,
 		headerSize:      headerSize,
+		insecureCert:    insecureCert,
 		forceDownload:   downloadMime,
 		maxDownloadSize: maxDownloadSize,
 		jwtSecret:       jwtSecret,
@@ -125,7 +129,15 @@ func (s *Server) DoPanic(writer http.ResponseWriter, status int, message string)
 }
 
 func (s *Server) getMimeHTTP(uri *url.URL) (string, error) {
-	res, err := http.Head(uri.String())
+	customTransport, ok := http.DefaultTransport.(*http.Transport)
+	if !ok {
+		return "", fmt.Errorf("http.DefaultTransport no (*http.Transport)")
+	}
+	customTransport = customTransport.Clone()
+	customTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: s.insecureCert}
+	client := &http.Client{Transport: customTransport}
+
+	res, err := client.Head(uri.String())
 	if err != nil {
 		return "", emperror.Wrapf(err, "error getting head request for %s", uri.String())
 	}
@@ -158,6 +170,13 @@ func (s *Server) getMimeHTTP(uri *url.URL) (string, error) {
 }
 
 func (s *Server) loadHTTP(uri *url.URL, writer io.Writer, fulldownload bool) (int64, error) {
+	customTransport, ok := http.DefaultTransport.(*http.Transport)
+	if !ok {
+		return 0, fmt.Errorf("http.DefaultTransport no (*http.Transport)")
+	}
+	customTransport = customTransport.Clone()
+	customTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: s.insecureCert}
+	client := &http.Client{Transport: customTransport}
 
 	ctx, cancel := context.WithTimeout(context.Background(), s.headerTimeout)
 	defer cancel() // The cancel should be deferred so resources are cleaned up
@@ -170,7 +189,7 @@ func (s *Server) loadHTTP(uri *url.URL, writer io.Writer, fulldownload bool) (in
 	if !fulldownload {
 		req.Header.Set("Range", fmt.Sprintf("bytes=0-%d", s.headerSize-1))
 	}
-	var client http.Client
+	//var client http.Client
 	resp, err := client.Do(req)
 	if err != nil {
 		return 0, emperror.Wrapf(err, "error querying uri")

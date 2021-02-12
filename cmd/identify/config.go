@@ -90,6 +90,7 @@ type Config struct {
 	KeyPEM          string
 	Addr            string
 	JwtKey          string
+	InsecureCert    bool
 	JwtAlg          []string
 	TempDir         string
 	HeaderTimeout   duration
@@ -108,6 +109,7 @@ type Config struct {
 
 func LoadConfig(filepath string) Config {
 	var conf Config
+	conf.InsecureCert = false
 	_, err := toml.DecodeFile(filepath, &conf)
 	if err != nil {
 		log.Fatalln("Error on loading config: ", err)

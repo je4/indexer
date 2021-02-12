@@ -91,13 +91,14 @@ func main() {
 		config.MaxDownloadSize,
 		config.JwtKey,
 		config.JwtAlg,
+		config.InsecureCert,
 		log,
 		accesslog,
 		config.ErrorTemplate,
 		config.TempDir,
 		fm,
 		sftp,
-		)
+	)
 	if err != nil {
 		log.Panicf("cannot initialize server: %v", err)
 		return

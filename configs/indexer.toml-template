@@ -6,6 +6,7 @@ logfile = "" # log file location
 loglevel = "DEBUG" # CRITICAL|ERROR|WARNING|NOTICE|INFO|DEBUG
 accesslog = "" # http access log file
 addr = "localhost:81"
+insecurecert = false
 certpem = "" # tls client certificate file in PEM format
 keypem = "" # tls client key file in PEM format
 jwtkey = "swordfish"
