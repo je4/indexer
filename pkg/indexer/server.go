@@ -337,7 +337,8 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 	if headerSize == 0 {
 		headerSize = s.headerSize
 	}
-	forceDownloadRegexp, err := regexp.Compile(param.ForceDownload)
+	forceDownload := param.ForceDownload
+	forceDownloadRegexp, err := regexp.Compile(forceDownload)
 	if err != nil {
 		return nil, emperror.Wrapf(err, "cannot compile forcedownload regexp %v", param.ForceDownload)
 	}

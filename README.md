@@ -23,14 +23,14 @@ query.json:
     {
       "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Stift_Melk_Nordseite_01.jpg/750px-Stift_Melk_Nordseite_01.jpg",
       "actions": ["siegfried","identify","ffprobe","tika"],
-      "downloadmime": "^image/.*$",
+      "forcedownload": "^image/.*$",
       "headersize": 5000
     }
 
 ### JSON-Fields
 * **url**: mandatory field (file:///...)
 * **actions**: optional field, list of identifiers to use
-* **downlaodmime**: optional field, regexp of mimetypes, which should be downloaded completely
+* **forcedownload**: optional field, regexp of mimetypes, which should be downloaded completely
 * **headersize**: optional field, size of header which is downloaded for format recognition 
     
 ## Rights

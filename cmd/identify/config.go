@@ -95,7 +95,7 @@ type Config struct {
 	TempDir         string
 	HeaderTimeout   duration
 	HeaderSize      int64
-	DownloadMime    string
+	DownloadMime    string `toml:"forcedownload"`
 	MaxDownloadSize int64
 	Siegfried       ConfigSiegfried
 	FFMPEG          ConfigFFMPEG
