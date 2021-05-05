@@ -11,13 +11,14 @@
 package indexer
 
 import (
-"errors"
-"fmt"
-"net/url"
-"os"
-"path/filepath"
-"runtime"
-"strings"
+	"errors"
+	"fmt"
+	"github.com/goph/emperror"
+	"net/url"
+	"os"
+	"path/filepath"
+	"runtime"
+	"strings"
 )
 
 type FileMapper struct {
@@ -30,7 +31,7 @@ func NewFileMapper(mapping map[string]string) *FileMapper {
 
 func (fm *FileMapper) Get(uri *url.URL) (string, error) {
 	if uri.Scheme != "file" {
-		return "", errors.New( fmt.Sprintf("cannot handle scheme %s: need file scheme", uri.Scheme))
+		return "", errors.New(fmt.Sprintf("cannot handle scheme %s: need file scheme", uri.Scheme))
 	}
 	var filename string
 	var ok bool
@@ -40,11 +41,14 @@ func (fm *FileMapper) Get(uri *url.URL) (string, error) {
 			return "", errors.New(fmt.Sprintf("no mapping for %s", uri.Host))
 		}
 	}
-	filename = filepath.Join(filename, uri.Path)
+	p, err := url.QueryUnescape(uri.EscapedPath())
+	if err != nil {
+		return "", emperror.Wrapf(err, "cannot unescape %s", uri.EscapedPath())
+	}
+	filename = filepath.Join(filename, p)
 	filename = filepath.Clean(filename)
 	if runtime.GOOS == "windows" {
 		filename = strings.TrimPrefix(filename, string(os.PathSeparator))
 	}
 	return filename, nil
 }
-

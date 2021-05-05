@@ -31,7 +31,7 @@ var _logformat = logging.MustStringFormatter(
 	`%{time:2006-01-02T15:04:05.000} %{module}::%{shortfunc} [%{shortfile}] > %{level:.5s} - %{message}`,
 )
 
-func Max( a, b int64) int64 {
+func Max(a, b int64) int64 {
 	if a > b {
 		return a
 	}
@@ -61,7 +61,7 @@ func CreateLogger(module string, logfile string, loglevel string) (log *logging.
 	return
 }
 
-func ClearMime( mimetype string ) string {
+func ClearMime(mimetype string) string {
 	// try to get a clean mimetype
 	for _, v := range strings.Split(mimetype, ",") {
 		t, _, err := mime.ParseMediaType(v)
@@ -78,7 +78,7 @@ func ClearMime( mimetype string ) string {
 /*
 holistic function to give some mimetypes a relevance
 */
-func MimeRelevance( mimetype string) (relevance int) {
+func MimeRelevance(mimetype string) (relevance int) {
 	if mimetype == "" {
 		return 0
 	}
@@ -89,6 +89,9 @@ func MimeRelevance( mimetype string) (relevance int) {
 		return 2
 	}
 	if mimetype == "audio/mpeg" {
+		return 2
+	}
+	if mimetype == "video/mpeg" {
 		return 2
 	}
 	if strings.HasPrefix(mimetype, "application/") {
@@ -120,7 +123,8 @@ func _getFilePath(uri *url.URL) (string, error) {
 }
 
 var regexpDriveLetter = regexp.MustCompile("^([A-Za-z]):/(.*$)")
-func pathToWSL( path string ) string {
+
+func pathToWSL(path string) string {
 	matches := regexpDriveLetter.FindStringSubmatch(filepath.ToSlash(path))
 	// no drive letter
 	if matches == nil {

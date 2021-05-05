@@ -34,6 +34,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -250,6 +251,7 @@ func (s *Server) getContent(uri *url.URL, forceDownloadRegexp *regexp.Regexp, wr
 			return "", false, emperror.Wrapf(err, "error loading from sftp %s", uri.String())
 		}
 	} else {
+		fulldownload = true
 		path, err := s.fm.Get(uri)
 		if err != nil {
 			return "", false, emperror.Wrapf(err, "cannot map uri %s ", uri.String())
@@ -261,7 +263,9 @@ func (s *Server) getContent(uri *url.URL, forceDownloadRegexp *regexp.Regexp, wr
 		defer f.Close()
 		buf := make([]byte, 512)
 		if _, err := f.Read(buf); err != nil {
-			return "", false, emperror.Wrapf(err, "cannot read from file %s", path)
+			if err != io.EOF {
+				return "", false, emperror.Wrapf(err, "cannot read from file %s", path)
+			}
 		}
 		mimetype = http.DetectContentType(buf)
 	}
@@ -281,6 +285,11 @@ func (s *Server) HandleDefault(w http.ResponseWriter, r *http.Request) {
 	param := ActionParam{ForceDownload: s.forceDownload}
 	if err := json.Unmarshal(body, &param); err != nil {
 		s.DoPanicf(w, http.StatusBadRequest, "cannot unmarshal json - %s: %v", string(body), err)
+		return
+	}
+	param.Url, err = url.QueryUnescape(param.Url)
+	if err != nil {
+		s.DoPanicf(w, http.StatusBadRequest, "cannot unescape url - %s: %v", param.Url, err)
 		return
 	}
 
@@ -317,13 +326,24 @@ func (s *Server) HandleDefault(w http.ResponseWriter, r *http.Request) {
 
 }
 
+var fileUrlRegexp = regexp.MustCompile("^file://([^/]+)/(.+)$")
+
 func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
-
-	uri, err := url.ParseRequestURI(param.Url)
-	if err != nil {
-		return nil, emperror.Wrapf(err, "cannot parse url %s", param.Url)
+	var err error
+	matches := fileUrlRegexp.FindStringSubmatch(param.Url)
+	var uri *url.URL
+	if matches != nil {
+		ustr := fmt.Sprintf("file://%s/%s", matches[1], url.QueryEscape(strings.TrimLeft(matches[2], "/")))
+		uri, err = url.ParseRequestURI(ustr)
+		if err != nil {
+			return nil, emperror.Wrapf(err, "cannot parse url %s", ustr)
+		}
+	} else {
+		uri, err = url.Parse(param.Url)
+		if err != nil {
+			return nil, emperror.Wrapf(err, "cannot parse url %s", param.Url)
+		}
 	}
-
 	var duration time.Duration
 	var width, height uint
 
