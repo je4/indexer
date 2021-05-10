@@ -124,7 +124,7 @@ func (as *ActionExternal) Do(
 		if err != nil {
 			return nil, emperror.Wrapf(err, "no file url")
 		}
-		urlstring := strings.Replace(as.url, "[[PATH]]", strings.Replace(url.QueryEscape(filepath.ToSlash(filename)), "+", "%20", -1), -1)
+		urlstring := strings.Replace(as.url, "[[PATH]]", strings.Replace(url.PathEscape(filepath.ToSlash(filename)), "+", "%20", -1), -1)
 
 		resp, err = http.Get(urlstring)
 		if err != nil {

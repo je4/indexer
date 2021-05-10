@@ -333,7 +333,7 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 	matches := fileUrlRegexp.FindStringSubmatch(param.Url)
 	var uri *url.URL
 	if matches != nil {
-		ustr := fmt.Sprintf("file://%s/%s", matches[1], url.QueryEscape(strings.TrimLeft(matches[2], "/")))
+		ustr := fmt.Sprintf("file://%s/%s", matches[1], url.PathEscape(strings.TrimLeft(matches[2], "/")))
 		uri, err = url.ParseRequestURI(ustr)
 		if err != nil {
 			return nil, emperror.Wrapf(err, "cannot parse url %s", ustr)
