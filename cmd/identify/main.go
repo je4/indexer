@@ -17,6 +17,8 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
+	badger "github.com/dgraph-io/badger/v3"
 	"github.com/je4/indexer/pkg/indexer"
 	"io"
 	"log"
@@ -84,6 +86,25 @@ func main() {
 		return
 	}
 
+	stat2, err := os.Stat(config.NSRLBadger)
+	if err != nil {
+		fmt.Printf("cannot stat badger folder %s: %v\n", config.NSRLBadger, err)
+		return
+	}
+	if !stat2.IsDir() {
+		fmt.Printf("%s is not a directory\n", config.NSRLBadger)
+		return
+	}
+
+	bconfig := badger.DefaultOptions(config.NSRLBadger)
+	nsrldb, err := badger.Open(bconfig)
+	if err != nil {
+		log.Panicf("cannot open badger database in %s: %v\n", config.NSRLBadger, err)
+		return
+	}
+	log.Infof("nsrl max batch count: %v", nsrldb.MaxBatchCount())
+	defer nsrldb.Close()
+
 	srv, err := indexer.NewServer(
 		config.HeaderTimeout.Duration,
 		config.HeaderSize,
@@ -98,6 +119,7 @@ func main() {
 		config.TempDir,
 		fm,
 		sftp,
+		nsrldb,
 	)
 	if err != nil {
 		log.Panicf("cannot initialize server: %v", err)

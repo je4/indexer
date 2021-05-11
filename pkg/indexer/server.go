@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/dgraph-io/badger"
 	mime "github.com/gabriel-vasile/mimetype"
 	"github.com/goph/emperror"
 	"github.com/gorilla/handlers"
@@ -39,10 +40,11 @@ import (
 )
 
 type ActionParam struct {
-	Url           string   `json:"url"`
-	Actions       []string `json:"actions,omitempty"`
-	ForceDownload string   `json:"forcedownload,omitempty"`
-	HeaderSize    int64    `json:"headersize,omitempty"`
+	Url           string            `json:"url"`
+	Actions       []string          `json:"actions,omitempty"`
+	ForceDownload string            `json:"forcedownload,omitempty"`
+	HeaderSize    int64             `json:"headersize,omitempty"`
+	Checksums     map[string]string `json:"checksums,omitempty"`
 }
 
 type Server struct {
@@ -61,6 +63,7 @@ type Server struct {
 	fm              *FileMapper
 	sftp            *SFTP
 	insecureCert    bool
+	nsrldb          *badger.DB
 }
 
 func NewServer(
@@ -77,6 +80,7 @@ func NewServer(
 	tempDir string,
 	fm *FileMapper,
 	sftp *SFTP,
+	nsrldb *badger.DB,
 ) (*Server, error) {
 	errorTpl, err := template.ParseFiles(errorTemplate)
 	if err != nil {
@@ -97,6 +101,7 @@ func NewServer(
 		actions:         map[string]Action{},
 		fm:              fm,
 		sftp:            sftp,
+		nsrldb:          nsrldb,
 	}
 	return srv, nil
 }
@@ -282,7 +287,7 @@ func (s *Server) HandleDefault(w http.ResponseWriter, r *http.Request) {
 		s.DoPanicf(w, http.StatusInternalServerError, "cannot read body: %v", err)
 		return
 	}
-	param := ActionParam{ForceDownload: s.forceDownload}
+	param := ActionParam{ForceDownload: s.forceDownload, Checksums: map[string]string{}}
 	if err := json.Unmarshal(body, &param); err != nil {
 		s.DoPanicf(w, http.StatusBadRequest, "cannot unmarshal json - %s: %v", string(body), err)
 		return

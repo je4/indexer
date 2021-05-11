@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	badger "github.com/dgraph-io/badger/v3"
+	"github.com/golang/snappy"
 	"github.com/goph/emperror"
 	"github.com/hooklift/iso9660"
 	"io"
@@ -16,7 +17,39 @@ import (
 
 const NSRL2BADGER = "nsrl2badger v0.2, info-age GmbH Basel"
 
-func copyCSV(indexField int, db *badger.DB, freader io.Reader) error {
+func contains(s []int, e int) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
+func appendIfNotExists(ls []map[string]string, els ...map[string]string) []map[string]string {
+	for _, el := range els {
+		found := false
+		for _, l := range ls {
+			same := true
+			for key, val := range l {
+				if el[key] != val {
+					same = false
+					break
+				}
+			}
+			if same {
+				found = true
+				break
+			}
+		}
+		if !found {
+			ls = append(ls, el)
+		}
+	}
+	return ls
+}
+
+func copyCSV(indexField int, db *badger.DB, freader io.Reader, ignore []int) error {
 	defer fmt.Println()
 	var counter int64
 	csvR := csv.NewReader(freader)
@@ -27,49 +60,63 @@ func copyCSV(indexField int, db *badger.DB, freader io.Reader) error {
 	dataStruct := make(map[string]string)
 	for {
 		done := false
+		num := 1000
+		d := make(map[string][]map[string]string)
+		for {
+			data, err := csvR.Read()
+			if err == io.EOF {
+				done = true
+				break
+			}
+			if err != nil {
+				return emperror.Wrapf(err, "cannot read csv data from %v", freader)
+			}
+			for key, name := range fields {
+				if contains(ignore, key) {
+					continue
+				}
+				dataStruct[name] = data[key]
+			}
+			daKey := fields[indexField] + "-" + data[indexField]
+			if _, ok := d[daKey]; !ok {
+				d[daKey] = make([]map[string]string, 0)
+			}
+			d[daKey] = appendIfNotExists(d[daKey], dataStruct)
+			num--
+			if num <= 0 {
+				break
+			}
+		}
 		if err := db.Update(func(txn *badger.Txn) error {
-			num := 1000
-			for {
-				data, err := csvR.Read()
-				if err == io.EOF {
-					done = true
-					break
-				}
-				if err != nil {
-					return emperror.Wrapf(err, "cannot read csv data from %v", freader)
-				}
-				for key, name := range fields {
-					dataStruct[name] = data[key]
-				}
-				dataList := []map[string]string{dataStruct}
-				daKey := fields[indexField] + "-" + dataStruct[fields[indexField]]
-				item, err := txn.Get([]byte(daKey))
+			for key, list := range d {
+				item, err := txn.Get([]byte(key))
 				if err != nil {
 					if err != badger.ErrKeyNotFound {
-						return emperror.Wrapf(err, "cannot get key %s", daKey)
+						return emperror.Wrapf(err, "cannot get key %s", key)
 					}
 				} else {
 					item.Value(func(val []byte) error {
-						var ds map[string]string
-						if err := json.Unmarshal(val, &ds); err != nil {
+						d, err := snappy.Decode(nil, val)
+						if err != nil {
+							return emperror.Wrapf(err, "cannot decode %s", val)
+						}
+						var ds []map[string]string
+						if err := json.Unmarshal(d, &ds); err != nil {
 							return emperror.Wrapf(err, "cannot unmarshal %s", string(val))
 						}
-						dataList = append(dataList, ds)
+						list = appendIfNotExists(list, ds...)
 						return nil
 					})
 				}
-				fmt.Printf("%v: %s [%v]\r", counter, daKey, len(dataList))
+				fmt.Printf("%v: %s [%v]\r", counter, key, len(list))
 				counter++
-				d, err := json.Marshal(dataList)
+				d, err := json.Marshal(list)
 				if err != nil {
-					return emperror.Wrapf(err, "cannot marshal struct %v", dataStruct)
+					return emperror.Wrapf(err, "cannot marshal data %v", list)
 				}
-				if err := txn.Set([]byte(daKey), d); err != nil {
+				d2 := snappy.Encode(nil, d)
+				if err := txn.Set([]byte(key), d2); err != nil {
 					return emperror.Wrapf(err, "cannot store struct %v", dataStruct)
-				}
-				num--
-				if num <= 0 {
-					break
 				}
 			}
 			return nil
@@ -162,7 +209,7 @@ func main() {
 				if err != nil {
 					fmt.Printf("cannot open zip content %s/%s")
 				}
-				if err := copyCSV(0, db, fr); err != nil {
+				if err := copyCSV(1, db, fr, []int{0, 1, 2}); err != nil {
 					fmt.Printf("cannot copy file csv %s: %v", fi.Name, err)
 					return
 				}
@@ -175,7 +222,7 @@ func main() {
 				fmt.Printf("%v os not a reader", f)
 				return
 			}
-			if err := copyCSV(0, db, freader); err != nil {
+			if err := copyCSV(0, db, freader, []int{0}); err != nil {
 				fmt.Printf("cannot copy os csv %s: %v", f.Name(), err)
 				return
 			}
@@ -185,7 +232,7 @@ func main() {
 				fmt.Printf("%v mfg not a reader", f)
 				return
 			}
-			if err := copyCSV(0, db, freader); err != nil {
+			if err := copyCSV(0, db, freader, []int{0}); err != nil {
 				fmt.Printf("cannot copy mfg csv %s: %v", f.Name(), err)
 				return
 			}
@@ -195,7 +242,7 @@ func main() {
 				fmt.Printf("%v prod not a reader", f)
 				return
 			}
-			if err := copyCSV(0, db, freader); err != nil {
+			if err := copyCSV(0, db, freader, []int{0}); err != nil {
 				fmt.Printf("cannot copy prod csv %s: %v", f.Name(), err)
 				return
 			}

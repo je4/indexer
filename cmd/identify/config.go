@@ -105,6 +105,7 @@ type Config struct {
 	FileMap         []FileMap
 	SFTP            SFTP
 	URLRegexp       []string
+	NSRLBadger      string
 }
 
 func LoadConfig(filepath string) Config {
