@@ -3,7 +3,7 @@ package indexer
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/dgraph-io/badger"
+	badger "github.com/dgraph-io/badger/v3"
 	"github.com/golang/snappy"
 	"github.com/goph/emperror"
 	"net/url"
