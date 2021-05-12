@@ -2,12 +2,13 @@ module github.com/je4/indexer
 
 go 1.16
 
+replace github.com/je4/indexer => ./
+
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/c4milo/gotoolkit v0.0.0-20190525173301-67483a18c17a // indirect
 	github.com/dgraph-io/badger v1.6.2
 	github.com/dgraph-io/badger/v3 v3.2011.1
-	github.com/felixge/httpsnoop v1.0.2 // indirect
 	github.com/gabriel-vasile/mimetype v1.3.0
 	github.com/golang/snappy v0.0.3
 	github.com/goph/emperror v0.17.2
@@ -21,7 +22,4 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/pkg/sftp v1.13.0
 	golang.org/x/crypto v0.0.0-20210506145944-38f3c27a63bf
-	golang.org/x/sys v0.0.0-20210426080607-c94f62235c83 // indirect
 )
-
-replace github.com/je4/indexer => ./

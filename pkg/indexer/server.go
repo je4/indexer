@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/dgraph-io/badger"
+	badger "github.com/dgraph-io/badger/v3"
 	mime "github.com/gabriel-vasile/mimetype"
 	"github.com/goph/emperror"
 	"github.com/gorilla/handlers"
