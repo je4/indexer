@@ -37,7 +37,7 @@ type ActionTika struct {
 	timeout    time.Duration
 	regexpMime *regexp.Regexp
 	caps       ActionCapability
-	server *Server
+	server     *Server
 }
 
 func NewActionTika(uri string, timeout time.Duration, regexpMime string, online bool, server *Server) Action {
@@ -50,8 +50,8 @@ func NewActionTika(uri string, timeout time.Duration, regexpMime string, online 
 		url:        uri,
 		timeout:    timeout,
 		regexpMime: regexp.MustCompile(regexpMime),
-		caps: caps,
-		server: server,
+		caps:       caps,
+		server:     server,
 	}
 	server.AddAction(at)
 	return at
@@ -65,7 +65,7 @@ func (at *ActionTika) GetName() string {
 	return at.name
 }
 
-func (at *ActionTika) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration) (interface{}, error) {
+func (at *ActionTika) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, error) {
 	if !at.regexpMime.MatchString(*mimetype) {
 		return nil, ErrMimeNotApplicable
 	}

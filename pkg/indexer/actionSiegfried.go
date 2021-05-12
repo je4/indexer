@@ -83,7 +83,7 @@ func (as *ActionSiegfried) GetName() string {
 	return as.name
 }
 
-func (as *ActionSiegfried) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration) (interface{}, error) {
+func (as *ActionSiegfried) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, error) {
 	filename, err := as.server.fm.Get(uri)
 	if err != nil {
 		return nil, emperror.Wrapf(err, "no file url")

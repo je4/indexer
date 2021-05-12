@@ -96,15 +96,6 @@ func main() {
 		return
 	}
 
-	bconfig := badger.DefaultOptions(config.NSRLBadger)
-	nsrldb, err := badger.Open(bconfig)
-	if err != nil {
-		log.Panicf("cannot open badger database in %s: %v\n", config.NSRLBadger, err)
-		return
-	}
-	log.Infof("nsrl max batch count: %v", nsrldb.MaxBatchCount())
-	defer nsrldb.Close()
-
 	srv, err := indexer.NewServer(
 		config.HeaderTimeout.Duration,
 		config.HeaderSize,
@@ -119,11 +110,26 @@ func main() {
 		config.TempDir,
 		fm,
 		sftp,
-		nsrldb,
 	)
 	if err != nil {
 		log.Panicf("cannot initialize server: %v", err)
 		return
+	}
+
+	var nsrldb *badger.DB
+	if config.NSRLBadger != "" {
+		bconfig := badger.DefaultOptions(config.NSRLBadger)
+		bconfig.ReadOnly = true
+		nsrldb, err = badger.Open(bconfig)
+		if err != nil {
+			log.Panicf("cannot open badger database in %s: %v\n", config.NSRLBadger, err)
+			return
+		}
+		log.Infof("nsrl max batch count: %v", nsrldb.MaxBatchCount())
+		defer nsrldb.Close()
+
+		indexer.NewActionNSRL(nsrldb, srv)
+		//return
 	}
 
 	if config.Siegfried.Enabled {

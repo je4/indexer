@@ -68,7 +68,7 @@ func (ai *ActionIdentify) GetName() string {
 	return ai.name
 }
 
-func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration) (interface{}, error) {
+func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, error) {
 	var metadata = make(map[string]interface{})
 	var metadataInt interface{}
 	//	var metadatalist = []map[string]interface{}{}

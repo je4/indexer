@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	badger "github.com/dgraph-io/badger/v3"
 	mime "github.com/gabriel-vasile/mimetype"
 	"github.com/goph/emperror"
 	"github.com/gorilla/handlers"
@@ -63,7 +62,6 @@ type Server struct {
 	fm              *FileMapper
 	sftp            *SFTP
 	insecureCert    bool
-	nsrldb          *badger.DB
 }
 
 func NewServer(
@@ -80,7 +78,6 @@ func NewServer(
 	tempDir string,
 	fm *FileMapper,
 	sftp *SFTP,
-	nsrldb *badger.DB,
 ) (*Server, error) {
 	errorTpl, err := template.ParseFiles(errorTemplate)
 	if err != nil {
@@ -101,7 +98,6 @@ func NewServer(
 		actions:         map[string]Action{},
 		fm:              fm,
 		sftp:            sftp,
-		nsrldb:          nsrldb,
 	}
 	return srv, nil
 }
@@ -410,7 +406,7 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 			continue
 		}
 		s.log.Infof("Action [%v] %s: %s", key, actionstr, theUri.String())
-		actionresult, err := action.Do(theUri, &mimetype, &width, &height, &duration)
+		actionresult, err := action.Do(theUri, &mimetype, &width, &height, &duration, nil)
 		if err == ErrMimeNotApplicable {
 			s.log.Infof("%s: mime %s not applicable", actionstr, mimetype)
 			continue

@@ -90,7 +90,7 @@ func (as *ActionFFProbe) GetName() string {
 	return as.name
 }
 
-func (as *ActionFFProbe) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration) (interface{}, error) {
+func (as *ActionFFProbe) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, error) {
 	var metadata ffmpeg_models.Metadata
 	var filename string
 	var err error
