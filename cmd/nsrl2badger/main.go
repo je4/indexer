@@ -13,6 +13,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 )
 
 const NSRL2BADGER = "nsrl2badger v0.2, info-age GmbH Basel"
@@ -49,7 +50,7 @@ func appendIfNotExists(ls []map[string]string, els ...map[string]string) []map[s
 	return ls
 }
 
-func copyCSV(indexField int, db *badger.DB, freader io.Reader, ignore []int) error {
+func copyCSV(indexField string, db *badger.DB, freader io.Reader, ignore []int) error {
 	defer fmt.Println()
 	var counter int64
 	csvR := csv.NewReader(freader)
@@ -57,6 +58,17 @@ func copyCSV(indexField int, db *badger.DB, freader io.Reader, ignore []int) err
 	if err != nil {
 		return emperror.Wrapf(err, "cannot read csv fields from %v", freader)
 	}
+	indexId := 0
+	if indexField != "" {
+		for key, val := range fields {
+			if val == indexField {
+				fmt.Printf("%v: %s == %s\n", key, val, indexField)
+				indexId = key
+				break
+			}
+		}
+	}
+	fmt.Printf("indexfield: %s --> %v:%s\n", indexField, indexId, fields[indexId])
 	dataStruct := make(map[string]string)
 	for {
 		done := false
@@ -77,7 +89,7 @@ func copyCSV(indexField int, db *badger.DB, freader io.Reader, ignore []int) err
 				}
 				dataStruct[name] = data[key]
 			}
-			daKey := fields[indexField] + "-" + data[indexField]
+			daKey := fields[indexId] + "-" + data[indexId]
 			if _, ok := d[daKey]; !ok {
 				d[daKey] = make([]map[string]string, 0)
 			}
@@ -108,7 +120,7 @@ func copyCSV(indexField int, db *badger.DB, freader io.Reader, ignore []int) err
 						return nil
 					})
 				}
-				fmt.Printf("%v: %s [%v]\r", counter, key, len(list))
+				fmt.Printf("%v: %s [%v]    \r", counter, key, len(list))
 				counter++
 				d, err := json.Marshal(list)
 				if err != nil {
@@ -139,6 +151,7 @@ func main() {
 	mfgFile := flag.String("mfg", "/nsrlmfg.txt", "nsrl mfg code and name")
 	osFile := flag.String("os", "/nsrlos.txt", "nsrl os code and name")
 	prodFile := flag.String("prod", "/nsrlprod.txt", "nsrl prod code and name")
+	checkSum := flag.String("checksum", "MD5", "MD5 OR SHA-1 as key value")
 
 	flag.Parse()
 
@@ -193,6 +206,14 @@ func main() {
 
 		switch f.Name() {
 		case *fileFile:
+			switch strings.ToUpper(*checkSum) {
+			case "MD5":
+			case "SHA-1":
+			case "":
+			default:
+				fmt.Printf("invalid checksum field for file table: %s", *checkSum)
+				return
+			}
 			freaderInt := f.Sys()
 			freader, ok := freaderInt.(io.ReaderAt)
 			if !ok {
@@ -209,7 +230,7 @@ func main() {
 				if err != nil {
 					fmt.Printf("cannot open zip content %s/%s")
 				}
-				if err := copyCSV(1, db, fr, []int{0, 1, 2}); err != nil {
+				if err := copyCSV(strings.ToUpper(*checkSum), db, fr, []int{0, 1, 2}); err != nil {
 					fmt.Printf("cannot copy file csv %s: %v", fi.Name, err)
 					return
 				}
@@ -217,12 +238,20 @@ func main() {
 			}
 
 		case *osFile:
+			switch strings.ToUpper(*checkSum) {
+			case "MD5":
+			case "SHA1":
+			case "":
+			default:
+				fmt.Printf("invalid checksum type: %s", *checkSum)
+				return
+			}
 			freader, ok := f.Sys().(io.Reader)
 			if !ok {
 				fmt.Printf("%v os not a reader", f)
 				return
 			}
-			if err := copyCSV(0, db, freader, []int{0}); err != nil {
+			if err := copyCSV("", db, freader, []int{0}); err != nil {
 				fmt.Printf("cannot copy os csv %s: %v", f.Name(), err)
 				return
 			}
@@ -232,7 +261,7 @@ func main() {
 				fmt.Printf("%v mfg not a reader", f)
 				return
 			}
-			if err := copyCSV(0, db, freader, []int{0}); err != nil {
+			if err := copyCSV("", db, freader, []int{0}); err != nil {
 				fmt.Printf("cannot copy mfg csv %s: %v", f.Name(), err)
 				return
 			}
@@ -242,7 +271,7 @@ func main() {
 				fmt.Printf("%v prod not a reader", f)
 				return
 			}
-			if err := copyCSV(0, db, freader, []int{0}); err != nil {
+			if err := copyCSV("", db, freader, []int{0}); err != nil {
 				fmt.Printf("cannot copy prod csv %s: %v", f.Name(), err)
 				return
 			}
