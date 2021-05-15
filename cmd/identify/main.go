@@ -125,7 +125,7 @@ func main() {
 			log.Panicf("cannot open badger database in %s: %v\n", config.NSRLBadger, err)
 			return
 		}
-		log.Infof("nsrl max batch count: %v", nsrldb.MaxBatchCount())
+		//log.Infof("nsrl max batch count: %v", nsrldb.MaxBatchCount())
 		defer nsrldb.Close()
 
 		indexer.NewActionNSRL(nsrldb, srv)
