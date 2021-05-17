@@ -21,5 +21,6 @@ require (
 	github.com/phayes/freeport v0.0.0-20180830031419-95f893ade6f2
 	github.com/pkg/errors v0.9.1
 	github.com/pkg/sftp v1.13.0
+	github.com/richardlehane/siegfried v1.9.1 // indirect
 	golang.org/x/crypto v0.0.0-20210506145944-38f3c27a63bf
 )

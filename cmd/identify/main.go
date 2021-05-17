@@ -86,16 +86,6 @@ func main() {
 		return
 	}
 
-	stat2, err := os.Stat(config.NSRLBadger)
-	if err != nil {
-		fmt.Printf("cannot stat badger folder %s: %v\n", config.NSRLBadger, err)
-		return
-	}
-	if !stat2.IsDir() {
-		fmt.Printf("%s is not a directory\n", config.NSRLBadger)
-		return
-	}
-
 	srv, err := indexer.NewServer(
 		config.HeaderTimeout.Duration,
 		config.HeaderSize,
@@ -117,12 +107,22 @@ func main() {
 	}
 
 	var nsrldb *badger.DB
-	if config.NSRLBadger != "" {
-		bconfig := badger.DefaultOptions(config.NSRLBadger)
+	if config.NSRL.Enabled {
+		stat2, err := os.Stat(config.NSRL.Badger)
+		if err != nil {
+			fmt.Printf("cannot stat badger folder %s: %v\n", config.NSRL.Badger, err)
+			return
+		}
+		if !stat2.IsDir() {
+			fmt.Printf("%s is not a directory\n", config.NSRL.Badger)
+			return
+		}
+
+		bconfig := badger.DefaultOptions(config.NSRL.Badger)
 		bconfig.ReadOnly = true
 		nsrldb, err = badger.Open(bconfig)
 		if err != nil {
-			log.Panicf("cannot open badger database in %s: %v\n", config.NSRLBadger, err)
+			log.Panicf("cannot open badger database in %s: %v\n", config.NSRL.Badger, err)
 			return
 		}
 		//log.Infof("nsrl max batch count: %v", nsrldb.MaxBatchCount())
@@ -133,7 +133,10 @@ func main() {
 	}
 
 	if config.Siegfried.Enabled {
-		indexer.NewActionSiegfried(config.Siegfried.Address, srv)
+		if _, err := os.Stat(config.Siegfried.SignatureFile); err != nil {
+			log.Panicf("siegfried signature file at %s not found. Please use 'sf -update' to download it: %v", config.Siegfried.SignatureFile, err)
+		}
+		indexer.NewActionSiegfried(config.Siegfried.SignatureFile, srv)
 		//srv.AddAction(sf)
 	}
 

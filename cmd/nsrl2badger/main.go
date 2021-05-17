@@ -81,7 +81,8 @@ func copyCSV(indexField string, db *badger.DB, freader io.Reader, ignore []int) 
 				break
 			}
 			if err != nil {
-				return emperror.Wrapf(err, "cannot read csv data from %v", freader)
+				fmt.Printf("cannot read csv data: %v", err)
+				continue
 			}
 			for key, name := range fields {
 				if contains(ignore, key) {
@@ -152,6 +153,8 @@ func main() {
 	osFile := flag.String("os", "/nsrlos.txt", "nsrl os code and name")
 	prodFile := flag.String("prod", "/nsrlprod.txt", "nsrl prod code and name")
 	checkSum := flag.String("checksum", "MD5", "MD5 OR SHA-1 as key value")
+	noFile := flag.Bool("nofile", false, "ignore nsrlfile.zip if true")
+	noMfg := flag.Bool("nomfg", false, "ignore nsrlmfg.txt if true")
 
 	flag.Parse()
 
@@ -206,6 +209,9 @@ func main() {
 
 		switch f.Name() {
 		case *fileFile:
+			if *noFile {
+				continue
+			}
 			switch strings.ToUpper(*checkSum) {
 			case "MD5":
 			case "SHA-1":
@@ -240,7 +246,7 @@ func main() {
 		case *osFile:
 			switch strings.ToUpper(*checkSum) {
 			case "MD5":
-			case "SHA1":
+			case "SHA-1":
 			case "":
 			default:
 				fmt.Printf("invalid checksum type: %s", *checkSum)
@@ -256,6 +262,9 @@ func main() {
 				return
 			}
 		case *mfgFile:
+			if *noMfg {
+				continue
+			}
 			freader, ok := f.Sys().(io.Reader)
 			if !ok {
 				fmt.Printf("%v mfg not a reader", f)

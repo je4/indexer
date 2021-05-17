@@ -407,7 +407,7 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 			continue
 		}
 		s.log.Infof("Action [%v] %s: %s", key, actionstr, theUri.String())
-		actionresult, err := action.Do(theUri, &mimetype, &width, &height, &duration, nil)
+		actionresult, err := action.Do(theUri, &mimetype, &width, &height, &duration, param.Checksums)
 		if err == ErrMimeNotApplicable {
 			s.log.Infof("%s: mime %s not applicable", actionstr, mimetype)
 			continue

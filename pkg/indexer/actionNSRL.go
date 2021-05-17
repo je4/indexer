@@ -40,8 +40,8 @@ func NewActionNSRL(nsrldb *badger.DB, server *Server) Action {
 	return an
 }
 
-func getStringMap(txn *badger.Txn, key string) (map[string]string, error) {
-	var result map[string]string
+func getStringMap(txn *badger.Txn, key string) ([]map[string]string, error) {
+	var result []map[string]string
 	item, err := txn.Get([]byte(key))
 	if err != nil {
 		if err == badger.ErrKeyNotFound {
@@ -89,21 +89,38 @@ func (aNSRL *ActionNSRL) getNSRL(sha1sum string) (interface{}, error) {
 			var am ActionNSRLMeta
 			am.File = file
 			if am.File["MfgCode"] != "" {
-				am.FileMfG, _ = getStringMap(txn, NSRL_MFG+am.Prod["MfgCode"])
+				r, _ := getStringMap(txn, NSRL_MFG+am.Prod["MfgCode"])
+				if len(r) > 0 {
+					am.FileMfG = r[0]
+				}
 			}
-			am.Prod, err = getStringMap(txn, NSRL_PROD+file["ProductCode"])
+			r, err := getStringMap(txn, NSRL_PROD+file["ProductCode"])
 			if err != nil {
-				return emperror.Wrapf(err, "cannot get data of %s", NSRL_PROD+file["ProductCode"])
+				aNSRL.server.log.Errorf("cannot get data of %s: %v", NSRL_PROD+file["ProductCode"], err)
+				// return emperror.Wrapf(err, "cannot get data of %s", NSRL_PROD+file["ProductCode"])
+			}
+			if len(r) > 0 {
+				am.Prod = r[0]
 			}
 			if am.Prod["MfgCode"] != "" {
-				am.ProdMfg, _ = getStringMap(txn, NSRL_MFG+am.Prod["MfgCode"])
+				r, _ = getStringMap(txn, NSRL_MFG+am.Prod["MfgCode"])
+				if len(r) > 0 {
+					am.ProdMfg = r[0]
+				}
 			}
-			am.OS, err = getStringMap(txn, NSRL_OS+file["OpSystemCode"])
+			r, err = getStringMap(txn, NSRL_OS+file["OpSystemCode"])
 			if err != nil {
-				return emperror.Wrapf(err, "cannot get data of %s", NSRL_PROD+file["ProductCode"])
+				aNSRL.server.log.Errorf("cannot get data of %s: %v", NSRL_OS+file["OpSystemCode"], err)
+				// return emperror.Wrapf(err, "cannot get data of %s", NSRL_PROD+file["ProductCode"])
+			}
+			if len(r) > 0 {
+				am.OS = r[0]
 			}
 			if am.OS["MfgCode"] != "" {
-				am.OSMfg, _ = getStringMap(txn, NSRL_MFG+am.Prod["MfgCode"])
+				r, _ = getStringMap(txn, NSRL_MFG+am.Prod["MfgCode"])
+				if len(r) > 0 {
+					am.OSMfg = r[0]
+				}
 			}
 			result = append(result, am)
 		}
@@ -122,6 +139,9 @@ func (aNSRL *ActionNSRL) GetName() string {
 
 func (aNSRL *ActionNSRL) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, error) {
 	if checksums == nil {
+		checksums = make(map[string]string)
+	}
+	if _, ok := checksums["SHA-1"]; !ok {
 		filename, err := aNSRL.server.fm.Get(uri)
 		if err != nil {
 			return nil, emperror.Wrapf(err, "no file url")
@@ -144,7 +164,7 @@ func (aNSRL *ActionNSRL) Do(uri *url.URL, mimetype *string, width *uint, height 
 
 	SHA1sumStr, ok := checksums["SHA-1"]
 	if !ok {
-		return nil, fmt.Errorf("no md5 checksum given to check nsrl")
+		return nil, fmt.Errorf("no SHA-1 checksum given to check nsrl")
 	}
 	/*
 		result := make([]map[string]interface{}, 0)

@@ -19,6 +19,8 @@ import (
 	"github.com/je4/indexer/pkg/indexer"
 	"log"
 	"os"
+	"os/user"
+	"path/filepath"
 	"time"
 )
 
@@ -33,8 +35,9 @@ func (d *duration) UnmarshalText(text []byte) error {
 }
 
 type ConfigSiegfried struct {
-	Address string
-	Enabled bool
+	//Address string
+	Enabled       bool
+	SignatureFile string
 }
 
 type ConfigTika struct {
@@ -81,6 +84,11 @@ type SFTP struct {
 	PrivateKey []string
 }
 
+type ConfigNSRL struct {
+	Enabled bool
+	Badger  string
+}
+
 type Config struct {
 	ErrorTemplate   string
 	Logfile         string
@@ -105,14 +113,19 @@ type Config struct {
 	FileMap         []FileMap
 	SFTP            SFTP
 	URLRegexp       []string
-	NSRLBadger      string
+	NSRL            ConfigNSRL
 }
 
-func LoadConfig(filepath string) Config {
+func LoadConfig(fp string) Config {
 	var conf Config
 	conf.InsecureCert = false
-	_, err := toml.DecodeFile(filepath, &conf)
+	user, err := user.Current()
 	if err != nil {
+		log.Fatalln("cannot get current user", err)
+	}
+	conf.Siegfried.SignatureFile = filepath.Join(user.HomeDir, "siegfried", "default.sig")
+
+	if _, err := toml.DecodeFile(fp, &conf); err != nil {
 		log.Fatalln("Error on loading config: ", err)
 	}
 	pwd := os.Getenv("SFTP_PASSWORD")
