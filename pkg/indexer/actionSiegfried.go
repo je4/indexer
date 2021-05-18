@@ -1,8 +1,23 @@
+// Copyright 2021 Juergen Enge, info-age GmbH, Basel. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
 package indexer
 
 import (
 	"github.com/goph/emperror"
 	"github.com/richardlehane/siegfried"
+	"github.com/richardlehane/siegfried/pkg/pronom"
 	"log"
 	"net/url"
 	"os"
@@ -49,6 +64,15 @@ func (as *ActionSiegfried) Do(uri *url.URL, mimetype *string, width *uint, heigh
 	ident, err := as.sf.Identify(fp, filepath.Base(filename), "")
 	if err != nil {
 		return nil, emperror.Wrapf(err, "cannot identify file %s", filename)
+	}
+	for _, id := range ident {
+		if pid, ok := id.(pronom.Identification); ok {
+			rel1 := MimeRelevance(*mimetype)
+			rel2 := MimeRelevance(pid.MIME)
+			if rel2 > rel1 {
+				*mimetype = pid.MIME
+			}
+		}
 	}
 	return ident, nil
 }
