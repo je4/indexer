@@ -63,6 +63,7 @@ type Server struct {
 	fm              *FileMapper
 	sftp            *SFTP
 	insecureCert    bool
+	mimeRelevance   map[*regexp.Regexp]int
 }
 
 func NewServer(
@@ -70,6 +71,7 @@ func NewServer(
 	headerSize int64,
 	downloadMime string,
 	maxDownloadSize int64,
+	mimeRelevance map[string]int,
 	jwtSecret string,
 	jwtAlg []string,
 	insecureCert bool,
@@ -99,12 +101,55 @@ func NewServer(
 		actions:         map[string]Action{},
 		fm:              fm,
 		sftp:            sftp,
+		mimeRelevance:   make(map[*regexp.Regexp]int, 0),
+	}
+	for key, val := range mimeRelevance {
+		rexp, err := regexp.Compile(key)
+		if err != nil {
+			return nil, emperror.Wrapf(err, "cannot compile regexp %s", key)
+		}
+		srv.mimeRelevance[rexp] = val
 	}
 	return srv, nil
 }
 
 func (s *Server) AddAction(a Action) {
 	s.actions[a.GetName()] = a
+}
+
+/*
+holistic function to give some mimetypes a relevance
+*/
+func (s *Server) MimeRelevance(mimetype string) (relevance int) {
+	if mimetype == "" {
+		return 0
+	}
+	for rexp, val := range s.mimeRelevance {
+		if rexp.MatchString(mimetype) {
+			return val
+		}
+	}
+	/*
+		if mimetype == "application/octet-stream" {
+			return 1
+		}
+		if mimetype == "text/plain" {
+			return 2
+		}
+		if mimetype == "audio/mpeg" {
+			return 2
+		}
+		if mimetype == "video/mpeg" {
+			return 2
+		}
+		if strings.HasPrefix(mimetype, "application/") {
+			return 3
+		}
+		if strings.HasPrefix(mimetype, "text/") {
+			return 4
+		}
+	*/
+	return 100
 }
 
 func (s *Server) DoPanicf(writer http.ResponseWriter, status int, message string, a ...interface{}) (err error) {

@@ -115,6 +115,7 @@ type Config struct {
 	SFTP            SFTP
 	URLRegexp       []string
 	NSRL            ConfigNSRL
+	MimeRelevance   map[string]int
 }
 
 func LoadConfig(fp string) Config {

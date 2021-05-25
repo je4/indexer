@@ -75,34 +75,6 @@ func ClearMime(mimetype string) string {
 
 }
 
-/*
-holistic function to give some mimetypes a relevance
-*/
-func MimeRelevance(mimetype string) (relevance int) {
-	if mimetype == "" {
-		return 0
-	}
-	if mimetype == "application/octet-stream" {
-		return 1
-	}
-	if mimetype == "text/plain" {
-		return 2
-	}
-	if mimetype == "audio/mpeg" {
-		return 2
-	}
-	if mimetype == "video/mpeg" {
-		return 2
-	}
-	if strings.HasPrefix(mimetype, "application/") {
-		return 3
-	}
-	if strings.HasPrefix(mimetype, "text/") {
-		return 4
-	}
-	return 100
-}
-
 func FileExists(filename string) bool {
 	info, err := os.Stat(filename)
 	if os.IsNotExist(err) {

@@ -154,7 +154,7 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 	image, ok := _image.(map[string]interface{})
 	_mimetype, ok := image["mimeType"].(string)
 	if ok {
-		if MimeRelevance(_mimetype) > MimeRelevance(*mimetype) {
+		if ai.server.MimeRelevance(_mimetype) > ai.server.MimeRelevance(*mimetype) {
 			*mimetype = _mimetype
 		}
 	}

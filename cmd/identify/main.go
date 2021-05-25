@@ -91,6 +91,7 @@ func main() {
 		config.HeaderSize,
 		config.DownloadMime,
 		config.MaxDownloadSize,
+		config.MimeRelevance,
 		config.JwtKey,
 		config.JwtAlg,
 		config.InsecureCert,

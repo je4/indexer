@@ -68,14 +68,14 @@ func (as *ActionSiegfried) Do(uri *url.URL, mimetype *string, width *uint, heigh
 	}
 	for _, id := range ident {
 		if pid, ok := id.(pronom.Identification); ok {
-			rel1 := MimeRelevance(*mimetype)
-			rel2 := MimeRelevance(pid.MIME)
+			rel1 := as.server.MimeRelevance(*mimetype)
+			rel2 := as.server.MimeRelevance(pid.MIME)
 			if rel2 > rel1 {
 				*mimetype = pid.MIME
 			}
 			if mime, ok := as.mimeMap[pid.ID]; ok {
-				rel1 := MimeRelevance(*mimetype)
-				rel2 := MimeRelevance(mime)
+				rel1 := as.server.MimeRelevance(*mimetype)
+				rel2 := as.server.MimeRelevance(mime)
 				if rel2 > rel1 {
 					*mimetype = mime
 				}
