@@ -26,17 +26,18 @@ import (
 )
 
 type ActionSiegfried struct {
-	name   string
-	sf     *siegfried.Siegfried
-	server *Server
+	name    string
+	sf      *siegfried.Siegfried
+	mimeMap map[string]string
+	server  *Server
 }
 
-func NewActionSiegfried(signatureFile string, server *Server) Action {
+func NewActionSiegfried(signatureFile string, mimeMap map[string]string, server *Server) Action {
 	sf, err := siegfried.Load(signatureFile)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	as := &ActionSiegfried{name: "siegfried", sf: sf, server: server}
+	as := &ActionSiegfried{name: "siegfried", sf: sf, mimeMap: mimeMap, server: server}
 	server.AddAction(as)
 	return as
 }
@@ -72,6 +73,15 @@ func (as *ActionSiegfried) Do(uri *url.URL, mimetype *string, width *uint, heigh
 			if rel2 > rel1 {
 				*mimetype = pid.MIME
 			}
+			if mime, ok := as.mimeMap[pid.ID]; ok {
+				rel1 := MimeRelevance(*mimetype)
+				rel2 := MimeRelevance(mime)
+				if rel2 > rel1 {
+					*mimetype = mime
+				}
+
+			}
+
 		}
 	}
 	return ident, nil

@@ -136,7 +136,7 @@ func main() {
 		if _, err := os.Stat(config.Siegfried.SignatureFile); err != nil {
 			log.Panicf("siegfried signature file at %s not found. Please use 'sf -update' to download it: %v", config.Siegfried.SignatureFile, err)
 		}
-		indexer.NewActionSiegfried(config.Siegfried.SignatureFile, srv)
+		indexer.NewActionSiegfried(config.Siegfried.SignatureFile, config.Siegfried.MimeMap, srv)
 		//srv.AddAction(sf)
 	}
 

@@ -38,6 +38,7 @@ type ConfigSiegfried struct {
 	//Address string
 	Enabled       bool
 	SignatureFile string
+	MimeMap       map[string]string
 }
 
 type ConfigTika struct {
