@@ -86,6 +86,11 @@ func main() {
 		return
 	}
 
+	mimeRelevance := map[string]indexer.MimeWeightString{}
+	for key, val := range config.MimeRelevance {
+		mimeRelevance[key] = indexer.MimeWeightString{}
+	}
+
 	srv, err := indexer.NewServer(
 		config.HeaderTimeout.Duration,
 		config.HeaderSize,

@@ -35,6 +35,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 )
@@ -45,6 +46,15 @@ type ActionParam struct {
 	ForceDownload string            `json:"forcedownload,omitempty"`
 	HeaderSize    int64             `json:"headersize,omitempty"`
 	Checksums     map[string]string `json:"checksums,omitempty"`
+}
+
+type MimeWeightString struct {
+	regexp string
+	weight int
+}
+type MimeWeight struct {
+	regexp *regexp.Regexp
+	weight int
 }
 
 type Server struct {
@@ -63,7 +73,7 @@ type Server struct {
 	fm              *FileMapper
 	sftp            *SFTP
 	insecureCert    bool
-	mimeRelevance   map[*regexp.Regexp]int
+	mimeRelevance   []MimeWeight
 }
 
 func NewServer(
@@ -71,7 +81,7 @@ func NewServer(
 	headerSize int64,
 	downloadMime string,
 	maxDownloadSize int64,
-	mimeRelevance map[string]int,
+	mimeRelevance map[string]MimeWeightString,
 	jwtSecret string,
 	jwtAlg []string,
 	insecureCert bool,
@@ -101,14 +111,22 @@ func NewServer(
 		actions:         map[string]Action{},
 		fm:              fm,
 		sftp:            sftp,
-		mimeRelevance:   make(map[*regexp.Regexp]int, 0),
+		mimeRelevance:   []MimeWeight{},
 	}
-	for key, val := range mimeRelevance {
-		rexp, err := regexp.Compile(key)
+	mKeys := []string{}
+	for key, _ := range mimeRelevance {
+		mKeys = append(mKeys, key)
+	}
+	sort.Strings(mKeys)
+	for _, key := range mKeys {
+		rexp, err := regexp.Compile(mimeRelevance[key].regexp)
 		if err != nil {
 			return nil, emperror.Wrapf(err, "cannot compile regexp %s", key)
 		}
-		srv.mimeRelevance[rexp] = val
+		srv.mimeRelevance = append(srv.mimeRelevance, MimeWeight{
+			regexp: rexp,
+			weight: mimeRelevance[key].weight,
+		})
 	}
 	return srv, nil
 }
@@ -124,9 +142,9 @@ func (s *Server) MimeRelevance(mimetype string) (relevance int) {
 	if mimetype == "" {
 		return 0
 	}
-	for rexp, val := range s.mimeRelevance {
-		if rexp.MatchString(mimetype) {
-			return val
+	for _, val := range s.mimeRelevance {
+		if val.regexp.MatchString(mimetype) {
+			return val.weight
 		}
 	}
 	/*

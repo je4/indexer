@@ -90,6 +90,11 @@ type ConfigNSRL struct {
 	Badger  string
 }
 
+type MimeWeight struct {
+	Regexp string
+	Weight int
+}
+
 type Config struct {
 	ErrorTemplate   string
 	Logfile         string
@@ -115,7 +120,7 @@ type Config struct {
 	SFTP            SFTP
 	URLRegexp       []string
 	NSRL            ConfigNSRL
-	MimeRelevance   map[string]int
+	MimeRelevance   map[int]MimeWeight
 }
 
 func LoadConfig(fp string) Config {
