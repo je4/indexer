@@ -25,6 +25,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -86,9 +87,17 @@ func main() {
 		return
 	}
 
-	mimeRelevance := map[string]indexer.MimeWeightString{}
+	mimeRelevance := map[int]indexer.MimeWeightString{}
 	for key, val := range config.MimeRelevance {
-		mimeRelevance[key] = indexer.MimeWeightString{}
+		keyInt, err := strconv.ParseInt(key, 10, 64)
+		if err != nil {
+			log.Panicf("cannot convert mimeRelevance %s to string", key)
+			return
+		}
+		mimeRelevance[int(keyInt)] = indexer.MimeWeightString{
+			Regexp: val.Regexp,
+			Weight: val.Weight,
+		}
 	}
 
 	srv, err := indexer.NewServer(
@@ -96,7 +105,7 @@ func main() {
 		config.HeaderSize,
 		config.DownloadMime,
 		config.MaxDownloadSize,
-		config.MimeRelevance,
+		mimeRelevance,
 		config.JwtKey,
 		config.JwtAlg,
 		config.InsecureCert,

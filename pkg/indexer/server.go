@@ -49,8 +49,8 @@ type ActionParam struct {
 }
 
 type MimeWeightString struct {
-	regexp string
-	weight int
+	Regexp string
+	Weight int
 }
 type MimeWeight struct {
 	regexp *regexp.Regexp
@@ -81,7 +81,7 @@ func NewServer(
 	headerSize int64,
 	downloadMime string,
 	maxDownloadSize int64,
-	mimeRelevance map[string]MimeWeightString,
+	mimeRelevance map[int]MimeWeightString,
 	jwtSecret string,
 	jwtAlg []string,
 	insecureCert bool,
@@ -113,19 +113,19 @@ func NewServer(
 		sftp:            sftp,
 		mimeRelevance:   []MimeWeight{},
 	}
-	mKeys := []string{}
+	mKeys := []int{}
 	for key, _ := range mimeRelevance {
 		mKeys = append(mKeys, key)
 	}
-	sort.Strings(mKeys)
+	sort.Ints(mKeys)
 	for _, key := range mKeys {
-		rexp, err := regexp.Compile(mimeRelevance[key].regexp)
+		rexp, err := regexp.Compile(mimeRelevance[key].Regexp)
 		if err != nil {
-			return nil, emperror.Wrapf(err, "cannot compile regexp %s", key)
+			return nil, emperror.Wrapf(err, "cannot compile Regexp %s", key)
 		}
 		srv.mimeRelevance = append(srv.mimeRelevance, MimeWeight{
 			regexp: rexp,
-			weight: mimeRelevance[key].weight,
+			weight: mimeRelevance[key].Weight,
 		})
 	}
 	return srv, nil
@@ -425,7 +425,7 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 	forceDownload := param.ForceDownload
 	forceDownloadRegexp, err := regexp.Compile(forceDownload)
 	if err != nil {
-		return nil, emperror.Wrapf(err, "cannot compile forcedownload regexp %v", param.ForceDownload)
+		return nil, emperror.Wrapf(err, "cannot compile forcedownload Regexp %v", param.ForceDownload)
 	}
 	mimetype, fulldownload, err := s.getContent(uri, forceDownloadRegexp, tmpfile)
 	if err != nil {

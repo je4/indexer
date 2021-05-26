@@ -30,7 +30,7 @@ import (
 )
 
 var regexpFFProbeDuration = regexp.MustCompile("^([0-9]+):([0-9]+):([0-9]+).([0-9]{2})$")
-var regexFFProbeMime = regexp.MustCompile("^(audio|video)/.*$")
+var regexFFProbeMime = regexp.MustCompile("^((audio|video)/.*)|(application/mp4)|(application/mpeg)$")
 
 func parseDuration(t string) (time.Duration, error) {
 
@@ -137,10 +137,39 @@ func (as *ActionFFProbe) Do(uri *url.URL, mimetype *string, width *uint, height 
 	// calculate duration and dimension
 	d, _ := strconv.ParseFloat(metadata.Format.Duration, 64)
 	*duration = time.Duration(d * float64(time.Second))
+	var hasAudio, hasVideo bool
 	for _, stream := range metadata.Streams {
 		if stream.Width > 0 || stream.Height > 0 {
 			*width = uint(stream.Width)
 			*height = uint(stream.Height)
+		}
+		if stream.CodecType == "audio" {
+			hasAudio = true
+		}
+		if stream.CodecType == "video" {
+			hasVideo = true
+		}
+		if stream.CodecType == "data" {
+			//hasData = true
+		}
+	}
+
+	var mtype string
+	switch metadata.Format.FormatName {
+	case "mp3":
+		mtype = "audio/mp3"
+	case "mov,mp4,m4a,3gp,3g2,mj2":
+		if hasVideo {
+			mtype = "video/mp4"
+		} else if hasAudio {
+			mtype = "audio/mp4"
+		}
+	}
+	if mtype != "" {
+		rel1 := as.server.MimeRelevance(*mimetype)
+		rel2 := as.server.MimeRelevance(mtype)
+		if rel2 > rel1 {
+			*mimetype = mtype
 		}
 	}
 
