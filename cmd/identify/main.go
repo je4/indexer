@@ -156,11 +156,21 @@ func main() {
 	}
 
 	if config.FFMPEG.Enabled {
+		var ffmpegmime []indexer.FFMPEGMime
+		for _, val := range config.FFMPEG.Mime {
+			ffmpegmime = append(ffmpegmime, indexer.FFMPEGMime{
+				Video:  val.Video,
+				Audio:  val.Audio,
+				Format: val.Format,
+				Mime:   val.Mime,
+			})
+		}
 		indexer.NewActionFFProbe(
 			config.FFMPEG.FFProbe,
 			config.FFMPEG.Wsl,
 			config.FFMPEG.Timeout.Duration,
 			config.FFMPEG.Online,
+			ffmpegmime,
 			srv)
 		//srv.AddAction(ffprobe)
 	}

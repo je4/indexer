@@ -15,14 +15,27 @@ errorTemplate = "web/template/error.gohtml" # error message for memoHandler
 tempDir = "/mnt/c/temp/"
 
 [MimeRelevance]
-# relevance < 100
-"^application/octet-stream$" = 1
-"^application/.+" = 2
-"^text/plain$" = 3
-"^audio/mpeg$" = 4
-"^video/mpeg$" = 4
-"^text/.+$" = 4
+# relevance < 100: rate down
+# relevance > 100: rate up
 # default = 100
+    [MimeRelevance.1]
+        regexp = "^application/octet-stream$"
+        weight = 1
+    [MimeRelevance.2]
+        regexp = "^application/.+"
+        weight = 2
+    [MimeRelevance.3]
+        regexp = "^text/plain$"
+        weight = 3
+    [MimeRelevance.4]
+        regexp = "^audio/mpeg$"
+        weight = 4
+    [MimeRelevance.5]
+        regexp = "^video/mpeg$"
+        weight = 4
+    [MimeRelevance.6]
+        regexp = "^text/.+$"
+        weight = 4
 
 [sftp]
 knownhosts = "" # if empty, IgnoreHostKey is true
@@ -49,11 +62,26 @@ enabled = true
 
 
 [FFMPEG]
-ffprobe = "/usr/local/bin/ffprobe"
-wsl = false  # true, if executable is within linux subsystem on windows
-timeout = "10s"
-online = true
-enabled = true
+    ffprobe = "/usr/local/bin/ffprobe"
+    wsl = false  # true, if executable is within linux subsystem on windows
+    timeout = "25s"
+    online = true
+    enabled = true
+    [[FFMPEG.Mime]]
+        video = false
+        audio = true
+        format = "mov,mp4,m4a,3gp,3g2,mj2"
+        mime = "audio/mp4"
+    [[FFMPEG.Mime]]
+        video = true
+        audio = true
+        format = "mov,mp4,m4a,3gp,3g2,mj2"
+        mime = "video/mp4"
+    [[FFMPEG.Mime]]
+        video = true
+        audio = false
+        format = "mov,mp4,m4a,3gp,3g2,mj2"
+        mime = "video/mp4"
 
 [ImageMagick]
 identify = "/usr/bin/identify"

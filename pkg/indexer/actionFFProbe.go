@@ -29,6 +29,13 @@ import (
 	"time"
 )
 
+type FFMPEGMime struct {
+	Video  bool
+	Audio  bool
+	Format string
+	Mime   string
+}
+
 var regexpFFProbeDuration = regexp.MustCompile("^([0-9]+):([0-9]+):([0-9]+).([0-9]{2})$")
 var regexFFProbeMime = regexp.MustCompile("^((audio|video)/.*)|(application/mp4)|(application/mpeg)$")
 
@@ -70,14 +77,15 @@ type ActionFFProbe struct {
 	timeout time.Duration
 	caps    ActionCapability
 	server  *Server
+	mime    []FFMPEGMime
 }
 
-func NewActionFFProbe(ffprobe string, wsl bool, timeout time.Duration, online bool, server *Server) Action {
+func NewActionFFProbe(ffprobe string, wsl bool, timeout time.Duration, online bool, mime []FFMPEGMime, server *Server) Action {
 	var caps ActionCapability = ACTFILEHEAD
 	if online {
 		caps |= ACTALLPROTO
 	}
-	af := &ActionFFProbe{name: "ffprobe", ffprobe: ffprobe, wsl: wsl, timeout: timeout, caps: caps, server: server}
+	af := &ActionFFProbe{name: "ffprobe", ffprobe: ffprobe, wsl: wsl, timeout: timeout, caps: caps, server: server, mime: mime}
 	server.AddAction(af)
 	return af
 }
@@ -155,14 +163,10 @@ func (as *ActionFFProbe) Do(uri *url.URL, mimetype *string, width *uint, height 
 	}
 
 	var mtype string
-	switch metadata.Format.FormatName {
-	case "mp3":
-		mtype = "audio/mp3"
-	case "mov,mp4,m4a,3gp,3g2,mj2":
-		if hasVideo {
-			mtype = "video/mp4"
-		} else if hasAudio {
-			mtype = "audio/mp4"
+	for _, m := range as.mime {
+		if m.Audio == hasAudio && m.Video == hasVideo && m.Format == metadata.Format.FormatName {
+			mtype = m.Mime
+			break
 		}
 	}
 	if mtype != "" {

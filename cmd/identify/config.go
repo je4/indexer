@@ -49,12 +49,20 @@ type ConfigTika struct {
 	Enabled    bool
 }
 
+type FFMPEGMime struct {
+	Video  bool
+	Audio  bool
+	Format string
+	Mime   string
+}
+
 type ConfigFFMPEG struct {
 	FFProbe string
 	Wsl     bool
 	Timeout duration
 	Online  bool
 	Enabled bool
+	Mime    []FFMPEGMime
 }
 
 type ConfigImageMagick struct {
