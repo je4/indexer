@@ -98,7 +98,9 @@ func (aNSRL *ActionNSRL) getNSRL(sha1sum string) (interface{}, error) {
 		}); err != nil {
 			return emperror.Wrapf(err, "cannot get value of %s", NSRL_File+sha1sum)
 		}
-
+		if len(fileData) > 10 {
+			fileData = fileData[0:10]
+		}
 		for _, file := range fileData {
 			var am ActionNSRLMeta
 			am.File = file
