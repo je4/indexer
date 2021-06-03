@@ -83,58 +83,66 @@ func copyCSV(indexField string, db *badger.DB, freader io.Reader, ignore []int) 
 		}
 	}
 	fmt.Printf("indexfield: %s --> %v:%s\n", indexField, indexId, fields[indexId])
-	dataStruct := make(map[string]string)
 	for {
 		done := false
 		num := 1000
 		d := make(map[string][]map[string]string)
-		for {
-			data, err := csvR.Read()
-			if err == io.EOF {
-				done = true
-				break
-			}
-			if err != nil {
-				fmt.Printf("cannot read csv data: %v", err)
-				continue
-			}
-			for key, name := range fields {
-				if contains(ignore, key) {
+		if err := db.View(func(txn *badger.Txn) error {
+			for {
+				dataStruct := make(map[string]string)
+				data, err := csvR.Read()
+				if err == io.EOF {
+					done = true
+					break
+				}
+				if err != nil {
+					fmt.Printf("cannot read csv data: %v", err)
 					continue
 				}
-				dataStruct[name] = data[key]
+				for key, name := range fields {
+					if contains(ignore, key) {
+						continue
+					}
+					dataStruct[name] = data[key]
+				}
+				daKey := fields[indexId] + "-" + data[indexId]
+				if _, ok := d[daKey]; !ok {
+					d[daKey] = make([]map[string]string, 0)
+					item, err := txn.Get([]byte(daKey))
+					if err != nil {
+						if err != badger.ErrKeyNotFound {
+							return emperror.Wrapf(err, "cannot get key %s", daKey)
+						}
+					} else {
+						item.Value(func(val []byte) error {
+							dec, err := snappy.Decode(nil, val)
+							if err != nil {
+								return emperror.Wrapf(err, "cannot decode %s", val)
+							}
+							var ds []map[string]string
+							if err := json.Unmarshal(dec, &ds); err != nil {
+								return emperror.Wrapf(err, "cannot unmarshal %s", string(val))
+							}
+							_list0 := d[daKey]
+							_list := appendIfNotExists(_list0, ds...)
+							d[daKey] = _list
+							return nil
+						})
+					}
+				}
+				_list0 := d[daKey]
+				_list := appendIfNotExists(_list0, dataStruct)
+				d[daKey] = _list
+				num--
+				if num <= 0 {
+					break
+				}
 			}
-			daKey := fields[indexId] + "-" + data[indexId]
-			if _, ok := d[daKey]; !ok {
-				d[daKey] = make([]map[string]string, 0)
-			}
-			d[daKey] = appendIfNotExists(d[daKey], dataStruct)
-			num--
-			if num <= 0 {
-				break
-			}
+			return nil
+		}); err != nil {
 		}
 		if err := db.Update(func(txn *badger.Txn) error {
 			for key, list := range d {
-				item, err := txn.Get([]byte(key))
-				if err != nil {
-					if err != badger.ErrKeyNotFound {
-						return emperror.Wrapf(err, "cannot get key %s", key)
-					}
-				} else {
-					item.Value(func(val []byte) error {
-						d, err := snappy.Decode(nil, val)
-						if err != nil {
-							return emperror.Wrapf(err, "cannot decode %s", val)
-						}
-						var ds []map[string]string
-						if err := json.Unmarshal(d, &ds); err != nil {
-							return emperror.Wrapf(err, "cannot unmarshal %s", string(val))
-						}
-						list = appendIfNotExists(list, ds...)
-						return nil
-					})
-				}
 				fmt.Printf("%v: %s [%v]    \r", counter, key, len(list))
 				counter++
 				d, err := json.Marshal(list)
@@ -143,7 +151,7 @@ func copyCSV(indexField string, db *badger.DB, freader io.Reader, ignore []int) 
 				}
 				d2 := snappy.Encode(nil, d)
 				if err := txn.Set([]byte(key), d2); err != nil {
-					return emperror.Wrapf(err, "cannot store struct %v", dataStruct)
+					return emperror.Wrapf(err, "cannot store struct %v", d)
 				}
 			}
 			return nil

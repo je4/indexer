@@ -15,7 +15,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/hooklift/assert v0.1.0 // indirect
 	github.com/hooklift/iso9660 v1.0.0
-	github.com/je4/goffmpeg v0.0.0-20190920144005-0e5560003726
+	github.com/je4/goffmpeg v0.0.0-20210601140900-1f3c7266e3bc
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/phayes/freeport v0.0.0-20180830031419-95f893ade6f2
 	github.com/pkg/errors v0.9.1

@@ -22,20 +22,20 @@ tempDir = "/mnt/c/temp/"
         regexp = "^application/octet-stream$"
         weight = 1
     [MimeRelevance.2]
-        regexp = "^application/.+"
-        weight = 2
-    [MimeRelevance.3]
         regexp = "^text/plain$"
         weight = 3
-    [MimeRelevance.4]
+    [MimeRelevance.3]
         regexp = "^audio/mpeg$"
         weight = 4
-    [MimeRelevance.5]
+    [MimeRelevance.4]
         regexp = "^video/mpeg$"
         weight = 4
-    [MimeRelevance.6]
+    [MimeRelevance.5]
         regexp = "^text/.+$"
         weight = 4
+    [MimeRelevance.6]
+        regexp = "^application/.+"
+        weight = 2
 
 [sftp]
 knownhosts = "" # if empty, IgnoreHostKey is true

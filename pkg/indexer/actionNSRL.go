@@ -203,5 +203,6 @@ func (aNSRL *ActionNSRL) Do(uri *url.URL, mimetype *string, width *uint, height 
 		}
 	*/
 
+	aNSRL.server.log.Infof("NSRL of %s", SHA1sumStr)
 	return aNSRL.getNSRL(SHA1sumStr)
 }
