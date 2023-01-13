@@ -4,23 +4,21 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 package indexer
 
 import (
 	"bytes"
 	"context"
+	"emperror.dev/errors"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"github.com/goph/emperror"
 	ffmpeg_models "github.com/je4/goffmpeg/models"
 	"net/url"
 	"os/exec"
@@ -48,20 +46,20 @@ func parseDuration(t string) (time.Duration, error) {
 
 	hours, err := strconv.Atoi(matches[1])
 	if err != nil {
-		return 0, emperror.Wrapf(err, "invalid hours %s in %s", matches[1], t)
+		return 0, errors.Wrapf(err, "invalid hours %s in %s", matches[1], t)
 	}
 	mins, err := strconv.Atoi(matches[2])
 	if err != nil {
-		return 0, emperror.Wrapf(err, "invalid min %s in %s", matches[2], t)
+		return 0, errors.Wrapf(err, "invalid min %s in %s", matches[2], t)
 	}
 	secs, err := strconv.Atoi(matches[3])
 	if err != nil {
-		return 0, emperror.Wrapf(err, "invalid sec %s in %s", matches[3], t)
+		return 0, errors.Wrapf(err, "invalid sec %s in %s", matches[3], t)
 	}
 
 	hundreds, err := strconv.Atoi(matches[3])
 	if err != nil {
-		return 0, emperror.Wrapf(err, "invalid sec %s in %s", matches[3], t)
+		return 0, errors.Wrapf(err, "invalid sec %s in %s", matches[3], t)
 	}
 
 	return time.Duration(hours)*time.Hour +
@@ -111,7 +109,7 @@ func (as *ActionFFProbe) Do(uri *url.URL, mimetype *string, width *uint, height 
 	if uri.Scheme == "file" {
 		filename, err = as.server.fm.Get(uri)
 		if err != nil {
-			return nil, emperror.Wrapf(err, "invalid file uri %s", uri.String())
+			return nil, errors.Wrapf(err, "invalid file uri %s", uri.String())
 		}
 		if as.wsl {
 			filename = pathToWSL(filename)
@@ -135,11 +133,11 @@ func (as *ActionFFProbe) Do(uri *url.URL, mimetype *string, width *uint, height 
 
 	err = cmd.Run()
 	if err != nil {
-		return nil, emperror.Wrapf(err, "error executing (%s %s): %v", cmdfile, cmdparam, out.String())
+		return nil, errors.Wrapf(err, "error executing (%s %s): %v", cmdfile, cmdparam, out.String())
 	}
 
 	if err = json.Unmarshal([]byte(out.String()), &metadata); err != nil {
-		return nil, emperror.Wrapf(err, "cannot unmarshall metadata: %s", out.String())
+		return nil, errors.Wrapf(err, "cannot unmarshall metadata: %s", out.String())
 	}
 
 	// calculate duration and dimension

@@ -36,6 +36,9 @@ tempDir = "/mnt/c/temp/"
     [MimeRelevance.6]
         regexp = "^application/.+"
         weight = 2
+    [MimeRelevance.7]
+        regexp = "^.+/x-.+"
+        weight = 80
 
 [sftp]
 knownhosts = "" # if empty, IgnoreHostKey is true
@@ -51,7 +54,7 @@ alias = "blah"
 folder = "/mnt/c/temp"
 
 [nsrl]
-badger = "/mnt/c/temp/nsrl/badger"
+badger = "/mnt/c/temp/nsrl"
 enabled = true
 
 [Siegfried]
@@ -59,6 +62,12 @@ enabled = true
 #signaturefile = "/mnt/c/Users/micro/siegfried/default.sig"
 [Siegfried.MimeMap]
 "fmt/134" = "audio/mp3"
+
+[clamav]
+    enabled = true
+    clamscan = "/usr/bin/clamdscan"
+    wsl = false
+    timeout = "10s"
 
 
 [FFMPEG]
@@ -92,37 +101,37 @@ online = true
 enabled = true
 
 [Tika]
-address = "http://localhost:9997/meta"
+address = "http://localhost:9998/meta"
 timeout = "10s"
 regexpMime = "^.*$" # ""^application/.*$"  # regexp for mimetype, which are used for tika queries
 online = true
-enabled = false
+enabled = true
 
 
 [[External]]
 name = "validateav"
-address = "http://localhost:83/validateav/[[PATH]]"
+address = "http://localhost:8083/validateav/[[PATH]]"
 calltype = "EACTURL"
 mimetype = "^(video|audio)/.*"
 ActionCapabilities = ["ACTFILE"]
 
 [[External]]
 name = "exif"
-address = "http://localhost:83/exif/[[PATH]]"
+address = "http://localhost:8083/exif/[[PATH]]"
 calltype = "EACTURL"
 mimetype = ".*"
 ActionCapabilities = ["ACTFILE"]
 
 [[External]]
 name = "validateimage"
-address = "http://localhost:83/validateimage/[[PATH]]"
+address = "http://localhost:8083/validateimage/[[PATH]]"
 calltype = "EACTURL"
 mimetype = "^image/.*"
 ActionCapabilities = ["ACTFILE"]
 
 [[External]]
 name = "histogram"
-address = "http://localhost:83/histogram/[[PATH]]"
+address = "http://localhost:8083/histogram/[[PATH]]"
 calltype = "EACTURL"
 mimetype = "^image/.*"
 ActionCapabilities = ["ACTFILE"]

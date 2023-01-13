@@ -4,18 +4,17 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 package indexer
 
 import (
-	"github.com/goph/emperror"
+	"emperror.dev/errors"
 	"github.com/richardlehane/siegfried"
 	"github.com/richardlehane/siegfried/pkg/pronom"
 	"log"
@@ -53,18 +52,18 @@ func (as *ActionSiegfried) GetName() string {
 func (as *ActionSiegfried) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, error) {
 	filename, err := as.server.fm.Get(uri)
 	if err != nil {
-		return nil, emperror.Wrapf(err, "no file url")
+		return nil, errors.Wrapf(err, "no file url")
 	}
 
 	fp, err := os.OpenFile(filename, os.O_RDONLY, 0644)
 	if err != nil {
-		return nil, emperror.Wrapf(err, "cannot open file %s", filename)
+		return nil, errors.Wrapf(err, "cannot open file %s", filename)
 	}
 	defer fp.Close()
 
 	ident, err := as.sf.Identify(fp, filepath.Base(filename), "")
 	if err != nil {
-		return nil, emperror.Wrapf(err, "cannot identify file %s", filename)
+		return nil, errors.Wrapf(err, "cannot identify file %s", filename)
 	}
 	for _, id := range ident {
 		if pid, ok := id.(pronom.Identification); ok {

@@ -4,23 +4,21 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 package indexer
 
 import (
 	"bytes"
 	"context"
+	"emperror.dev/errors"
 	"encoding/json"
 	"fmt"
-	"github.com/goph/emperror"
-	"github.com/pkg/errors"
 	"io"
 	"net/http"
 	"net/url"
@@ -84,11 +82,11 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 	if uri.Scheme == "file" {
 		filename, err = ai.server.fm.Get(uri)
 		if err != nil {
-			return nil, emperror.Wrapf(err, "invalid file uri %s", uri.String())
+			return nil, errors.Wrapf(err, "invalid file uri %s", uri.String())
 		}
 		f, err := os.Open(filename)
 		if err != nil {
-			return nil, emperror.Wrapf(err, "cannot open: %s", filename)
+			return nil, errors.Wrapf(err, "cannot open: %s", filename)
 		}
 		defer f.Close()
 		dataOut = f
@@ -96,7 +94,7 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 		//		filename = uri.String()
 		resp, err := http.Get(uri.String())
 		if err != nil {
-			return nil, emperror.Wrapf(err, "cannot load url: %s", uri.String())
+			return nil, errors.Wrapf(err, "cannot load url: %s", uri.String())
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode >= 200 && resp.StatusCode < 300 {
@@ -122,11 +120,11 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 
 	err = cmd.Run()
 	if err != nil {
-		return nil, emperror.Wrapf(err, "error executing (%s %s): %v", cmdfile, cmdparam, out.String())
+		return nil, errors.Wrapf(err, "error executing (%s %s): %v", cmdfile, cmdparam, out.String())
 	}
 
 	if err = json.Unmarshal([]byte(out.String()), &metadataInt); err != nil {
-		return nil, emperror.Wrapf(err, "cannot unmarshall metadata: %s", out.String())
+		return nil, errors.Wrapf(err, "cannot unmarshall metadata: %s", out.String())
 	}
 
 	switch val := metadataInt.(type) {
@@ -148,7 +146,7 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 
 	_image, ok := metadata["image"]
 	if !ok {
-		return nil, emperror.Wrapf(err, "no image field in %s", out.String())
+		return nil, errors.Wrapf(err, "no image field in %s", out.String())
 	}
 	// calculate mimetype and dimensions
 	image, ok := _image.(map[string]interface{})

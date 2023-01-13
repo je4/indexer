@@ -4,23 +4,22 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 package indexer
 
 import (
 	"crypto/sha1"
+	"emperror.dev/errors"
 	"encoding/json"
 	"fmt"
 	badger "github.com/dgraph-io/badger/v3"
 	"github.com/golang/snappy"
-	"github.com/goph/emperror"
 	"io"
 	"net/url"
 	"os"
@@ -61,19 +60,19 @@ func getStringMap(txn *badger.Txn, key string) ([]map[string]string, error) {
 		if err == badger.ErrKeyNotFound {
 			return nil, nil
 		}
-		return nil, emperror.Wrapf(err, "cannot get %s", key)
+		return nil, errors.Wrapf(err, "cannot get %s", key)
 	}
 	if err := item.Value(func(val []byte) error {
 		jsonStr, err := snappy.Decode(nil, val)
 		if err != nil {
-			return emperror.Wrapf(err, "cannot decompress snappy of %s", key)
+			return errors.Wrapf(err, "cannot decompress snappy of %s", key)
 		}
 		if err := json.Unmarshal([]byte(jsonStr), &result); err != nil {
-			return emperror.Wrapf(err, "cannot unmarshal %s for %s", jsonStr, key)
+			return errors.Wrapf(err, "cannot unmarshal %s for %s", jsonStr, key)
 		}
 		return nil
 	}); err != nil {
-		return nil, emperror.Wrapf(err, "cannot get data of %s", key)
+		return nil, errors.Wrapf(err, "cannot get data of %s", key)
 	}
 	return result, nil
 }
@@ -83,20 +82,20 @@ func (aNSRL *ActionNSRL) getNSRL(sha1sum string) (interface{}, error) {
 	aNSRL.nsrldb.View(func(txn *badger.Txn) error {
 		item, err := txn.Get([]byte(NSRL_File + sha1sum))
 		if err != nil {
-			return emperror.Wrapf(err, "cannot get os %s", NSRL_File+sha1sum)
+			return errors.Wrapf(err, "cannot get os %s", NSRL_File+sha1sum)
 		}
 		var fileData []map[string]string
 		if err := item.Value(func(val []byte) error {
 			jsonStr, err := snappy.Decode(nil, val)
 			if err != nil {
-				return emperror.Wrapf(err, "cannot decompress snappy of %s", NSRL_File+sha1sum)
+				return errors.Wrapf(err, "cannot decompress snappy of %s", NSRL_File+sha1sum)
 			}
 			if err := json.Unmarshal([]byte(jsonStr), &fileData); err != nil {
-				return emperror.Wrapf(err, "cannot unmarshal %s for %s", jsonStr, NSRL_File+sha1sum)
+				return errors.Wrapf(err, "cannot unmarshal %s for %s", jsonStr, NSRL_File+sha1sum)
 			}
 			return nil
 		}); err != nil {
-			return emperror.Wrapf(err, "cannot get value of %s", NSRL_File+sha1sum)
+			return errors.Wrapf(err, "cannot get value of %s", NSRL_File+sha1sum)
 		}
 		if len(fileData) > 10 {
 			fileData = fileData[0:10]
@@ -113,7 +112,7 @@ func (aNSRL *ActionNSRL) getNSRL(sha1sum string) (interface{}, error) {
 			r, err := getStringMap(txn, NSRL_PROD+file["ProductCode"])
 			if err != nil {
 				aNSRL.server.log.Errorf("cannot get data of %s: %v", NSRL_PROD+file["ProductCode"], err)
-				// return emperror.Wrapf(err, "cannot get data of %s", NSRL_PROD+file["ProductCode"])
+				// return errors.Wrapf(err, "cannot get data of %s", NSRL_PROD+file["ProductCode"])
 			}
 			if len(r) > 0 {
 				am.Prod = r[0]
@@ -127,7 +126,7 @@ func (aNSRL *ActionNSRL) getNSRL(sha1sum string) (interface{}, error) {
 			r, err = getStringMap(txn, NSRL_OS+file["OpSystemCode"])
 			if err != nil {
 				aNSRL.server.log.Errorf("cannot get data of %s: %v", NSRL_OS+file["OpSystemCode"], err)
-				// return emperror.Wrapf(err, "cannot get data of %s", NSRL_PROD+file["ProductCode"])
+				// return errors.Wrapf(err, "cannot get data of %s", NSRL_PROD+file["ProductCode"])
 			}
 			if len(r) > 0 {
 				am.OS = r[0]
@@ -160,16 +159,16 @@ func (aNSRL *ActionNSRL) Do(uri *url.URL, mimetype *string, width *uint, height 
 	if _, ok := checksums["SHA-1"]; !ok {
 		filename, err := aNSRL.server.fm.Get(uri)
 		if err != nil {
-			return nil, emperror.Wrapf(err, "no file url")
+			return nil, errors.Wrapf(err, "no file url")
 		}
 		fp, err := os.Open(filename)
 		if err != nil {
-			return nil, emperror.Wrapf(err, "cannot open file %s", filename)
+			return nil, errors.Wrapf(err, "cannot open file %s", filename)
 		}
 		defer fp.Close()
 		hash := sha1.New()
 		if _, err := io.Copy(hash, fp); err != nil {
-			return nil, emperror.Wrapf(err, "cannot read %s", filename)
+			return nil, errors.Wrapf(err, "cannot read %s", filename)
 		}
 		sum := hash.Sum(nil)
 		sumStr := fmt.Sprintf("%X", sum)
@@ -189,19 +188,19 @@ func (aNSRL *ActionNSRL) Do(uri *url.URL, mimetype *string, width *uint, height 
 			if err == badger.ErrKeyNotFound {
 				return nil
 			} else if err != nil {
-				return emperror.Wrapf(err, "cannot lookup checksum SHA-1-%s", SHA1sumStr)
+				return errors.Wrapf(err, "cannot lookup checksum SHA-1-%s", SHA1sumStr)
 			}
 			if err := item.Value(func(val []byte) error {
 				if err := json.Unmarshal(val, &result); err != nil {
-					return emperror.Wrapf(err, "cannot unmarshal %s", string(val))
+					return errors.Wrapf(err, "cannot unmarshal %s", string(val))
 				}
 				return nil
 			}); err != nil {
-				return emperror.Wrapf(err, "cannot get value of nsrl from SHA-1-%s", SHA1sumStr)
+				return errors.Wrapf(err, "cannot get value of nsrl from SHA-1-%s", SHA1sumStr)
 			}
 			return nil
 		}); err != nil {
-			return nil, emperror.Wrapf(err, "cannot get entry for SHA-1-%s", sumStr)
+			return nil, errors.Wrapf(err, "cannot get entry for SHA-1-%s", sumStr)
 		}
 	*/
 

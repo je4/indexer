@@ -19,7 +19,7 @@ import (
 var addr string
 var workingDirectory string
 
-func TestMain( m *testing.M) {
+func TestMain(m *testing.M) {
 	var err error
 	workingDirectory, err = os.Getwd()
 	if err != nil {
@@ -74,13 +74,13 @@ func TestMain( m *testing.M) {
 
 func TestIndexer(t *testing.T) {
 	requestBody, err := json.Marshal(map[string]string{
-		"url": "file:///"+filepath.Clean(fmt.Sprintf("%s/../../web/static/memoriav_logo_400x400.jpg", workingDirectory)),
+		"url": "file:///" + filepath.Clean(fmt.Sprintf("%s/../../web/static/memoriav_logo_400x400.jpg", workingDirectory)),
 	})
 	if err != nil {
 		t.Error("cannot marshal request body")
 		return
 	}
-	resp, err := http.Post(fmt.Sprintf("http://%s", addr ), "application/json", bytes.NewBuffer(requestBody))
+	resp, err := http.Post(fmt.Sprintf("http://%s", addr), "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		t.Errorf("error querying %s: %v", addr, err)
 		return

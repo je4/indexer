@@ -4,19 +4,18 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 package indexer
 
 import (
+	"emperror.dev/errors"
 	"fmt"
-	"github.com/goph/emperror"
 	"github.com/op/go-logging"
 	"golang.org/x/crypto/ssh"
 	"strings"
@@ -52,7 +51,7 @@ func (cp *SSHConnectionPool) GetConnection(address, user string, config *ssh.Cli
 	cp.log.Infof("new ssh connection to %v", id)
 	conn, err = NewSSHConnection(address, user, config, cp.log)
 	if err != nil {
-		return nil, emperror.Wrapf(err, "cannot open ssh connection")
+		return nil, errors.Wrapf(err, "cannot open ssh connection")
 	}
 	cp.table[id] = conn
 	return conn, nil

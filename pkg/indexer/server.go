@@ -5,30 +5,27 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 package indexer
 
 import (
 	"context"
 	"crypto/tls"
+	"emperror.dev/errors"
 	"encoding/json"
-	"errors"
 	"fmt"
 	mime "github.com/gabriel-vasile/mimetype"
-	"github.com/goph/emperror"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/op/go-logging"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"math"
 	"net/http"
 	"net/url"
@@ -87,15 +84,11 @@ func NewServer(
 	insecureCert bool,
 	log *logging.Logger,
 	accesslog io.Writer,
-	errorTemplate string,
+	errorTemplate *template.Template,
 	tempDir string,
 	fm *FileMapper,
 	sftp *SFTP,
 ) (*Server, error) {
-	errorTpl, err := template.ParseFiles(errorTemplate)
-	if err != nil {
-		return nil, emperror.Wrapf(err, "cannot parse error template %s", errorTemplate)
-	}
 	srv := &Server{
 		headerTimeout:   headerTimeout,
 		headerSize:      headerSize,
@@ -107,7 +100,7 @@ func NewServer(
 		log:             log,
 		accesslog:       accesslog,
 		tempDir:         tempDir,
-		errorTemplate:   errorTpl,
+		errorTemplate:   errorTemplate,
 		actions:         map[string]Action{},
 		fm:              fm,
 		sftp:            sftp,
@@ -121,7 +114,7 @@ func NewServer(
 	for _, key := range mKeys {
 		rexp, err := regexp.Compile(mimeRelevance[key].Regexp)
 		if err != nil {
-			return nil, emperror.Wrapf(err, "cannot compile Regexp %s", key)
+			return nil, errors.Wrapf(err, "cannot compile Regexp %s", key)
 		}
 		srv.mimeRelevance = append(srv.mimeRelevance, MimeWeight{
 			regexp: rexp,
@@ -205,7 +198,7 @@ func (s *Server) getMimeHTTP(uri *url.URL) (string, error) {
 
 	res, err := client.Head(uri.String())
 	if err != nil {
-		return "", emperror.Wrapf(err, "error getting head request for %s", uri.String())
+		return "", errors.Wrapf(err, "error getting head request for %s", uri.String())
 	}
 	if res.StatusCode == http.StatusMethodNotAllowed || res.StatusCode == http.StatusForbidden {
 		s.log.Debugf("HEAD not allowed")
@@ -213,17 +206,17 @@ func (s *Server) getMimeHTTP(uri *url.URL) (string, error) {
 		defer cancel() // The cancel should be deferred so resources are cleaned up
 		req, err := http.NewRequestWithContext(ctx, "GET", uri.String(), nil)
 		if err != nil {
-			return "", emperror.Wrapf(err, "error creating request for %s", uri.String())
+			return "", errors.Wrapf(err, "error creating request for %s", uri.String())
 		}
 		req.Header.Set("Range", fmt.Sprintf("bytes=0-%d", 64))
 		var client http.Client
 		res, err = client.Do(req)
 		if err != nil {
-			return "", emperror.Wrapf(err, "error querying uri")
+			return "", errors.Wrapf(err, "error querying uri")
 		}
 		res.Body.Close()
 		if res.StatusCode >= 400 {
-			return "", emperror.Wrapf(err, "error querying %s: %s", uri.String(), res.Status)
+			return "", errors.Wrapf(err, "error querying %s: %s", uri.String(), res.Status)
 		}
 	}
 	if res.StatusCode > 300 {
@@ -250,7 +243,7 @@ func (s *Server) loadHTTP(uri *url.URL, writer io.Writer, fulldownload bool) (in
 	// build range request. we do not want to load more than needed
 	req, err := http.NewRequestWithContext(ctx, "GET", uri.String(), nil)
 	if err != nil {
-		return 0, emperror.Wrapf(err, "error creating request for %s", uri.String())
+		return 0, errors.Wrapf(err, "error creating request for %s", uri.String())
 	}
 	if !fulldownload {
 		req.Header.Set("Range", fmt.Sprintf("bytes=0-%d", s.headerSize-1))
@@ -258,7 +251,7 @@ func (s *Server) loadHTTP(uri *url.URL, writer io.Writer, fulldownload bool) (in
 	//var client http.Client
 	resp, err := client.Do(req)
 	if err != nil {
-		return 0, emperror.Wrapf(err, "error querying uri")
+		return 0, errors.Wrapf(err, "error querying uri")
 	}
 	// default should follow redirects
 	defer resp.Body.Close()
@@ -270,7 +263,7 @@ func (s *Server) loadHTTP(uri *url.URL, writer io.Writer, fulldownload bool) (in
 	num, err := io.CopyN(writer, resp.Body, maxSize)
 	if err != nil && err != io.ErrUnexpectedEOF {
 		if err.Error() != "EOF" {
-			return 0, emperror.Wrapf(err, "cannot read content from url %s", uri.String())
+			return 0, errors.Wrapf(err, "cannot read content from url %s", uri.String())
 		}
 	}
 	if num == 0 {
@@ -289,13 +282,13 @@ func (s *Server) loadSFTP(uri *url.URL, writer io.Writer) (int64, error) {
 /*
 loads part of data and gets mime type
 */
-func (s *Server) getContent(uri *url.URL, forceDownloadRegexp *regexp.Regexp, writer io.Writer) (mimetype string, fulldownload bool, err error) {
+func (s *Server) getContent(uri *url.URL, forceDownloadRegexp *regexp.Regexp) (mimetype string, fulldownload bool, tmpfile *os.File, err error) {
 	s.log.Infof("loading from %s", uri.String())
 
 	if uri.Scheme == "http" || uri.Scheme == "https" {
 		mimetype, err = s.getMimeHTTP(uri)
 		if err != nil {
-			return "", false, emperror.Wrapf(err, "error loading mime from %s", uri.String())
+			return "", false, nil, errors.Wrapf(err, "error loading mime from %s", uri.String())
 		}
 		s.log.Debugf("mimetype from server: %v", mimetype)
 		fulldownload = forceDownloadRegexp.MatchString(mimetype)
@@ -305,31 +298,40 @@ func (s *Server) getContent(uri *url.URL, forceDownloadRegexp *regexp.Regexp, wr
 		} else {
 			s.log.Infof("downloading %v byte from %s", s.headerSize, uri.String())
 		}
+		tmpfile, err = os.CreateTemp(s.tempDir, "indexer")
+		if err != nil {
+			return "", false, nil, errors.Wrap(err, "cannot create tempfile")
+		}
 
-		if _, err = s.loadHTTP(uri, writer, fulldownload); err != nil {
-			return "", false, emperror.Wrapf(err, "error loading from web %s", uri.String())
+		if _, err = s.loadHTTP(uri, tmpfile, fulldownload); err != nil {
+			return "", false, nil, errors.Wrapf(err, "error loading from web %s", uri.String())
 		}
 	} else if uri.Scheme == "sftp" {
-		_, err := s.sftp.Get(*uri, writer)
+		tmpfile, err = os.CreateTemp(s.tempDir, "indexer")
+		if err != nil {
+			return "", false, nil, errors.Wrap(err, "cannot create tempfile")
+		}
+
+		_, err := s.sftp.Get(*uri, tmpfile)
 		fulldownload = true
 		if err != nil {
-			return "", false, emperror.Wrapf(err, "error loading from sftp %s", uri.String())
+			return "", false, nil, errors.Wrapf(err, "error loading from sftp %s", uri.String())
 		}
 	} else {
 		fulldownload = true
 		path, err := s.fm.Get(uri)
 		if err != nil {
-			return "", false, emperror.Wrapf(err, "cannot map uri %s ", uri.String())
+			return "", false, nil, errors.Wrapf(err, "cannot map uri %s ", uri.String())
 		}
 		f, err := os.Open(path)
 		if err != nil {
-			return "", false, emperror.Wrapf(err, "cannot open file %s", path)
+			return "", false, nil, errors.Wrapf(err, "cannot open file %s", path)
 		}
 		defer f.Close()
 		buf := make([]byte, 512)
 		if _, err := f.Read(buf); err != nil {
 			if err != io.EOF {
-				return "", false, emperror.Wrapf(err, "cannot read from file %s", path)
+				return "", false, nil, errors.Wrapf(err, "cannot read from file %s", path)
 			}
 		}
 		mimetype = http.DetectContentType(buf)
@@ -342,7 +344,7 @@ func (s *Server) getContent(uri *url.URL, forceDownloadRegexp *regexp.Regexp, wr
 var unibasSFTPRegexp = regexp.MustCompile("^sftp:/([^/].+)$")
 
 func (s *Server) HandleDefault(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	body, err := io.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
 		s.DoPanicf(w, http.StatusInternalServerError, "cannot read body: %v", err)
 		return
@@ -401,22 +403,16 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 		ustr := fmt.Sprintf("file://%s/%s", matches[1], url.PathEscape(strings.TrimLeft(matches[2], "/")))
 		uri, err = url.ParseRequestURI(ustr)
 		if err != nil {
-			return nil, emperror.Wrapf(err, "cannot parse url %s", ustr)
+			return nil, errors.Wrapf(err, "cannot parse url %s", ustr)
 		}
 	} else {
 		uri, err = url.Parse(param.Url)
 		if err != nil {
-			return nil, emperror.Wrapf(err, "cannot parse url %s", param.Url)
+			return nil, errors.Wrapf(err, "cannot parse url %s", param.Url)
 		}
 	}
 	var duration time.Duration
 	var width, height uint
-
-	tmpfile, err := ioutil.TempFile(s.tempDir, "indexer")
-	if err != nil {
-		return nil, emperror.Wrap(err, "cannot create tempfile")
-	}
-	defer os.Remove(tmpfile.Name()) // clean up
 
 	headerSize := param.HeaderSize
 	if headerSize == 0 {
@@ -425,34 +421,44 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 	forceDownload := param.ForceDownload
 	forceDownloadRegexp, err := regexp.Compile(forceDownload)
 	if err != nil {
-		return nil, emperror.Wrapf(err, "cannot compile forcedownload Regexp %v", param.ForceDownload)
-	}
-	mimetype, fulldownload, err := s.getContent(uri, forceDownloadRegexp, tmpfile)
-	if err != nil {
-		return nil, emperror.Wrapf(err, "cannot get content header of %s", uri.String())
-	}
-	if err := tmpfile.Close(); err != nil {
-		return nil, emperror.Wrapf(err, "cannot close tempfile %s", tmpfile.Name())
-	}
-	if mimetype == "" && fulldownload {
-		m, err := mime.DetectFile(tmpfile.Name())
-		if err != nil {
-			return nil, emperror.Wrapf(err, "cannot detect mimetype of %v", tmpfile.Name())
-		}
-		mimetype = ClearMime(m.String())
-	}
-	tmpUri, err := url.Parse(fmt.Sprintf("file:///%s", filepath.ToSlash(tmpfile.Name())))
-	if err != nil {
-		return nil, emperror.Wrapf(err, "cannot create uri for tempfile %s", tmpfile.Name())
+		return nil, errors.Wrapf(err, "cannot compile forcedownload Regexp %v", param.ForceDownload)
 	}
 
+	mimetype, fulldownload, tmpfile, err := s.getContent(uri, forceDownloadRegexp)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot get content header of %s", uri.String())
+	}
+	if tmpfile != nil {
+		if err := tmpfile.Close(); err != nil {
+			return nil, errors.Wrapf(err, "cannot close tempfile %s", tmpfile.Name())
+		}
+		defer func() {
+			name := tmpfile.Name()
+			os.Remove(name) // clean up
+		}()
+	}
+
+	var tmpUri *url.URL
+	if tmpfile != nil {
+		if mimetype == "" && fulldownload {
+			m, err := mime.DetectFile(tmpfile.Name())
+			if err != nil {
+				return nil, errors.Wrapf(err, "cannot detect mimetype of %v", tmpfile.Name())
+			}
+			mimetype = ClearMime(m.String())
+		}
+		tmpUri, err = url.Parse(fmt.Sprintf("file:///%s", filepath.ToSlash(tmpfile.Name())))
+		if err != nil {
+			return nil, errors.Wrapf(err, "cannot create uri for tempfile %s", tmpfile.Name())
+		}
+	}
 	result := map[string]interface{}{}
 	errors := map[string]string{}
 	// todo: download once, start concurrent identifiers...
 	for key, actionstr := range param.Actions {
 		action, ok := s.actions[actionstr]
 		if !ok {
-			// return nil, emperror.Wrapf(err, "invalid action: %s", actionstr)
+			// return nil, errors.Wrapf(err, "invalid action: %s", actionstr)
 			errors[actionstr] = "action not available"
 			continue
 		}
@@ -460,7 +466,7 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 		caps := action.GetCaps()
 		// can only deal with files
 		if fulldownload || (caps&ACTFILEHEAD > 0 && caps&(ACTHTTP|ACTHTTPS) == 0) {
-			if uri.Scheme != "file" {
+			if tmpfile != nil /* uri.Scheme != "file" */ {
 				theUri = tmpUri
 			}
 		}

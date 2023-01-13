@@ -19,10 +19,9 @@
 package indexer
 
 import (
+	"emperror.dev/errors"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"github.com/goph/emperror"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -118,13 +117,13 @@ func (as *ActionExternal) Do(uri *url.URL, mimetype *string, width *uint, height
 	if as.callType == EACTURL {
 		filename, err := as.server.fm.Get(uri)
 		if err != nil {
-			return nil, emperror.Wrapf(err, "no file url")
+			return nil, errors.Wrapf(err, "no file url")
 		}
 		urlstring := strings.Replace(as.url, "[[PATH]]", strings.Replace(url.PathEscape(filepath.ToSlash(filename)), "+", "%20", -1), -1)
 
 		resp, err = http.Get(urlstring)
 		if err != nil {
-			return nil, emperror.Wrapf(err, "cannot query %v - %v", as.name, urlstring)
+			return nil, errors.Wrapf(err, "cannot query %v - %v", as.name, urlstring)
 		}
 	} else if as.callType == EACTJSONPOST {
 		return nil, fmt.Errorf("JSONPOST CallType not implemented")
@@ -134,7 +133,7 @@ func (as *ActionExternal) Do(uri *url.URL, mimetype *string, width *uint, height
 	defer resp.Body.Close()
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, emperror.Wrapf(err, "error reading body")
+		return nil, errors.Wrapf(err, "error reading body")
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -144,7 +143,7 @@ func (as *ActionExternal) Do(uri *url.URL, mimetype *string, width *uint, height
 	var result interface{}
 	err = json.Unmarshal(bodyBytes, &result)
 	if err != nil {
-		return nil, emperror.Wrapf(err, "error decoding json - %v", string(bodyBytes))
+		return nil, errors.Wrapf(err, "error decoding json - %v", string(bodyBytes))
 	}
 	return result, nil
 }

@@ -4,14 +4,13 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 package main
 
 import (
@@ -32,6 +31,13 @@ func (d *duration) UnmarshalText(text []byte) error {
 	var err error
 	d.Duration, err = time.ParseDuration(string(text))
 	return err
+}
+
+type ConfigClamAV struct {
+	Enabled  bool
+	Timeout  duration
+	ClamScan string
+	Wsl      bool
 }
 
 type ConfigSiegfried struct {
@@ -128,6 +134,7 @@ type Config struct {
 	SFTP            SFTP
 	URLRegexp       []string
 	NSRL            ConfigNSRL
+	Clamav          ConfigClamAV
 	MimeRelevance   map[string]MimeWeight
 }
 

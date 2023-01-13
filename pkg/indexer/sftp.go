@@ -4,24 +4,22 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 package indexer
 
 import (
+	"emperror.dev/errors"
 	"fmt"
-	"github.com/goph/emperror"
 	"github.com/op/go-logging"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/knownhosts"
 	"io"
-	"io/ioutil"
 	"net/url"
 	"os"
 )
@@ -45,14 +43,14 @@ func NewSFTP(PrivateKey []string, Password, KnownHosts string, log *logging.Logg
 	}
 
 	for _, pk := range PrivateKey {
-		key, err := ioutil.ReadFile(pk)
+		key, err := os.ReadFile(pk)
 		if err != nil {
-			return nil, emperror.Wrapf(err, "cannot read private key file %s")
+			return nil, errors.Wrapf(err, "cannot read private key file %s")
 		}
 		// Create the Signer for this private key.
 		s, err := ssh.ParsePrivateKey(key)
 		if err != nil {
-			return nil, emperror.Wrapf(err, "unable to parse private key %v", string(key))
+			return nil, errors.Wrapf(err, "unable to parse private key %v", string(key))
 		}
 		signer = append(signer, s)
 	}
@@ -62,7 +60,7 @@ func NewSFTP(PrivateKey []string, Password, KnownHosts string, log *logging.Logg
 	if KnownHosts != "" {
 		hostKeyCallback, err := knownhosts.New(KnownHosts)
 		if err != nil {
-			return nil, emperror.Wrapf(err, "could not create hostkeycallback function for %s", KnownHosts)
+			return nil, errors.Wrapf(err, "could not create hostkeycallback function for %s", KnownHosts)
 		}
 		sftp.config.HostKeyCallback = hostKeyCallback
 	}
@@ -86,12 +84,12 @@ func (s *SFTP) Get(uri url.URL, w io.Writer) (int64, error) {
 	}
 	conn, err := s.GetConnection(uri.Host, user)
 	if err != nil {
-		return 0, emperror.Wrapf(err, "unable to connect to %v with user %v", uri.Host, user)
+		return 0, errors.Wrapf(err, "unable to connect to %v with user %v", uri.Host, user)
 	}
 
 	written, err := conn.ReadFile(uri.Path, w)
 	if err != nil {
-		return 0, emperror.Wrapf(err, "cannot read data from %v", uri.Path)
+		return 0, errors.Wrapf(err, "cannot read data from %v", uri.Path)
 	}
 	return written, nil
 }
@@ -99,7 +97,7 @@ func (s *SFTP) Get(uri url.URL, w io.Writer) (int64, error) {
 func (s *SFTP) GetFile(uri url.URL, user string, target string) (int64, error) {
 	f, err := os.Create(target)
 	if err != nil {
-		return 0, emperror.Wrapf(err, "cannot create file %s", target)
+		return 0, errors.Wrapf(err, "cannot create file %s", target)
 	}
 	defer f.Close()
 	return s.Get(uri, f)
@@ -108,7 +106,7 @@ func (s *SFTP) GetFile(uri url.URL, user string, target string) (int64, error) {
 func (s *SFTP) PutFile(uri url.URL, user string, source string) (int64, error) {
 	f, err := os.Open(source)
 	if err != nil {
-		return 0, emperror.Wrapf(err, "cannot open file %s", source)
+		return 0, errors.Wrapf(err, "cannot open file %s", source)
 	}
 	defer f.Close()
 	return s.Put(uri, user, f)
@@ -120,7 +118,7 @@ func (s *SFTP) Put(uri url.URL, user string, r io.Reader) (int64, error) {
 	}
 	conn, err := s.GetConnection(uri.Host, user)
 	if err != nil {
-		return 0, emperror.Wrapf(err, "unable to connect to %v with user %v", uri.Host, user)
+		return 0, errors.Wrapf(err, "unable to connect to %v with user %v", uri.Host, user)
 	}
 	return conn.WriteFile(uri.Path, r)
 }
