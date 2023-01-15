@@ -393,7 +393,7 @@ func (s *Server) HandleDefault(w http.ResponseWriter, r *http.Request) {
 
 }
 
-var fileUrlRegexp = regexp.MustCompile("^file://([^/]+)/(.+)$")
+var fileUrlRegexp = regexp.MustCompile("^file://([^/]*)/(.+)$")
 
 func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 	var err error
