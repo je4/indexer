@@ -96,20 +96,20 @@ func (as *ActionFFProbe) GetName() string {
 	return as.name
 }
 
-func (as *ActionFFProbe) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, error) {
+func (as *ActionFFProbe) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
 	var metadata ffmpeg_models.Metadata
 	var filename string
 	var err error
 
 	if !regexFFProbeMime.MatchString(*mimetype) {
-		return nil, ErrMimeNotApplicable
+		return nil, nil, ErrMimeNotApplicable
 	}
 
 	// local files need some adjustments...
 	if uri.Scheme == "file" {
 		filename, err = as.server.fm.Get(uri)
 		if err != nil {
-			return nil, errors.Wrapf(err, "invalid file uri %s", uri.String())
+			return nil, nil, errors.Wrapf(err, "invalid file uri %s", uri.String())
 		}
 		if as.wsl {
 			filename = pathToWSL(filename)
@@ -133,11 +133,11 @@ func (as *ActionFFProbe) Do(uri *url.URL, mimetype *string, width *uint, height 
 
 	err = cmd.Run()
 	if err != nil {
-		return nil, errors.Wrapf(err, "error executing (%s %s): %v", cmdfile, cmdparam, out.String())
+		return nil, nil, errors.Wrapf(err, "error executing (%s %s): %v", cmdfile, cmdparam, out.String())
 	}
 
 	if err = json.Unmarshal([]byte(out.String()), &metadata); err != nil {
-		return nil, errors.Wrapf(err, "cannot unmarshall metadata: %s", out.String())
+		return nil, nil, errors.Wrapf(err, "cannot unmarshall metadata: %s", out.String())
 	}
 
 	// calculate duration and dimension
@@ -161,7 +161,9 @@ func (as *ActionFFProbe) Do(uri *url.URL, mimetype *string, width *uint, height 
 	}
 
 	var mtype string
+	mimetypes := []string{}
 	for _, m := range as.mime {
+		mimetypes = append(mimetypes, m.Mime)
 		if m.Audio == hasAudio && m.Video == hasVideo && m.Format == metadata.Format.FormatName {
 			mtype = m.Mime
 			break
@@ -175,5 +177,5 @@ func (as *ActionFFProbe) Do(uri *url.URL, mimetype *string, width *uint, height 
 		}
 	}
 
-	return metadata, nil
+	return metadata, mimetypes, nil
 }

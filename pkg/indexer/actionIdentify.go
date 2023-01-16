@@ -67,7 +67,7 @@ func (ai *ActionIdentify) GetName() string {
 	return ai.name
 }
 
-func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, error) {
+func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
 	var metadata = make(map[string]interface{})
 	var metadataInt interface{}
 	//	var metadatalist = []map[string]interface{}{}
@@ -75,7 +75,7 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 	var err error
 
 	if !regexIdentifyMime.MatchString(*mimetype) {
-		return nil, ErrMimeNotApplicable
+		return nil, nil, ErrMimeNotApplicable
 	}
 
 	var dataOut io.Reader
@@ -83,11 +83,11 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 	if uri.Scheme == "file" {
 		filename, err = ai.server.fm.Get(uri)
 		if err != nil {
-			return nil, errors.Wrapf(err, "invalid file uri %s", uri.String())
+			return nil, nil, errors.Wrapf(err, "invalid file uri %s", uri.String())
 		}
 		f, err := os.Open(filename)
 		if err != nil {
-			return nil, errors.Wrapf(err, "cannot open: %s", filename)
+			return nil, nil, errors.Wrapf(err, "cannot open: %s", filename)
 		}
 		defer f.Close()
 		dataOut = f
@@ -95,11 +95,11 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 		//		filename = uri.String()
 		resp, err := http.Get(uri.String())
 		if err != nil {
-			return nil, errors.Wrapf(err, "cannot load url: %s", uri.String())
+			return nil, nil, errors.Wrapf(err, "cannot load url: %s", uri.String())
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-			return nil, errors.New(fmt.Sprintf("invalid status %v - %v for %s", resp.StatusCode, resp.StatusCode, uri.String()))
+			return nil, nil, errors.New(fmt.Sprintf("invalid status %v - %v for %s", resp.StatusCode, resp.StatusCode, uri.String()))
 		}
 		dataOut = resp.Body
 	}
@@ -121,38 +121,40 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 
 	err = cmd.Run()
 	if err != nil {
-		return nil, errors.Wrapf(err, "error executing (%s %s): %v", cmdfile, cmdparam, out.String())
+		return nil, nil, errors.Wrapf(err, "error executing (%s %s): %v", cmdfile, cmdparam, out.String())
 	}
 
 	if err = json.Unmarshal([]byte(out.String()), &metadataInt); err != nil {
-		return nil, errors.Wrapf(err, "cannot unmarshall metadata: %s", out.String())
+		return nil, nil, errors.Wrapf(err, "cannot unmarshall metadata: %s", out.String())
 	}
 
 	switch val := metadataInt.(type) {
 	case []interface{}:
 		// todo: check for content and type
 		if len(val) != 1 {
-			return nil, fmt.Errorf("wrong number of objects in image magick result list - %v", len(val))
+			return nil, nil, fmt.Errorf("wrong number of objects in image magick result list - %v", len(val))
 		}
 		var ok bool
 		metadata, ok = val[0].(map[string]interface{})
 		if !ok {
-			return nil, fmt.Errorf("wrong object type in image magick result - %T", val[0])
+			return nil, nil, fmt.Errorf("wrong object type in image magick result - %T", val[0])
 		}
 	case map[string]interface{}:
 		metadata = val
 	default:
-		return nil, fmt.Errorf("invalid return type from image magick - %T", val)
+		return nil, nil, fmt.Errorf("invalid return type from image magick - %T", val)
 	}
 
 	_image, ok := metadata["image"]
 	if !ok {
-		return nil, errors.Wrapf(err, "no image field in %s", out.String())
+		return nil, nil, errors.Wrapf(err, "no image field in %s", out.String())
 	}
 	// calculate mimetype and dimensions
 	image, ok := _image.(map[string]interface{})
 	_mimetype, ok := image["mimeType"].(string)
+	mimetypes := []string{}
 	if ok {
+		mimetypes = append(mimetypes, _mimetype)
 		if ai.server.MimeRelevance(_mimetype) > ai.server.MimeRelevance(*mimetype) {
 			*mimetype = _mimetype
 		}
@@ -169,5 +171,5 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 		}
 	}
 
-	return metadata, nil
+	return metadata, mimetypes, nil
 }

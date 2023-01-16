@@ -49,24 +49,28 @@ func (as *ActionSiegfried) GetName() string {
 	return as.name
 }
 
-func (as *ActionSiegfried) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, error) {
+func (as *ActionSiegfried) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
 	filename, err := as.server.fm.Get(uri)
 	if err != nil {
-		return nil, errors.Wrapf(err, "no file url")
+		return nil, nil, errors.Wrapf(err, "no file url")
 	}
 
 	fp, err := os.OpenFile(filename, os.O_RDONLY, 0644)
 	if err != nil {
-		return nil, errors.Wrapf(err, "cannot open file %s", filename)
+		return nil, nil, errors.Wrapf(err, "cannot open file %s", filename)
 	}
 	defer fp.Close()
 
 	ident, err := as.sf.Identify(fp, filepath.Base(filename), "")
 	if err != nil {
-		return nil, errors.Wrapf(err, "cannot identify file %s", filename)
+		return nil, nil, errors.Wrapf(err, "cannot identify file %s", filename)
 	}
+	mimetypes := []string{}
 	for _, id := range ident {
 		if pid, ok := id.(pronom.Identification); ok {
+			if pid.MIME != "" {
+				mimetypes = append(mimetypes, pid.MIME)
+			}
 			rel1 := as.server.MimeRelevance(*mimetype)
 			rel2 := as.server.MimeRelevance(pid.MIME)
 			if rel2 > rel1 {
@@ -83,5 +87,5 @@ func (as *ActionSiegfried) Do(uri *url.URL, mimetype *string, width *uint, heigh
 
 		}
 	}
-	return ident, nil
+	return ident, mimetypes, nil
 }

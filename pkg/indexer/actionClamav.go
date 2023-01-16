@@ -48,7 +48,7 @@ func (ac *ActionClamAV) GetName() string {
 	return ac.name
 }
 
-func (ac *ActionClamAV) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, error) {
+func (ac *ActionClamAV) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
 	var filename string
 	var err error
 
@@ -56,7 +56,7 @@ func (ac *ActionClamAV) Do(uri *url.URL, mimetype *string, width *uint, height *
 	if uri.Scheme == "file" {
 		filename, err = ac.server.fm.Get(uri)
 		if err != nil {
-			return nil, errors.Wrapf(err, "invalid file uri %s", uri.String())
+			return nil, nil, errors.Wrapf(err, "invalid file uri %s", uri.String())
 		}
 		if ac.wsl {
 			filename = pathToWSL(filename)
@@ -80,7 +80,7 @@ func (ac *ActionClamAV) Do(uri *url.URL, mimetype *string, width *uint, height *
 
 	err = cmd.Run()
 	if err != nil {
-		return nil, errors.Wrapf(err, "error executing (%s %s): %v", cmdfile, cmdparam, out.String())
+		return nil, nil, errors.Wrapf(err, "error executing (%s %s): %v", cmdfile, cmdparam, out.String())
 	}
 
 	result := make(map[string]string)
@@ -93,5 +93,5 @@ func (ac *ActionClamAV) Do(uri *url.URL, mimetype *string, width *uint, height *
 		}
 	}
 
-	return result, nil
+	return result, nil, nil
 }
