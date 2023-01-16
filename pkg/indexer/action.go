@@ -62,7 +62,7 @@ func (a *ActionCapability) UnmarshalText(text []byte) error {
 var ErrMimeNotApplicable = errors.New("mime type not applicable for action")
 
 type Action interface {
-	Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error)
+	Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error)
 	GetName() string
 	GetCaps() ActionCapability
 }

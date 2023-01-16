@@ -93,7 +93,7 @@ func (as *ActionExternal) GetName() string {
 	return as.name
 }
 
-func (as *ActionExternal) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
+func (as *ActionExternal) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
 	switch uri.Scheme {
 	case "file":
 		if as.capability&ACTFILE != ACTFILE {
@@ -109,7 +109,7 @@ func (as *ActionExternal) Do(uri *url.URL, mimetype *string, width *uint, height
 		}
 	}
 
-	if !as.mimetype.MatchString(*mimetype) {
+	if !as.mimetype.MatchString(mimetype) {
 		return nil, nil, ErrMimeNotApplicable
 	}
 

@@ -19,10 +19,10 @@ require (
 	github.com/je4/goffmpeg v0.0.0-20220114092308-33ab9986404d
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/phayes/freeport v0.0.0-20220201140144-74d24b5ae9f5
-	github.com/pkg/errors v0.9.1
 	github.com/pkg/sftp v1.13.5
 	github.com/richardlehane/siegfried v1.9.6
 	golang.org/x/crypto v0.5.0
+	golang.org/x/exp v0.0.0-20230116083435-1de6713980de
 )
 
 require (
@@ -40,6 +40,7 @@ require (
 	github.com/hooklift/assert v0.1.0 // indirect
 	github.com/klauspost/compress v1.15.14 // indirect
 	github.com/kr/fs v0.1.0 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/richardlehane/characterize v1.0.0 // indirect
 	github.com/richardlehane/match v1.0.2 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect

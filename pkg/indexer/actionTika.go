@@ -63,8 +63,8 @@ func (at *ActionTika) GetName() string {
 	return at.name
 }
 
-func (at *ActionTika) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
-	if !at.regexpMime.MatchString(*mimetype) {
+func (at *ActionTika) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
+	if !at.regexpMime.MatchString(mimetype) {
 		return nil, nil, ErrMimeNotApplicable
 	}
 

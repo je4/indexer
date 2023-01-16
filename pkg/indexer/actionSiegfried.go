@@ -49,7 +49,7 @@ func (as *ActionSiegfried) GetName() string {
 	return as.name
 }
 
-func (as *ActionSiegfried) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
+func (as *ActionSiegfried) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
 	filename, err := as.server.fm.Get(uri)
 	if err != nil {
 		return nil, nil, errors.Wrapf(err, "no file url")
@@ -71,18 +71,10 @@ func (as *ActionSiegfried) Do(uri *url.URL, mimetype *string, width *uint, heigh
 			if pid.MIME != "" {
 				mimetypes = append(mimetypes, pid.MIME)
 			}
-			rel1 := as.server.MimeRelevance(*mimetype)
-			rel2 := as.server.MimeRelevance(pid.MIME)
-			if rel2 > rel1 {
-				*mimetype = pid.MIME
-			}
 			if mime, ok := as.mimeMap[pid.ID]; ok {
-				rel1 := as.server.MimeRelevance(*mimetype)
-				rel2 := as.server.MimeRelevance(mime)
-				if rel2 > rel1 {
-					*mimetype = mime
+				if mime != "" {
+					mimetypes = append(mimetypes, mime)
 				}
-
 			}
 
 		}

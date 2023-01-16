@@ -24,6 +24,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/op/go-logging"
+	"golang.org/x/exp/slices"
 	"html/template"
 	"io"
 	"math"
@@ -454,6 +455,7 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 	}
 	result := map[string]interface{}{}
 	errors := map[string]string{}
+	mimetypes := []string{mimetype}
 	// todo: download once, start concurrent identifiers...
 	for key, actionstr := range param.Actions {
 		action, ok := s.actions[actionstr]
@@ -476,7 +478,7 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 			continue
 		}
 		s.log.Infof("Action [%v] %s: %s", key, actionstr, theUri.String())
-		actionresult, _, err := action.Do(theUri, &mimetype, &width, &height, &duration, param.Checksums)
+		actionresult, newMimetypes, err := action.Do(theUri, mimetype, &width, &height, &duration, param.Checksums)
 		if err == ErrMimeNotApplicable {
 			s.log.Infof("%s: mime %s not applicable", actionstr, mimetype)
 			continue
@@ -484,11 +486,32 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 		if err != nil {
 			errors[actionstr] = err.Error()
 		} else {
+			if newMimetypes != nil {
+				mimetypes = append(mimetypes, newMimetypes...)
+			}
 			result[actionstr] = actionresult
 		}
 	}
+	slices.Sort(mimetypes)
+	mimetypes = slices.Compact(mimetypes)
+	mimeMap := map[string]int{}
+	for _, mimetype := range mimetypes {
+		mimeMap[mimetype] = 50
+		for _, mr := range s.mimeRelevance {
+			if mr.regexp.MatchString(mimetype) {
+				mimeMap[mimetype] = mr.weight
+			}
+		}
+	}
+	slices.SortFunc(mimetypes, func(a, b string) bool {
+		// higher weight means less in sorting
+		return mimeMap[a] > mimeMap[b]
+	})
 	result["errors"] = errors
-	result["mimetype"] = mimetype
+	if len(mimetypes) > 0 {
+		result["mimetype"] = mimetypes[0]
+	}
+	result["mimetypes"] = mimetypes
 	if width > 0 || height > 0 {
 		result["width"] = width
 		result["height"] = height

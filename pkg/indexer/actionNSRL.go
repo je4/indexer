@@ -152,7 +152,7 @@ func (aNSRL *ActionNSRL) GetName() string {
 	return aNSRL.name
 }
 
-func (aNSRL *ActionNSRL) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
+func (aNSRL *ActionNSRL) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
 	if checksums == nil {
 		checksums = make(map[string]string)
 	}

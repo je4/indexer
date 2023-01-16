@@ -96,12 +96,12 @@ func (as *ActionFFProbe) GetName() string {
 	return as.name
 }
 
-func (as *ActionFFProbe) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
+func (as *ActionFFProbe) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
 	var metadata ffmpeg_models.Metadata
 	var filename string
 	var err error
 
-	if !regexFFProbeMime.MatchString(*mimetype) {
+	if !regexFFProbeMime.MatchString(mimetype) {
 		return nil, nil, ErrMimeNotApplicable
 	}
 
@@ -160,22 +160,11 @@ func (as *ActionFFProbe) Do(uri *url.URL, mimetype *string, width *uint, height 
 		}
 	}
 
-	var mtype string
 	mimetypes := []string{}
 	for _, m := range as.mime {
-		mimetypes = append(mimetypes, m.Mime)
 		if m.Audio == hasAudio && m.Video == hasVideo && m.Format == metadata.Format.FormatName {
-			mtype = m.Mime
-			break
+			mimetypes = append(mimetypes, m.Mime)
 		}
 	}
-	if mtype != "" {
-		rel1 := as.server.MimeRelevance(*mimetype)
-		rel2 := as.server.MimeRelevance(mtype)
-		if rel2 > rel1 {
-			*mimetype = mtype
-		}
-	}
-
 	return metadata, mimetypes, nil
 }

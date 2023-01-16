@@ -67,14 +67,14 @@ func (ai *ActionIdentify) GetName() string {
 	return ai.name
 }
 
-func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
+func (ai *ActionIdentify) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
 	var metadata = make(map[string]interface{})
 	var metadataInt interface{}
 	//	var metadatalist = []map[string]interface{}{}
 	var filename string
 	var err error
 
-	if !regexIdentifyMime.MatchString(*mimetype) {
+	if !regexIdentifyMime.MatchString(mimetype) {
 		return nil, nil, ErrMimeNotApplicable
 	}
 
@@ -155,9 +155,6 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype *string, width *uint, height
 	mimetypes := []string{}
 	if ok {
 		mimetypes = append(mimetypes, _mimetype)
-		if ai.server.MimeRelevance(_mimetype) > ai.server.MimeRelevance(*mimetype) {
-			*mimetype = _mimetype
-		}
 	}
 	_geometry, ok := image["geometry"].(map[string]interface{})
 	if ok {

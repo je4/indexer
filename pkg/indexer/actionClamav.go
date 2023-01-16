@@ -48,7 +48,7 @@ func (ac *ActionClamAV) GetName() string {
 	return ac.name
 }
 
-func (ac *ActionClamAV) Do(uri *url.URL, mimetype *string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
+func (ac *ActionClamAV) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
 	var filename string
 	var err error
 
