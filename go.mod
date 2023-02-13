@@ -1,6 +1,6 @@
 module github.com/je4/indexer
 
-go 1.19
+go 1.20
 
 replace (
 	github.com/google/flatbuffers => github.com/google/flatbuffers v1.12.1

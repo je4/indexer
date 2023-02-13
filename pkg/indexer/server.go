@@ -283,13 +283,13 @@ func (s *Server) loadSFTP(uri *url.URL, writer io.Writer) (int64, error) {
 /*
 loads part of data and gets mime type
 */
-func (s *Server) getContent(uri *url.URL, forceDownloadRegexp *regexp.Regexp) (mimetype string, fulldownload bool, tmpfile *os.File, err error) {
+func (s *Server) getContent(uri *url.URL, forceDownloadRegexp *regexp.Regexp) (mimetype string, fulldownload bool, tmpfile *os.File, size int64, err error) {
 	s.log.Infof("loading from %s", uri.String())
 
 	if uri.Scheme == "http" || uri.Scheme == "https" {
 		mimetype, err = s.getMimeHTTP(uri)
 		if err != nil {
-			return "", false, nil, errors.Wrapf(err, "error loading mime from %s", uri.String())
+			return "", false, nil, 0, errors.Wrapf(err, "error loading mime from %s", uri.String())
 		}
 		s.log.Debugf("mimetype from server: %v", mimetype)
 		fulldownload = forceDownloadRegexp.MatchString(mimetype)
@@ -301,38 +301,58 @@ func (s *Server) getContent(uri *url.URL, forceDownloadRegexp *regexp.Regexp) (m
 		}
 		tmpfile, err = os.CreateTemp(s.tempDir, "indexer")
 		if err != nil {
-			return "", false, nil, errors.Wrap(err, "cannot create tempfile")
+			return "", false, nil, 0, errors.Wrap(err, "cannot create tempfile")
 		}
 
 		if _, err = s.loadHTTP(uri, tmpfile, fulldownload); err != nil {
-			return "", false, nil, errors.Wrapf(err, "error loading from web %s", uri.String())
+			return "", false, nil, 0, errors.Wrapf(err, "error loading from web %s", uri.String())
+		}
+		if fulldownload {
+			stat, err := tmpfile.Stat()
+			if err != nil {
+				return "", false, nil, 0, errors.Wrapf(err, "cannot stat temp file '%s'", tmpfile.Name())
+			}
+			size = stat.Size()
 		}
 	} else if uri.Scheme == "sftp" {
 		tmpfile, err = os.CreateTemp(s.tempDir, "indexer")
 		if err != nil {
-			return "", false, nil, errors.Wrap(err, "cannot create tempfile")
+			return "", false, nil, 0, errors.Wrap(err, "cannot create tempfile")
 		}
 
 		_, err := s.sftp.Get(*uri, tmpfile)
 		fulldownload = true
 		if err != nil {
-			return "", false, nil, errors.Wrapf(err, "error loading from sftp %s", uri.String())
+			return "", false, nil, 0, errors.Wrapf(err, "error loading from sftp %s", uri.String())
+		}
+		if fulldownload {
+			stat, err := tmpfile.Stat()
+			if err != nil {
+				return "", false, nil, 0, errors.Wrapf(err, "cannot stat temp file '%s'", tmpfile.Name())
+			}
+			size = stat.Size()
 		}
 	} else {
 		fulldownload = true
 		path, err := s.fm.Get(uri)
 		if err != nil {
-			return "", false, nil, errors.Wrapf(err, "cannot map uri %s ", uri.String())
+			return "", false, nil, 0, errors.Wrapf(err, "cannot map uri %s ", uri.String())
 		}
 		f, err := os.Open(path)
 		if err != nil {
-			return "", false, nil, errors.Wrapf(err, "cannot open file %s", path)
+			return "", false, nil, 0, errors.Wrapf(err, "cannot open file %s", path)
 		}
 		defer f.Close()
+		stat, err := f.Stat()
+		if err != nil {
+			return "", false, nil, 0, errors.Wrapf(err, "cannot stat temp file '%s'", tmpfile.Name())
+		}
+		size = stat.Size()
+
 		buf := make([]byte, 512)
 		if _, err := f.Read(buf); err != nil {
 			if err != io.EOF {
-				return "", false, nil, errors.Wrapf(err, "cannot read from file %s", path)
+				return "", false, nil, 0, errors.Wrapf(err, "cannot read from file %s", path)
 			}
 		}
 		mimetype = http.DetectContentType(buf)
@@ -425,7 +445,7 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 		return nil, errors.Wrapf(err, "cannot compile forcedownload Regexp %v", param.ForceDownload)
 	}
 
-	mimetype, fulldownload, tmpfile, err := s.getContent(uri, forceDownloadRegexp)
+	mimetype, fulldownload, tmpfile, size, err := s.getContent(uri, forceDownloadRegexp)
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot get content header of %s", uri.String())
 	}
@@ -518,6 +538,9 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 	}
 	if duration > 0 {
 		result["duration"] = math.Round(float64(duration) / float64(time.Second))
+	}
+	if size > 0 {
+		result["size"] = size
 	}
 	return result, nil
 }
