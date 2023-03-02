@@ -27,7 +27,6 @@ import (
 	"golang.org/x/exp/slices"
 	"html/template"
 	"io"
-	"math"
 	"net/http"
 	"net/url"
 	"os"
@@ -394,12 +393,57 @@ func (s *Server) HandleDefault(w http.ResponseWriter, r *http.Request) {
 		param.Url = fmt.Sprintf("sftp://mb_sftp@mb-wf2.memobase.unibas.ch:80/%s", str[1])
 	}
 
-	result, err := s.doIndex(param)
+	result, err := s.doIndex(param, "v1")
 	if err != nil {
-		result = map[string]interface{}{}
-		errors := map[string]string{}
-		errors["index"] = err.Error()
-		result["errors"] = errors
+		result = map[string]interface{}{"errors": map[string]string{"index": err.Error()}}
+		s.log.Errorf("error on indexing: %v", err)
+	}
+
+	js, err := json.Marshal(result)
+	if err != nil {
+		s.DoPanicf(w, http.StatusInternalServerError, "cannot marshal result %v: %v", result, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+
+}
+func (s *Server) HandleVersion(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	version := vars["version"]
+	body, err := io.ReadAll(io.LimitReader(r.Body, 1048576))
+	if err != nil {
+		s.DoPanicf(w, http.StatusInternalServerError, "cannot read body: %v", err)
+		return
+	}
+	param := ActionParam{ForceDownload: s.forceDownload, Checksums: map[string]string{}}
+	if err := json.Unmarshal(body, &param); err != nil {
+		s.DoPanicf(w, http.StatusBadRequest, "cannot unmarshal json - %s: %v", string(body), err)
+		return
+	}
+	param.Url, err = url.QueryUnescape(param.Url)
+	if err != nil {
+		s.DoPanicf(w, http.StatusBadRequest, "cannot unescape url - %s: %v", param.Url, err)
+		return
+	}
+
+	// if no action is given, just use all
+	if len(param.Actions) == 0 {
+		for name, _ := range s.actions {
+			param.Actions = append(param.Actions, name)
+		}
+	}
+
+	// todo: bad code. make it configurable
+	str := unibasSFTPRegexp.FindStringSubmatch(param.Url)
+	if len(str) > 1 {
+		param.Url = fmt.Sprintf("sftp://mb_sftp@mb-wf2.memobase.unibas.ch:80/%s", str[1])
+	}
+
+	result, err := s.doIndex(param, version)
+	if err != nil {
+		result = map[string]interface{}{"errors": map[string]string{"index": err.Error()}}
 		s.log.Errorf("error on indexing: %v", err)
 	}
 
@@ -416,7 +460,10 @@ func (s *Server) HandleDefault(w http.ResponseWriter, r *http.Request) {
 
 var fileUrlRegexp = regexp.MustCompile("^file://([^/]*)/(.+)$")
 
-func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
+func (s *Server) doIndex(param ActionParam, version string) (any, error) {
+	if version == "" { // default to v1
+		version = "v1"
+	}
 	var err error
 	matches := fileUrlRegexp.FindStringSubmatch(param.Url)
 	var uri *url.URL
@@ -473,15 +520,15 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 			return nil, errors.Wrapf(err, "cannot create uri for tempfile %s", tmpfile.Name())
 		}
 	}
-	result := map[string]interface{}{}
-	errors := map[string]string{}
+	errs := map[string]string{}
 	mimetypes := []string{mimetype}
+	metadata := map[string]any{}
 	// todo: download once, start concurrent identifiers...
 	for key, actionstr := range param.Actions {
 		action, ok := s.actions[actionstr]
 		if !ok {
 			// return nil, errors.Wrapf(err, "invalid action: %s", actionstr)
-			errors[actionstr] = "action not available"
+			errs[actionstr] = "action not available"
 			continue
 		}
 		theUri := uri
@@ -494,7 +541,7 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 		}
 		if !fulldownload && (caps&(^ACTFILEFULL)) == 0 {
 			s.log.Infof("%s: no full download. action not applicable", actionstr)
-			errors[actionstr] = fmt.Errorf("no full download. action not applicable").Error()
+			errs[actionstr] = fmt.Errorf("no full download. action not applicable").Error()
 			continue
 		}
 		s.log.Infof("Action [%v] %s: %s", key, actionstr, theUri.String())
@@ -504,12 +551,12 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 			continue
 		}
 		if err != nil {
-			errors[actionstr] = err.Error()
+			errs[actionstr] = err.Error()
 		} else {
 			if newMimetypes != nil {
 				mimetypes = append(mimetypes, newMimetypes...)
 			}
-			result[actionstr] = actionresult
+			metadata[actionstr] = actionresult
 		}
 	}
 	slices.Sort(mimetypes)
@@ -527,28 +574,50 @@ func (s *Server) doIndex(param ActionParam) (map[string]interface{}, error) {
 		// higher weight means less in sorting
 		return mimeMap[a] > mimeMap[b]
 	})
-	result["errors"] = errors
-	if len(mimetypes) > 0 {
-		result["mimetype"] = mimetypes[0]
+	if version == "v1" {
+		result := map[string]interface{}{}
+		result["errors"] = errs
+		if len(mimetypes) > 0 {
+			result["mimetype"] = mimetypes[0]
+		}
+		result["mimetypes"] = mimetypes
+		if width > 0 || height > 0 {
+			result["width"] = width
+			result["height"] = height
+		}
+		if duration > 0 {
+			result["duration"] = uint(duration.Seconds()) // math.Round(float64(duration) / float64(time.Second))
+		}
+		if size > 0 {
+			result["size"] = size
+		}
+		for key, value := range metadata {
+			result[key] = value
+		}
+		return result, nil
+	} else {
+		if version == "v2" {
+			result := ResultV2{
+				Errors:    errs,
+				Mimetype:  mimetypes[0],
+				Mimetypes: mimetypes,
+				Width:     width,
+				Height:    height,
+				Duration:  uint(duration.Seconds()), // uint(math.Round(float64(duration) / float64(time.Second))),
+				Size:      uint64(size),
+				Metadata:  metadata,
+			}
+			return result, nil
+		}
 	}
-	result["mimetypes"] = mimetypes
-	if width > 0 || height > 0 {
-		result["width"] = width
-		result["height"] = height
-	}
-	if duration > 0 {
-		result["duration"] = math.Round(float64(duration) / float64(time.Second))
-	}
-	if size > 0 {
-		result["size"] = size
-	}
-	return result, nil
+	return nil, errors.Errorf("invalid version: %s", version)
 }
 
 func (s *Server) ListenAndServe(addr, cert, key string) error {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/", s.HandleDefault).Methods("POST")
+	router.HandleFunc("/{version}", s.HandleVersion).Methods("POST")
 
 	loggedRouter := handlers.LoggingHandler(s.accesslog, router)
 	s.srv = &http.Server{
