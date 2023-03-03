@@ -26,6 +26,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -108,7 +109,12 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype string, width *uint, height 
 		dataOut = resp.Body
 	}
 
-	cmdparam := []string{"-", "json:-"}
+	vals := strings.Split(mimetype, "/")
+	infile := "-"
+	if len(vals) == 2 {
+		infile = vals[1] + ":-"
+	}
+	cmdparam := []string{infile, "json:-"}
 	cmdfile := ai.convert
 	if ai.wsl {
 		cmdparam = append([]string{cmdfile}, cmdparam...)
@@ -119,6 +125,7 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype string, width *uint, height 
 	out.Grow(1024 * 1024) // 1MB size
 	ctx, cancel := context.WithTimeout(context.Background(), ai.timeout)
 	defer cancel()
+
 	cmd := exec.CommandContext(ctx, cmdfile, cmdparam...)
 	cmd.Stdin = dataOut
 	cmd.Stdout = &out
