@@ -165,14 +165,21 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype string, width *uint, height 
 	switch val := metadataInt.(type) {
 	case []interface{}:
 		// todo: check for content and type
-		if len(val) != 1 {
-			return nil, nil, nil, fmt.Errorf("wrong number of objects in image magick result list - %v", len(val))
+		if len(val) > 0 {
+			metadata = val[0].(map[string]interface{})
+		} else {
+			return nil, nil, nil, errors.New("empty image magick result list")
 		}
-		var ok bool
-		metadata, ok = val[0].(map[string]interface{})
-		if !ok {
-			return nil, nil, nil, fmt.Errorf("wrong object type in image magick result - %T", val[0])
-		}
+		/*
+			if len(val) != 1 {
+				return nil, nil, nil, fmt.Errorf("wrong number of objects in image magick result list - %v", len(val))
+			}
+			var ok bool
+			metadata, ok = val[0].(map[string]interface{})
+			if !ok {
+				return nil, nil, nil, fmt.Errorf("wrong object type in image magick result - %T", val[0])
+			}
+		*/
 	case map[string]interface{}:
 		metadata = val
 	default:
