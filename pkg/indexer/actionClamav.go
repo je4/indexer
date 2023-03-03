@@ -40,6 +40,10 @@ func NewActionClamAV(clamav string, wsl bool, timeout time.Duration, server *Ser
 	return ac
 }
 
+func (ac *ActionClamAV) GetWeight() uint {
+	return 100
+}
+
 func (ac *ActionClamAV) GetCaps() ActionCapability {
 	return ac.caps
 }
@@ -95,3 +99,7 @@ func (ac *ActionClamAV) Do(uri *url.URL, mimetype string, width *uint, height *u
 
 	return result, nil, nil, nil
 }
+
+var (
+	_ Action = &ActionClamAV{}
+)

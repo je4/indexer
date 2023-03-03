@@ -55,6 +55,10 @@ func NewActionTika(uri string, timeout time.Duration, regexpMime string, online 
 	return at
 }
 
+func (at *ActionTika) GetWeight() uint {
+	return 50
+}
+
 func (at *ActionTika) GetCaps() ActionCapability {
 	return ACTFILEHEAD
 }
@@ -133,3 +137,7 @@ func (at *ActionTika) Do(uri *url.URL, mimetype string, width *uint, height *uin
 	}
 	return result, mimetypes, nil, nil
 }
+
+var (
+	_ Action = (*ActionTika)(nil)
+)

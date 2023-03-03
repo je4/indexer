@@ -59,6 +59,10 @@ func NewActionIdentify(identify, convert string, wsl bool, timeout time.Duration
 	return ai
 }
 
+func (ai *ActionIdentify) GetWeight() uint {
+	return 50
+}
+
 func (ai *ActionIdentify) GetCaps() ActionCapability {
 	return ACTFILEHEAD
 }
@@ -170,3 +174,7 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype string, width *uint, height 
 
 	return metadata, mimetypes, nil, nil
 }
+
+var (
+	_ Action = (*ActionIdentify)(nil)
+)

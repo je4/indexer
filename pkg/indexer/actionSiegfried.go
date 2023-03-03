@@ -41,6 +41,10 @@ func NewActionSiegfried(signatureFile string, mimeMap map[string]string, server 
 	return as
 }
 
+func (as *ActionSiegfried) GetWeight() uint {
+	return 10
+}
+
 func (as *ActionSiegfried) GetCaps() ActionCapability {
 	return ACTFILEHEAD
 }
@@ -85,3 +89,7 @@ func (as *ActionSiegfried) Do(uri *url.URL, mimetype string, width *uint, height
 	}
 	return ident, mimetypes, pronoms, nil
 }
+
+var (
+	_ Action = &ActionSiegfried{}
+)

@@ -53,6 +53,10 @@ func NewActionNSRL(nsrldb *badger.DB, server *Server) Action {
 	return an
 }
 
+func (aNSRL *ActionNSRL) GetWeight() uint {
+	return 100
+}
+
 func getStringMap(txn *badger.Txn, key string) ([]map[string]string, error) {
 	var result []map[string]string
 	item, err := txn.Get([]byte(key))
@@ -207,3 +211,7 @@ func (aNSRL *ActionNSRL) Do(uri *url.URL, mimetype string, width *uint, height *
 	aNSRL.server.log.Infof("NSRL of %s", SHA1sumStr)
 	return aNSRL.getNSRL(SHA1sumStr)
 }
+
+var (
+	_ Action = &ActionNSRL{}
+)

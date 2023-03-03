@@ -65,4 +65,5 @@ type Action interface {
 	Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error)
 	GetName() string
 	GetCaps() ActionCapability
+	GetWeight() uint
 }

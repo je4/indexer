@@ -88,6 +88,10 @@ func NewActionFFProbe(ffprobe string, wsl bool, timeout time.Duration, online bo
 	return af
 }
 
+func (as *ActionFFProbe) GetWeight() uint {
+	return 50
+}
+
 func (as *ActionFFProbe) GetCaps() ActionCapability {
 	return as.caps
 }
@@ -168,3 +172,7 @@ func (as *ActionFFProbe) Do(uri *url.URL, mimetype string, width *uint, height *
 	}
 	return metadata, mimetypes, nil, nil
 }
+
+var (
+	_ Action = &ActionFFProbe{}
+)

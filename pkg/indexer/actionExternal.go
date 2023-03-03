@@ -85,6 +85,10 @@ func NewActionExternal(
 	return ae
 }
 
+func (as *ActionExternal) GetWeight() uint {
+	return 100
+}
+
 func (as *ActionExternal) GetCaps() ActionCapability {
 	return as.capability
 }
@@ -147,3 +151,7 @@ func (as *ActionExternal) Do(uri *url.URL, mimetype string, width *uint, height 
 	}
 	return result, nil, nil, nil
 }
+
+var (
+	_ Action = (*ActionExternal)(nil)
+)

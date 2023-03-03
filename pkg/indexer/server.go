@@ -520,6 +520,11 @@ func (s *Server) doIndex(param ActionParam, version string) (any, error) {
 			return nil, errors.Wrapf(err, "cannot create uri for tempfile %s", tmpfile.Name())
 		}
 	}
+
+	sort.SliceStable(param.Actions, func(i, j int) bool {
+		return s.actions[param.Actions[i]].GetWeight() < s.actions[param.Actions[j]].GetWeight()
+	})
+
 	errs := map[string]string{}
 	mimetypes := []string{mimetype}
 	metadata := map[string]any{}
