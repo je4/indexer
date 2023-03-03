@@ -40,6 +40,7 @@ type ActionIdentify struct {
 	timeout  time.Duration
 	caps     ActionCapability
 	server   *Server
+	mimeMap  map[string]string
 }
 
 func NewActionIdentify(identify, convert string, wsl bool, timeout time.Duration, online bool, server *Server) Action {
@@ -55,6 +56,24 @@ func NewActionIdentify(identify, convert string, wsl bool, timeout time.Duration
 		timeout:  timeout,
 		caps:     caps,
 		server:   server,
+		mimeMap:  map[string]string{},
+	}
+	if mime, err := GetMagickMime(); err == nil {
+		if mime != nil {
+			for _, m := range mime {
+				if m.Acronym != nil && *m.Acronym != "" {
+					ai.mimeMap[m.Type] = *m.Acronym
+				} else {
+					m.Type = strings.ToLower(m.Type)
+					if strings.HasPrefix(m.Type, "image/") {
+						t := strings.TrimPrefix(m.Type, "image/")
+						if t != "" {
+							ai.mimeMap[m.Type] = t
+						}
+					}
+				}
+			}
+		}
 	}
 	server.AddAction(ai)
 	return ai
@@ -109,10 +128,14 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype string, width *uint, height 
 		dataOut = resp.Body
 	}
 
-	vals := strings.Split(mimetype, "/")
 	infile := "-"
-	if len(vals) == 2 {
-		infile = vals[1] + ":-"
+	if t, ok := ai.mimeMap[mimetype]; ok {
+		infile = t + ":-"
+	} else {
+		t := strings.TrimPrefix(mimetype, "image/")
+		if len(t) > 0 {
+			infile = t + ":-"
+		}
 	}
 	cmdparam := []string{infile, "json:-"}
 	cmdfile := ai.convert
