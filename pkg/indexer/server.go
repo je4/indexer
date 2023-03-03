@@ -569,22 +569,25 @@ func (s *Server) doIndex(param ActionParam, version string) (any, error) {
 				pronoms = append(pronoms, newPronoms...)
 			}
 		}
-	}
-	slices.Sort(mimetypes)
-	mimetypes = slices.Compact(mimetypes)
-	mimeMap := map[string]int{}
-	for _, mimetype := range mimetypes {
-		mimeMap[mimetype] = 50
-		for _, mr := range s.mimeRelevance {
-			if mr.regexp.MatchString(mimetype) {
-				mimeMap[mimetype] = mr.weight
+		slices.Sort(mimetypes)
+		mimetypes = slices.Compact(mimetypes)
+		mimeMap := map[string]int{}
+		for _, mimetype := range mimetypes {
+			mimeMap[mimetype] = 50
+			for _, mr := range s.mimeRelevance {
+				if mr.regexp.MatchString(mimetype) {
+					mimeMap[mimetype] = mr.weight
+				}
 			}
 		}
+		slices.SortFunc(mimetypes, func(a, b string) bool {
+			// higher weight means less in sorting
+			return mimeMap[a] > mimeMap[b]
+		})
+		if len(mimetypes) > 0 {
+			mimetype = mimetypes[0]
+		}
 	}
-	slices.SortFunc(mimetypes, func(a, b string) bool {
-		// higher weight means less in sorting
-		return mimeMap[a] > mimeMap[b]
-	})
 	if version == "v1" {
 		result := map[string]interface{}{}
 		result["errors"] = errs
