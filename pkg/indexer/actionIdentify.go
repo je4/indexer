@@ -132,7 +132,7 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype string, width *uint, height 
 
 	err = cmd.Run()
 	if err != nil {
-		return nil, nil, nil, errors.Wrapf(err, "error executing (%s %s): %v", cmdfile, cmdparam, out.String())
+		return nil, nil, nil, errors.Wrapf(err, "error executing (%s %s) for file '%s': %v", cmdfile, cmdparam, filename, out.String())
 	}
 
 	if err = json.Unmarshal([]byte(out.String()), &metadataInt); err != nil {
