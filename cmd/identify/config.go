@@ -27,7 +27,7 @@ type duration struct {
 	Duration time.Duration
 }
 
-func (d *duration) UnmarshalText(text []byte) error {
+func (d *duration) UnmarshalJSON(text []byte) error {
 	var err error
 	d.Duration, err = time.ParseDuration(string(text))
 	return err
