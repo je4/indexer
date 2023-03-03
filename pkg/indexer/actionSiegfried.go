@@ -49,35 +49,39 @@ func (as *ActionSiegfried) GetName() string {
 	return as.name
 }
 
-func (as *ActionSiegfried) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
+func (as *ActionSiegfried) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
 	filename, err := as.server.fm.Get(uri)
 	if err != nil {
-		return nil, nil, errors.Wrapf(err, "no file url")
+		return nil, nil, nil, errors.Wrapf(err, "no file url")
 	}
 
 	fp, err := os.OpenFile(filename, os.O_RDONLY, 0644)
 	if err != nil {
-		return nil, nil, errors.Wrapf(err, "cannot open file %s", filename)
+		return nil, nil, nil, errors.Wrapf(err, "cannot open file %s", filename)
 	}
 	defer fp.Close()
 
 	ident, err := as.sf.Identify(fp, filepath.Base(filename), "")
 	if err != nil {
-		return nil, nil, errors.Wrapf(err, "cannot identify file %s", filename)
+		return nil, nil, nil, errors.Wrapf(err, "cannot identify file %s", filename)
 	}
 	mimetypes := []string{}
+	pronoms := []string{}
 	for _, id := range ident {
 		if pid, ok := id.(pronom.Identification); ok {
 			if pid.MIME != "" {
 				mimetypes = append(mimetypes, pid.MIME)
 			}
-			if mime, ok := as.mimeMap[pid.ID]; ok {
-				if mime != "" {
-					mimetypes = append(mimetypes, mime)
+			if pid.ID != "" {
+				pronoms = append(pronoms, pid.ID)
+				if mime, ok := as.mimeMap[pid.ID]; ok {
+					if mime != "" {
+						mimetypes = append(mimetypes, mime)
+					}
 				}
 			}
 
 		}
 	}
-	return ident, mimetypes, nil
+	return ident, mimetypes, pronoms, nil
 }

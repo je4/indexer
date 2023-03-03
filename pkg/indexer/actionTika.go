@@ -63,9 +63,9 @@ func (at *ActionTika) GetName() string {
 	return at.name
 }
 
-func (at *ActionTika) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
+func (at *ActionTika) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
 	if !at.regexpMime.MatchString(mimetype) {
-		return nil, nil, ErrMimeNotApplicable
+		return nil, nil, nil, ErrMimeNotApplicable
 	}
 
 	var dataOut io.Reader
@@ -73,11 +73,11 @@ func (at *ActionTika) Do(uri *url.URL, mimetype string, width *uint, height *uin
 	if uri.Scheme == "file" {
 		filename, err := at.server.fm.Get(uri)
 		if err != nil {
-			return nil, nil, errors.Wrapf(err, "invalid file uri %s", uri.String())
+			return nil, nil, nil, errors.Wrapf(err, "invalid file uri %s", uri.String())
 		}
 		f, err := os.Open(filename)
 		if err != nil {
-			return nil, nil, errors.Wrapf(err, "cannot open: %s", filename)
+			return nil, nil, nil, errors.Wrapf(err, "cannot open: %s", filename)
 		}
 		defer f.Close()
 		dataOut = f
@@ -85,7 +85,7 @@ func (at *ActionTika) Do(uri *url.URL, mimetype string, width *uint, height *uin
 		//		filename = uri.String()
 		resp, err := http.Get(uri.String())
 		if err != nil {
-			return nil, nil, errors.Wrapf(err, "cannot load url: %s", uri.String())
+			return nil, nil, nil, errors.Wrapf(err, "cannot load url: %s", uri.String())
 		}
 		defer resp.Body.Close()
 		dataOut = resp.Body
@@ -96,22 +96,22 @@ func (at *ActionTika) Do(uri *url.URL, mimetype string, width *uint, height *uin
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, at.url, dataOut)
 	if err != nil {
-		return nil, nil, errors.Wrapf(err, "cannot create tika request - %v", at.url)
+		return nil, nil, nil, errors.Wrapf(err, "cannot create tika request - %v", at.url)
 	}
 	req.Header.Add("Accept", "application/json")
 	//req.Header.Add("fileUrl", uri.String())
 	tresp, err := client.Do(req)
 	if err != nil {
-		return nil, nil, errors.Wrapf(err, "error in tika request - %v", at.url)
+		return nil, nil, nil, errors.Wrapf(err, "error in tika request - %v", at.url)
 	}
 	defer tresp.Body.Close()
 	bodyBytes, err := ioutil.ReadAll(tresp.Body)
 	if err != nil {
-		return nil, nil, errors.Wrapf(err, "error reading body - %v", at.url)
+		return nil, nil, nil, errors.Wrapf(err, "error reading body - %v", at.url)
 	}
 
 	if tresp.StatusCode != http.StatusOK {
-		return nil, nil, errors.New(fmt.Sprintf("status not ok - %v -> %v: %s", at.url, tresp.Status, string(bodyBytes)))
+		return nil, nil, nil, errors.New(fmt.Sprintf("status not ok - %v -> %v: %s", at.url, tresp.Status, string(bodyBytes)))
 	}
 
 	if bodyBytes[0] == '{' {
@@ -121,7 +121,7 @@ func (at *ActionTika) Do(uri *url.URL, mimetype string, width *uint, height *uin
 	result := make([]map[string]interface{}, 0)
 	err = json.Unmarshal(bodyBytes, &result)
 	if err != nil {
-		return nil, nil, errors.Wrapf(err, "error decoding json - %v", string(bodyBytes))
+		return nil, nil, nil, errors.Wrapf(err, "error decoding json - %v", string(bodyBytes))
 	}
 	mimetypes := []string{}
 	if len(result) > 0 {
@@ -131,5 +131,5 @@ func (at *ActionTika) Do(uri *url.URL, mimetype string, width *uint, height *uin
 			}
 		}
 	}
-	return result, mimetypes, nil
+	return result, mimetypes, nil, nil
 }

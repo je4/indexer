@@ -4,6 +4,8 @@ type ResultV2 struct {
 	Errors    map[string]string `json:"errors,omitempty"`
 	Mimetype  string            `json:"mimetype"`
 	Mimetypes []string          `json:"mimetypes"`
+	Pronom    string            `json:"pronom"`
+	Pronoms   []string          `json:"pronoms"`
 	Width     uint              `json:"width,omitempty"`
 	Height    uint              `json:"height,omitempty"`
 	Duration  uint              `json:"duration,omitempty"`

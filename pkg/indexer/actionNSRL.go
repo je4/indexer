@@ -77,7 +77,7 @@ func getStringMap(txn *badger.Txn, key string) ([]map[string]string, error) {
 	return result, nil
 }
 
-func (aNSRL *ActionNSRL) getNSRL(sha1sum string) (interface{}, []string, error) {
+func (aNSRL *ActionNSRL) getNSRL(sha1sum string) (interface{}, []string, []string, error) {
 	var result []ActionNSRLMeta
 	aNSRL.nsrldb.View(func(txn *badger.Txn) error {
 		item, err := txn.Get([]byte(NSRL_File + sha1sum))
@@ -141,7 +141,7 @@ func (aNSRL *ActionNSRL) getNSRL(sha1sum string) (interface{}, []string, error) 
 		}
 		return nil
 	})
-	return result, []string{}, nil
+	return result, []string{}, nil, nil
 }
 
 func (aNSRL *ActionNSRL) GetCaps() ActionCapability {
@@ -152,23 +152,23 @@ func (aNSRL *ActionNSRL) GetName() string {
 	return aNSRL.name
 }
 
-func (aNSRL *ActionNSRL) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
+func (aNSRL *ActionNSRL) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
 	if checksums == nil {
 		checksums = make(map[string]string)
 	}
 	if _, ok := checksums["SHA-1"]; !ok {
 		filename, err := aNSRL.server.fm.Get(uri)
 		if err != nil {
-			return nil, nil, errors.Wrapf(err, "no file url")
+			return nil, nil, nil, errors.Wrapf(err, "no file url")
 		}
 		fp, err := os.Open(filename)
 		if err != nil {
-			return nil, nil, errors.Wrapf(err, "cannot open file %s", filename)
+			return nil, nil, nil, errors.Wrapf(err, "cannot open file %s", filename)
 		}
 		defer fp.Close()
 		hash := sha1.New()
 		if _, err := io.Copy(hash, fp); err != nil {
-			return nil, nil, errors.Wrapf(err, "cannot read %s", filename)
+			return nil, nil, nil, errors.Wrapf(err, "cannot read %s", filename)
 		}
 		sum := hash.Sum(nil)
 		sumStr := fmt.Sprintf("%X", sum)
@@ -179,7 +179,7 @@ func (aNSRL *ActionNSRL) Do(uri *url.URL, mimetype string, width *uint, height *
 
 	SHA1sumStr, ok := checksums["SHA-1"]
 	if !ok {
-		return nil, nil, fmt.Errorf("no SHA-1 checksum given to check nsrl")
+		return nil, nil, nil, fmt.Errorf("no SHA-1 checksum given to check nsrl")
 	}
 	/*
 		result := make([]map[string]interface{}, 0)

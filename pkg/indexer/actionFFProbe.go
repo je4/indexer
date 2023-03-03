@@ -96,20 +96,20 @@ func (as *ActionFFProbe) GetName() string {
 	return as.name
 }
 
-func (as *ActionFFProbe) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, error) {
+func (as *ActionFFProbe) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
 	var metadata ffmpeg_models.Metadata
 	var filename string
 	var err error
 
 	if !regexFFProbeMime.MatchString(mimetype) {
-		return nil, nil, ErrMimeNotApplicable
+		return nil, nil, nil, ErrMimeNotApplicable
 	}
 
 	// local files need some adjustments...
 	if uri.Scheme == "file" {
 		filename, err = as.server.fm.Get(uri)
 		if err != nil {
-			return nil, nil, errors.Wrapf(err, "invalid file uri %s", uri.String())
+			return nil, nil, nil, errors.Wrapf(err, "invalid file uri %s", uri.String())
 		}
 		if as.wsl {
 			filename = pathToWSL(filename)
@@ -133,11 +133,11 @@ func (as *ActionFFProbe) Do(uri *url.URL, mimetype string, width *uint, height *
 
 	err = cmd.Run()
 	if err != nil {
-		return nil, nil, errors.Wrapf(err, "error executing (%s %s): %v", cmdfile, cmdparam, out.String())
+		return nil, nil, nil, errors.Wrapf(err, "error executing (%s %s): %v", cmdfile, cmdparam, out.String())
 	}
 
 	if err = json.Unmarshal([]byte(out.String()), &metadata); err != nil {
-		return nil, nil, errors.Wrapf(err, "cannot unmarshall metadata: %s", out.String())
+		return nil, nil, nil, errors.Wrapf(err, "cannot unmarshall metadata: %s", out.String())
 	}
 
 	// calculate duration and dimension
@@ -166,5 +166,5 @@ func (as *ActionFFProbe) Do(uri *url.URL, mimetype string, width *uint, height *
 			mimetypes = append(mimetypes, m.Mime)
 		}
 	}
-	return metadata, mimetypes, nil
+	return metadata, mimetypes, nil, nil
 }

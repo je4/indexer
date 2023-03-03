@@ -523,6 +523,8 @@ func (s *Server) doIndex(param ActionParam, version string) (any, error) {
 	errs := map[string]string{}
 	mimetypes := []string{mimetype}
 	metadata := map[string]any{}
+	pronom := ""
+	pronoms := []string{}
 	// todo: download once, start concurrent identifiers...
 	for key, actionstr := range param.Actions {
 		action, ok := s.actions[actionstr]
@@ -545,7 +547,7 @@ func (s *Server) doIndex(param ActionParam, version string) (any, error) {
 			continue
 		}
 		s.log.Infof("Action [%v] %s: %s", key, actionstr, theUri.String())
-		actionresult, newMimetypes, err := action.Do(theUri, mimetype, &width, &height, &duration, param.Checksums)
+		actionresult, newMimetypes, newPronoms, err := action.Do(theUri, mimetype, &width, &height, &duration, param.Checksums)
 		if err == ErrMimeNotApplicable {
 			s.log.Infof("%s: mime %s not applicable", actionstr, mimetype)
 			continue
@@ -557,6 +559,10 @@ func (s *Server) doIndex(param ActionParam, version string) (any, error) {
 				mimetypes = append(mimetypes, newMimetypes...)
 			}
 			metadata[actionstr] = actionresult
+			if len(newPronoms) != 0 {
+				pronom = newPronoms[0]
+				pronoms = append(pronoms, newPronoms...)
+			}
 		}
 	}
 	slices.Sort(mimetypes)
@@ -601,6 +607,8 @@ func (s *Server) doIndex(param ActionParam, version string) (any, error) {
 				Errors:    errs,
 				Mimetype:  mimetypes[0],
 				Mimetypes: mimetypes,
+				Pronom:    pronom,
+				Pronoms:   pronoms,
 				Width:     width,
 				Height:    height,
 				Duration:  uint(duration.Seconds()), // uint(math.Round(float64(duration) / float64(time.Second))),
