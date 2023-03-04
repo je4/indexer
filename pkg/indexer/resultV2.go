@@ -12,3 +12,8 @@ type ResultV2 struct {
 	Size      uint64            `json:"size"`
 	Metadata  map[string]any    `json:"metadata"`
 }
+
+type FullMagickResult struct {
+	Magick *MagickResult `json:"magick"`
+	Frames []*Geometry   `json:"frames,omitempty"`
+}

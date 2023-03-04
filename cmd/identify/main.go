@@ -181,7 +181,6 @@ func main() {
 			config.FFMPEG.Online,
 			ffmpegmime,
 			srv)
-		//srv.AddAction(ffprobe)
 	}
 
 	if config.ImageMagick.Enabled {
@@ -192,7 +191,13 @@ func main() {
 			config.ImageMagick.Timeout.Duration,
 			config.ImageMagick.Online,
 			srv)
-		//srv.AddAction(identify)
+		indexer.NewActionIdentifyV2(
+			config.ImageMagick.Identify,
+			config.ImageMagick.Convert,
+			config.ImageMagick.Wsl,
+			config.ImageMagick.Timeout.Duration,
+			config.ImageMagick.Online,
+			srv)
 	}
 
 	if config.Tika.Enabled {

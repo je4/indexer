@@ -20,16 +20,20 @@ import (
 	"emperror.dev/errors"
 	"encoding/json"
 	"fmt"
+	"golang.org/x/exp/slices"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 	"time"
 )
 
-type ActionIdentify struct {
+var regexIdentifyMime = regexp.MustCompile("^image/")
+
+type ActionIdentifyV2 struct {
 	name     string
 	identify string
 	convert  string
@@ -40,13 +44,13 @@ type ActionIdentify struct {
 	mimeMap  map[string]string
 }
 
-func NewActionIdentify(identify, convert string, wsl bool, timeout time.Duration, online bool, server *Server) Action {
+func NewActionIdentifyV2(identify, convert string, wsl bool, timeout time.Duration, online bool, server *Server) Action {
 	var caps ActionCapability = ACTFILEHEAD
 	if online {
 		caps |= ACTALLPROTO
 	}
-	ai := &ActionIdentify{
-		name:     "identify",
+	ai := &ActionIdentifyV2{
+		name:     "identify2",
 		identify: identify,
 		convert:  convert,
 		wsl:      wsl,
@@ -63,8 +67,8 @@ func NewActionIdentify(identify, convert string, wsl bool, timeout time.Duration
 				} else {
 					m.Type = strings.ToLower(m.Type)
 					if strings.HasPrefix(m.Type, "image/") {
-						t := strings.TrimPrefix(m.Type, "image/")
-						if t != "" {
+						t := m.Type[6:]
+						if t != "" && !strings.ContainsAny(t, ".-") {
 							ai.mimeMap[m.Type] = t
 						}
 					}
@@ -76,22 +80,22 @@ func NewActionIdentify(identify, convert string, wsl bool, timeout time.Duration
 	return ai
 }
 
-func (ai *ActionIdentify) GetWeight() uint {
+func (ai *ActionIdentifyV2) GetWeight() uint {
 	return 50
 }
 
-func (ai *ActionIdentify) GetCaps() ActionCapability {
+func (ai *ActionIdentifyV2) GetCaps() ActionCapability {
 	return ACTFILEHEAD
 }
 
-func (ai *ActionIdentify) GetName() string {
+func (ai *ActionIdentifyV2) GetName() string {
 	return ai.name
 }
 
-func (ai *ActionIdentify) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
-	var metadata = make(map[string]interface{})
-	var metadataInt interface{}
-	//	var metadatalist = []map[string]interface{}{}
+func (ai *ActionIdentifyV2) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
+	var metadata = FullMagickResult{
+		Frames: []*Geometry{},
+	}
 	var filename string
 	var err error
 
@@ -128,11 +132,6 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype string, width *uint, height 
 	infile := "-"
 	if t, ok := ai.mimeMap[mimetype]; ok {
 		infile = t + ":-"
-	} else {
-		t := strings.TrimPrefix(mimetype, "image/")
-		if len(t) > 0 {
-			infile = t + ":-"
-		}
 	}
 	cmdparam := []string{infile, "json:-"}
 	cmdfile := ai.convert
@@ -155,65 +154,40 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype string, width *uint, height 
 		return nil, nil, nil, errors.Wrapf(err, "error executing (%s %s) for file '%s': %v", cmdfile, cmdparam, filename, out.String())
 	}
 
-	var meta = &MagickResult{}
+	var meta = []*MagickResult{}
 	if err = json.Unmarshal([]byte(out.String()), &meta); err != nil {
 		return nil, nil, nil, errors.Wrapf(err, "cannot unmarshall metadata: %s", out.String())
 	}
-
-	if err = json.Unmarshal([]byte(out.String()), &metadataInt); err != nil {
-		return nil, nil, nil, errors.Wrapf(err, "cannot unmarshall metadata: %s", out.String())
+	if len(meta) == 0 {
+		return nil, nil, nil, errors.New("no metadata from imagemagick found")
 	}
-
-	switch val := metadataInt.(type) {
-	case []interface{}:
-		// todo: check for content and type
-		if len(val) > 0 {
-			metadata = val[0].(map[string]interface{})
-		} else {
-			return nil, nil, nil, errors.New("empty image magick result list")
-		}
-		/*
-			if len(val) != 1 {
-				return nil, nil, nil, fmt.Errorf("wrong number of objects in image magick result list - %v", len(val))
-			}
-			var ok bool
-			metadata, ok = val[0].(map[string]interface{})
-			if !ok {
-				return nil, nil, nil, fmt.Errorf("wrong object type in image magick result - %T", val[0])
-			}
-		*/
-	case map[string]interface{}:
-		metadata = val
-	default:
-		return nil, nil, nil, fmt.Errorf("invalid return type from image magick - %T", val)
+	metadata.Magick = meta[0]
+	if metadata.Magick.Image != nil {
+		metadata.Magick.Image.Name = uri.String()
 	}
-
-	_image, ok := metadata["image"]
-	if !ok {
-		return nil, nil, nil, errors.Wrapf(err, "no image field in %s", out.String())
-	}
-	// calculate mimetype and dimensions
-	image, ok := _image.(map[string]interface{})
-	_mimetype, ok := image["mimeType"].(string)
 	mimetypes := []string{}
-	if ok {
-		mimetypes = append(mimetypes, _mimetype)
-	}
-	_geometry, ok := image["geometry"].(map[string]interface{})
-	if ok {
-		w, ok := _geometry["width"].(float64)
-		if ok {
-			*width = uint(w)
+	for _, m := range meta {
+		if m.Image == nil {
+			continue
 		}
-		h, ok := _geometry["height"].(float64)
-		if ok {
-			*height = uint(h)
+		if m.Image.MimeType != "" {
+			mimetypes = append(mimetypes, m.Image.MimeType)
+		}
+		if m.Image.Geometry != nil {
+			metadata.Frames = append(metadata.Frames, m.Image.Geometry)
+			if uint(m.Image.Geometry.Width) > *width {
+				*width = uint(m.Image.Geometry.Width)
+			}
+			if uint(m.Image.Geometry.Height) > *height {
+				*height = uint(m.Image.Geometry.Height)
+			}
 		}
 	}
-
+	slices.Sort(mimetypes)
+	mimetypes = slices.Compact(mimetypes)
 	return metadata, mimetypes, nil, nil
 }
 
 var (
-	_ Action = (*ActionIdentify)(nil)
+	_ Action = (*ActionIdentifyV2)(nil)
 )
