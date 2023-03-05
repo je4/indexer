@@ -152,7 +152,7 @@ func main() {
 			keyCount += tbl.KeyCount
 		}
 		log.Infof("NSRL-Table: %v keys", keyCount)
-		indexer.NewActionNSRL(nsrldb, srv)
+		indexer.NewActionNSRL("nsrl", nsrldb, srv)
 		//return
 	}
 
@@ -160,7 +160,7 @@ func main() {
 		if _, err := os.Stat(config.Siegfried.SignatureFile); err != nil {
 			log.Panicf("siegfried signature file at %s not found. Please use 'sf -update' to download it: %v", config.Siegfried.SignatureFile, err)
 		}
-		indexer.NewActionSiegfried(config.Siegfried.SignatureFile, config.Siegfried.MimeMap, srv)
+		indexer.NewActionSiegfried("siegfried", config.Siegfried.SignatureFile, config.Siegfried.MimeMap, srv)
 		//srv.AddAction(sf)
 	}
 
@@ -174,39 +174,16 @@ func main() {
 				Mime:   val.Mime,
 			})
 		}
-		indexer.NewActionFFProbe(
-			config.FFMPEG.FFProbe,
-			config.FFMPEG.Wsl,
-			config.FFMPEG.Timeout.Duration,
-			config.FFMPEG.Online,
-			ffmpegmime,
-			srv)
+		indexer.NewActionFFProbe("ffprobe", config.FFMPEG.FFProbe, config.FFMPEG.Wsl, config.FFMPEG.Timeout.Duration, config.FFMPEG.Online, ffmpegmime, srv)
 	}
 
 	if config.ImageMagick.Enabled {
-		indexer.NewActionIdentify(
-			config.ImageMagick.Identify,
-			config.ImageMagick.Convert,
-			config.ImageMagick.Wsl,
-			config.ImageMagick.Timeout.Duration,
-			config.ImageMagick.Online,
-			srv)
-		indexer.NewActionIdentifyV2(
-			config.ImageMagick.Identify,
-			config.ImageMagick.Convert,
-			config.ImageMagick.Wsl,
-			config.ImageMagick.Timeout.Duration,
-			config.ImageMagick.Online,
-			srv)
+		indexer.NewActionIdentify("identify", config.ImageMagick.Identify, config.ImageMagick.Convert, config.ImageMagick.Wsl, config.ImageMagick.Timeout.Duration, config.ImageMagick.Online, srv)
+		indexer.NewActionIdentifyV2("identify2", config.ImageMagick.Identify, config.ImageMagick.Convert, config.ImageMagick.Wsl, config.ImageMagick.Timeout.Duration, config.ImageMagick.Online, srv)
 	}
 
 	if config.Tika.Enabled {
-		indexer.NewActionTika(
-			config.Tika.Address,
-			config.Tika.Timeout.Duration,
-			config.Tika.RegexpMime,
-			config.Tika.Online,
-			srv)
+		indexer.NewActionTika("tika", config.Tika.Address, config.Tika.Timeout.Duration, config.Tika.RegexpMime, config.Tika.Online, srv)
 		//srv.AddAction(tika)
 	}
 

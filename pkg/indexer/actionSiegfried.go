@@ -31,12 +31,12 @@ type ActionSiegfried struct {
 	server  *Server
 }
 
-func NewActionSiegfried(signatureFile string, mimeMap map[string]string, server *Server) Action {
+func NewActionSiegfried(name string, signatureFile string, mimeMap map[string]string, server *Server) Action {
 	sf, err := siegfried.Load(signatureFile)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	as := &ActionSiegfried{name: "siegfried", sf: sf, mimeMap: mimeMap, server: server}
+	as := &ActionSiegfried{name: name, sf: sf, mimeMap: mimeMap, server: server}
 	server.AddAction(as)
 	return as
 }

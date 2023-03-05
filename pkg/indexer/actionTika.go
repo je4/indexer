@@ -38,13 +38,13 @@ type ActionTika struct {
 	server     *Server
 }
 
-func NewActionTika(uri string, timeout time.Duration, regexpMime string, online bool, server *Server) Action {
+func NewActionTika(name string, uri string, timeout time.Duration, regexpMime string, online bool, server *Server) Action {
 	var caps ActionCapability = ACTFILEHEAD
 	if online {
 		caps |= ACTALLPROTO
 	}
 	at := &ActionTika{
-		name:       "tika",
+		name:       name,
 		url:        uri,
 		timeout:    timeout,
 		regexpMime: regexp.MustCompile(regexpMime),

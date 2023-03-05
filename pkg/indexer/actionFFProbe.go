@@ -78,12 +78,12 @@ type ActionFFProbe struct {
 	mime    []FFMPEGMime
 }
 
-func NewActionFFProbe(ffprobe string, wsl bool, timeout time.Duration, online bool, mime []FFMPEGMime, server *Server) Action {
+func NewActionFFProbe(name string, ffprobe string, wsl bool, timeout time.Duration, online bool, mime []FFMPEGMime, server *Server) Action {
 	var caps ActionCapability = ACTFILEHEAD
 	if online {
 		caps |= ACTALLPROTO
 	}
-	af := &ActionFFProbe{name: "ffprobe", ffprobe: ffprobe, wsl: wsl, timeout: timeout, caps: caps, server: server, mime: mime}
+	af := &ActionFFProbe{name: name, ffprobe: ffprobe, wsl: wsl, timeout: timeout, caps: caps, server: server, mime: mime}
 	server.AddAction(af)
 	return af
 }

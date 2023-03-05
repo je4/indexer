@@ -47,8 +47,8 @@ type ActionNSRLMeta struct {
 	ProdMfg map[string]string
 }
 
-func NewActionNSRL(nsrldb *badger.DB, server *Server) Action {
-	an := &ActionNSRL{name: "nsrl", nsrldb: nsrldb, server: server, caps: ACTFILE}
+func NewActionNSRL(name string, nsrldb *badger.DB, server *Server) Action {
+	an := &ActionNSRL{name: name, nsrldb: nsrldb, server: server, caps: ACTFILE}
 	server.AddAction(an)
 	return an
 }

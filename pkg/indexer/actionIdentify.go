@@ -40,13 +40,13 @@ type ActionIdentify struct {
 	mimeMap  map[string]string
 }
 
-func NewActionIdentify(identify, convert string, wsl bool, timeout time.Duration, online bool, server *Server) Action {
+func NewActionIdentify(name, identify, convert string, wsl bool, timeout time.Duration, online bool, server *Server) Action {
 	var caps ActionCapability = ACTFILEHEAD
 	if online {
 		caps |= ACTALLPROTO
 	}
 	ai := &ActionIdentify{
-		name:     "identify",
+		name:     name,
 		identify: identify,
 		convert:  convert,
 		wsl:      wsl,
