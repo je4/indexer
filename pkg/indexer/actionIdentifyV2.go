@@ -34,34 +34,39 @@ import (
 var regexIdentifyMime = regexp.MustCompile("^image/")
 
 type ActionIdentifyV2 struct {
-	name     string
-	identify string
-	convert  string
-	wsl      bool
-	timeout  time.Duration
-	caps     ActionCapability
-	server   *Server
-	mimeMap  map[string]string
+	name         string
+	identify     string
+	convert      string
+	wsl          bool
+	timeout      time.Duration
+	caps         ActionCapability
+	server       *Server
+	mimeMap      map[string]string
+	extensionMap map[*regexp.Regexp]string
 }
 
-func NewActionIdentifyV2(name, identify, convert string, wsl bool, timeout time.Duration, online bool, server *Server) Action {
+func NewActionIdentifyV2(name, identify, convert string, wsl bool, timeout time.Duration, online bool, server *Server, ad *ActionDispatcher) Action {
 	var caps ActionCapability = ACTFILEHEAD
 	if online {
 		caps |= ACTALLPROTO
 	}
 	ai := &ActionIdentifyV2{
-		name:     name,
-		identify: identify,
-		convert:  convert,
-		wsl:      wsl,
-		timeout:  timeout,
-		caps:     caps,
-		server:   server,
-		mimeMap:  map[string]string{},
+		name:         name,
+		identify:     identify,
+		convert:      convert,
+		wsl:          wsl,
+		timeout:      timeout,
+		caps:         caps,
+		server:       server,
+		mimeMap:      map[string]string{},
+		extensionMap: map[*regexp.Regexp]string{},
 	}
 	if mime, err := GetMagickMime(); err == nil {
 		if mime != nil {
 			for _, m := range mime {
+				if m.Pattern != nil && *m.Pattern != "" && m.Acronym != nil && *m.Acronym != "" {
+					ai.extensionMap[regexp.MustCompile(wildCardToRegexp(*m.Pattern))] = *m.Acronym
+				}
 				if m.Acronym != nil && *m.Acronym != "" {
 					ai.mimeMap[m.Type] = *m.Acronym
 				} else {
@@ -76,7 +81,7 @@ func NewActionIdentifyV2(name, identify, convert string, wsl bool, timeout time.
 			}
 		}
 	}
-	server.AddAction(ai)
+	ad.RegisterAction(ai)
 	return ai
 }
 
@@ -85,11 +90,84 @@ func (ai *ActionIdentifyV2) GetWeight() uint {
 }
 
 func (ai *ActionIdentifyV2) GetCaps() ActionCapability {
-	return ACTFILEHEAD
+	return ACTFILEHEAD | ACTSTREAM
 }
 
 func (ai *ActionIdentifyV2) GetName() string {
 	return ai.name
+}
+
+func (ai *ActionIdentifyV2) Stream(dataType string, reader io.Reader, filename string) (*ResultV2, error) {
+	if slices.Contains([]string{"audio", "video"}, dataType) {
+		return nil, nil
+	}
+	infile := "-"
+	for re, t := range ai.extensionMap {
+		if re.MatchString(filename) {
+			infile = t + ":-"
+			break
+		}
+	}
+	cmdparam := []string{infile, "json:-"}
+	cmdfile := ai.convert
+	if ai.wsl {
+		cmdparam = append([]string{cmdfile}, cmdparam...)
+		cmdfile = "wsl"
+	}
+
+	var out bytes.Buffer
+	out.Grow(1024 * 1024) // 1MB size
+	ctx, cancel := context.WithTimeout(context.Background(), ai.timeout)
+	defer cancel()
+
+	cmd := exec.CommandContext(ctx, cmdfile, cmdparam...)
+	cmd.Stdin = reader
+	cmd.Stdout = &out
+
+	if err := cmd.Run(); err != nil {
+		return nil, errors.Wrapf(err, "error executing (%s %s) for file '%s': %v", cmdfile, cmdparam, filename, out.String())
+	}
+
+	var meta = []*MagickResult{}
+	if err := json.Unmarshal([]byte(out.String()), &meta); err != nil {
+		return nil, errors.Wrapf(err, "cannot unmarshall metadata: %s", out.String())
+	}
+	if len(meta) == 0 {
+		return nil, errors.New("no metadata from imagemagick found")
+	}
+
+	var metadata = FullMagickResult{
+		Frames: []*Geometry{},
+	}
+
+	metadata.Magick = meta[0]
+	if metadata.Magick.Image != nil {
+		metadata.Magick.Image.Name = filename
+	}
+	var result = NewResultV2()
+	mimetypes := []string{}
+	for _, m := range meta {
+		if m.Image == nil {
+			continue
+		}
+		if m.Image.MimeType != "" {
+			mimetypes = append(mimetypes, m.Image.MimeType)
+		}
+		if m.Image.Geometry != nil {
+			metadata.Frames = append(metadata.Frames, m.Image.Geometry)
+			if uint(m.Image.Geometry.Width+m.Image.Geometry.X) > result.Width {
+				result.Width = uint(m.Image.Geometry.Width + m.Image.Geometry.X)
+			}
+			if uint(m.Image.Geometry.Height+m.Image.Geometry.Y) > result.Height {
+				result.Height = uint(m.Image.Geometry.Height + m.Image.Geometry.Y)
+			}
+		}
+	}
+	slices.Sort(mimetypes)
+	result.Mimetypes = slices.Compact(mimetypes)
+	result.Metadata[ai.GetName()] = metadata
+
+	return result, nil
 }
 
 func (ai *ActionIdentifyV2) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {

@@ -61,7 +61,7 @@ type Server struct {
 	log             *logging.Logger
 	accesslog       io.Writer
 	errorTemplate   *template.Template
-	actions         map[string]Action
+	actions         *ActionDispatcher
 	headerTimeout   time.Duration
 	headerSize      int64
 	forceDownload   string
@@ -101,7 +101,7 @@ func NewServer(
 		accesslog:       accesslog,
 		tempDir:         tempDir,
 		errorTemplate:   errorTemplate,
-		actions:         map[string]Action{},
+		actions:         NewActionDispatcher(mimeRelevance),
 		fm:              fm,
 		sftp:            sftp,
 		mimeRelevance:   []MimeWeight{},
@@ -124,8 +124,10 @@ func NewServer(
 	return srv, nil
 }
 
-func (s *Server) AddAction(a Action) {
-	s.actions[a.GetName()] = a
+func (s *Server) AddActions(as ...Action) {
+	for _, a := range as {
+		s.actions.RegisterAction(a)
+	}
 }
 
 /*
@@ -380,9 +382,9 @@ func (s *Server) HandleDefault(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if no action is given, just use all
+	// if no actions is given, just use all
 	if len(param.Actions) == 0 {
-		for name, _ := range s.actions {
+		for name, _ := range s.actions.GetActions() {
 			param.Actions = append(param.Actions, name)
 		}
 	}
@@ -428,9 +430,9 @@ func (s *Server) HandleVersion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if no action is given, just use all
+	// if no actions is given, just use all
 	if len(param.Actions) == 0 {
-		for name, _ := range s.actions {
+		for name, _ := range s.actions.GetActions() {
 			param.Actions = append(param.Actions, name)
 		}
 	}
@@ -521,9 +523,7 @@ func (s *Server) doIndex(param ActionParam, version string) (any, error) {
 		}
 	}
 
-	sort.SliceStable(param.Actions, func(i, j int) bool {
-		return s.actions[param.Actions[i]].GetWeight() < s.actions[param.Actions[j]].GetWeight()
-	})
+	s.actions.Sort(param.Actions)
 
 	errs := map[string]string{}
 	mimetypes := []string{mimetype}
@@ -532,10 +532,10 @@ func (s *Server) doIndex(param ActionParam, version string) (any, error) {
 	pronoms := []string{}
 	// todo: download once, start concurrent identifiers...
 	for key, actionstr := range param.Actions {
-		action, ok := s.actions[actionstr]
+		action, ok := s.actions.GetActions()[actionstr]
 		if !ok {
-			// return nil, errors.Wrapf(err, "invalid action: %s", actionstr)
-			errs[actionstr] = "action not available"
+			// return nil, errors.Wrapf(err, "invalid actions: %s", actionstr)
+			errs[actionstr] = "actions not available"
 			continue
 		}
 		theUri := uri
@@ -547,8 +547,8 @@ func (s *Server) doIndex(param ActionParam, version string) (any, error) {
 			}
 		}
 		if !fulldownload && (caps&(^ACTFILEFULL)) == 0 {
-			s.log.Infof("%s: no full download. action not applicable", actionstr)
-			errs[actionstr] = fmt.Errorf("no full download. action not applicable").Error()
+			s.log.Infof("%s: no full download. actions not applicable", actionstr)
+			errs[actionstr] = fmt.Errorf("no full download. actions not applicable").Error()
 			continue
 		}
 		s.log.Infof("Action [%v] %s: %s", key, actionstr, theUri.String())

@@ -40,7 +40,11 @@ type ActionIdentify struct {
 	mimeMap  map[string]string
 }
 
-func NewActionIdentify(name, identify, convert string, wsl bool, timeout time.Duration, online bool, server *Server) Action {
+func (ai *ActionIdentify) Stream(dataType string, reader io.Reader, filename string) (*ResultV2, error) {
+	return nil, errors.New("identify actions does not support streaming")
+}
+
+func NewActionIdentify(name, identify, convert string, wsl bool, timeout time.Duration, online bool, server *Server, ad *ActionDispatcher) Action {
 	var caps ActionCapability = ACTFILEHEAD
 	if online {
 		caps |= ACTALLPROTO
@@ -72,7 +76,7 @@ func NewActionIdentify(name, identify, convert string, wsl bool, timeout time.Du
 			}
 		}
 	}
-	server.AddAction(ai)
+	ad.RegisterAction(ai)
 	return ai
 }
 

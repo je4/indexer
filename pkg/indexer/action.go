@@ -16,6 +16,7 @@ package indexer
 import (
 	"emperror.dev/errors"
 	"fmt"
+	"io"
 	"net/url"
 	"time"
 )
@@ -23,10 +24,11 @@ import (
 type ActionCapability uint
 
 const (
-	ACTFILE  ActionCapability = 1 << iota // needs local file
-	ACTHTTP                               // capable of HTTP
-	ACTHTTPS                              // capable of HTTPS
-	ACTHEAD                               // can deal with file head
+	ACTFILE   ActionCapability = 1 << iota // needs local file
+	ACTHTTP                                // capable of HTTP
+	ACTHTTPS                               // capable of HTTPS
+	ACTHEAD                                // can deal with file head
+	ACTSTREAM                              // can deal with stream
 
 	ACTWEB      = ACTHTTPS | ACTHTTP
 	ACTALLPROTO = ACTFILE | ACTHTTP | ACTHTTPS
@@ -36,17 +38,19 @@ const (
 )
 
 var ACTString map[ActionCapability]string = map[ActionCapability]string{
-	ACTFILE:  "ACTFILE",
-	ACTHTTP:  "ACTHTTP",
-	ACTHTTPS: "ACTHTTPS",
-	ACTHEAD:  "ACTHEAD",
+	ACTFILE:   "ACTFILE",
+	ACTHTTP:   "ACTHTTP",
+	ACTHTTPS:  "ACTHTTPS",
+	ACTHEAD:   "ACTHEAD",
+	ACTSTREAM: "ACTSTREAM",
 }
 
 var ACTAction map[string]ActionCapability = map[string]ActionCapability{
-	"ACTFILE":  ACTFILE,
-	"ACTHTTP":  ACTHTTP,
-	"ACTHTTPS": ACTHTTPS,
-	"ACTHEAD":  ACTHEAD,
+	"ACTFILE":   ACTFILE,
+	"ACTHTTP":   ACTHTTP,
+	"ACTHTTPS":  ACTHTTPS,
+	"ACTHEAD":   ACTHEAD,
+	"ACTSTREAM": ACTSTREAM,
 }
 
 // for toml decoding
@@ -54,14 +58,15 @@ func (a *ActionCapability) UnmarshalText(text []byte) error {
 	var ok bool
 	*a, ok = ACTAction[string(text)]
 	if !ok {
-		return fmt.Errorf("invalid action capability: %s", string(text))
+		return fmt.Errorf("invalid actions capability: %s", string(text))
 	}
 	return nil
 }
 
-var ErrMimeNotApplicable = errors.New("mime type not applicable for action")
+var ErrMimeNotApplicable = errors.New("mime type not applicable for actions")
 
 type Action interface {
+	Stream(dataType string, reader io.Reader, filename string) (*ResultV2, error)
 	Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error)
 	GetName() string
 	GetCaps() ActionCapability

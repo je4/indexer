@@ -19,6 +19,7 @@ import (
 	"fmt"
 	badger "github.com/dgraph-io/badger/v3"
 	"github.com/je4/indexer/pkg/indexer"
+	lm "github.com/je4/utils/v2/pkg/logger"
 	"html/template"
 	"io"
 	"log"
@@ -55,11 +56,10 @@ func main() {
 		}
 	}
 	// configfile should exists at this place
-	var config Config
-	config = LoadConfig(*configFile)
+	config := LoadConfig(*configFile)
 
 	// create logger instance
-	log, lf := indexer.CreateLogger("indexer", config.Logfile, config.Loglevel)
+	log, lf := lm.CreateLogger("indexer", config.Logfile, nil, config.Loglevel, config.LogFormat)
 	defer lf.Close()
 
 	var accesslog io.Writer
@@ -126,6 +126,8 @@ func main() {
 		return
 	}
 
+	ad := indexer.NewActionDispatcher(mimeRelevance)
+
 	var nsrldb *badger.DB
 	if config.NSRL.Enabled {
 		stat2, err := os.Stat(config.NSRL.Badger)
@@ -152,7 +154,7 @@ func main() {
 			keyCount += tbl.KeyCount
 		}
 		log.Infof("NSRL-Table: %v keys", keyCount)
-		indexer.NewActionNSRL("nsrl", nsrldb, srv)
+		indexer.NewActionNSRL("nsrl", nsrldb, srv, ad)
 		//return
 	}
 
@@ -160,8 +162,8 @@ func main() {
 		if _, err := os.Stat(config.Siegfried.SignatureFile); err != nil {
 			log.Panicf("siegfried signature file at %s not found. Please use 'sf -update' to download it: %v", config.Siegfried.SignatureFile, err)
 		}
-		indexer.NewActionSiegfried("siegfried", config.Siegfried.SignatureFile, config.Siegfried.MimeMap, srv)
-		//srv.AddAction(sf)
+		indexer.NewActionSiegfried("siegfried", config.Siegfried.SignatureFile, config.Siegfried.MimeMap, srv, ad)
+		//srv.AddActions(sf)
 	}
 
 	if config.FFMPEG.Enabled {
@@ -174,17 +176,17 @@ func main() {
 				Mime:   val.Mime,
 			})
 		}
-		indexer.NewActionFFProbe("ffprobe", config.FFMPEG.FFProbe, config.FFMPEG.Wsl, config.FFMPEG.Timeout.Duration, config.FFMPEG.Online, ffmpegmime, srv)
+		indexer.NewActionFFProbe("ffprobe", config.FFMPEG.FFProbe, config.FFMPEG.Wsl, config.FFMPEG.Timeout.Duration, config.FFMPEG.Online, ffmpegmime, srv, ad)
 	}
 
 	if config.ImageMagick.Enabled {
-		indexer.NewActionIdentify("identify", config.ImageMagick.Identify, config.ImageMagick.Convert, config.ImageMagick.Wsl, config.ImageMagick.Timeout.Duration, config.ImageMagick.Online, srv)
-		indexer.NewActionIdentifyV2("identify2", config.ImageMagick.Identify, config.ImageMagick.Convert, config.ImageMagick.Wsl, config.ImageMagick.Timeout.Duration, config.ImageMagick.Online, srv)
+		indexer.NewActionIdentify("identify", config.ImageMagick.Identify, config.ImageMagick.Convert, config.ImageMagick.Wsl, config.ImageMagick.Timeout.Duration, config.ImageMagick.Online, srv, ad)
+		indexer.NewActionIdentifyV2("identify2", config.ImageMagick.Identify, config.ImageMagick.Convert, config.ImageMagick.Wsl, config.ImageMagick.Timeout.Duration, config.ImageMagick.Online, srv, ad)
 	}
 
 	if config.Tika.Enabled {
-		indexer.NewActionTika("tika", config.Tika.Address, config.Tika.Timeout.Duration, config.Tika.RegexpMime, config.Tika.Online, srv)
-		//srv.AddAction(tika)
+		indexer.NewActionTika("tika", config.Tika.Address, config.Tika.Timeout.Duration, config.Tika.RegexpMime, config.Tika.Online, srv, ad)
+		//srv.AddActions(tika)
 	}
 
 	if config.Clamav.Enabled {
@@ -192,7 +194,8 @@ func main() {
 			config.Clamav.ClamScan,
 			config.Clamav.Wsl,
 			config.Clamav.Timeout.Duration,
-			srv)
+			srv,
+			ad)
 	}
 
 	for _, eaconfig := range config.External {
@@ -200,8 +203,12 @@ func main() {
 		for _, c := range eaconfig.ActionCapabilities {
 			caps |= c
 		}
-		indexer.NewActionExternal(eaconfig.Name, eaconfig.Address, caps, eaconfig.CallType, eaconfig.Mimetype, srv)
-		//srv.AddAction(ea)
+		indexer.NewActionExternal(eaconfig.Name, eaconfig.Address, caps, eaconfig.CallType, eaconfig.Mimetype, srv, ad)
+		//srv.AddActions(ea)
+	}
+
+	for _, a := range ad.GetActions() {
+		srv.AddActions(a)
 	}
 
 	go func() {

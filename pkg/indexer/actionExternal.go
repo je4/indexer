@@ -22,6 +22,7 @@ import (
 	"emperror.dev/errors"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -53,7 +54,7 @@ func (a *ExternalActionCalltype) UnmarshalText(text []byte) error {
 	var ok bool
 	*a, ok = EACTAction[string(text)]
 	if !ok {
-		return fmt.Errorf("invalid action capability: %s", string(text))
+		return fmt.Errorf("invalid actions capability: %s", string(text))
 	}
 	return nil
 }
@@ -67,12 +68,11 @@ type ActionExternal struct {
 	mimetype   *regexp.Regexp
 }
 
-func NewActionExternal(
-	name, address string,
-	capability ActionCapability,
-	callType ExternalActionCalltype,
-	mimetype string,
-	server *Server) Action {
+func (as *ActionExternal) Stream(dataType string, reader io.Reader, filename string) (*ResultV2, error) {
+	return nil, errors.New("external actions does not support streaming")
+}
+
+func NewActionExternal(name, address string, capability ActionCapability, callType ExternalActionCalltype, mimetype string, server *Server, ad *ActionDispatcher) Action {
 	ae := &ActionExternal{
 		name:       name,
 		url:        address,
@@ -81,7 +81,7 @@ func NewActionExternal(
 		mimetype:   regexp.MustCompile(mimetype),
 		server:     server,
 	}
-	server.AddAction(ae)
+	ad.RegisterAction(ae)
 	return ae
 }
 

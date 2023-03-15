@@ -17,6 +17,7 @@ import (
 	"emperror.dev/errors"
 	"github.com/richardlehane/siegfried"
 	"github.com/richardlehane/siegfried/pkg/pronom"
+	"io"
 	"log"
 	"net/url"
 	"os"
@@ -31,13 +32,13 @@ type ActionSiegfried struct {
 	server  *Server
 }
 
-func NewActionSiegfried(name string, signatureFile string, mimeMap map[string]string, server *Server) Action {
+func NewActionSiegfried(name string, signatureFile string, mimeMap map[string]string, server *Server, ad *ActionDispatcher) Action {
 	sf, err := siegfried.Load(signatureFile)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	as := &ActionSiegfried{name: name, sf: sf, mimeMap: mimeMap, server: server}
-	server.AddAction(as)
+	ad.RegisterAction(as)
 	return as
 }
 
@@ -46,11 +47,37 @@ func (as *ActionSiegfried) GetWeight() uint {
 }
 
 func (as *ActionSiegfried) GetCaps() ActionCapability {
-	return ACTFILEHEAD
+	return ACTFILEHEAD | ACTSTREAM
 }
 
 func (as *ActionSiegfried) GetName() string {
 	return as.name
+}
+
+func (as *ActionSiegfried) Stream(dataType string, reader io.Reader, filename string) (*ResultV2, error) {
+	ident, err := as.sf.Identify(reader, filepath.Base(filename), "")
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot identify file %s", filename)
+	}
+	var result = NewResultV2()
+	for _, id := range ident {
+		if pid, ok := id.(pronom.Identification); ok {
+			if pid.MIME != "" {
+				result.Mimetypes = append(result.Mimetypes, pid.MIME)
+			}
+			if pid.ID != "" {
+				result.Pronoms = append(result.Pronoms, pid.ID)
+				if mime, ok := as.mimeMap[pid.ID]; ok {
+					if mime != "" {
+						result.Mimetypes = append(result.Mimetypes, mime)
+					}
+				}
+			}
+
+		}
+	}
+	result.Metadata[as.GetName()] = ident
+	return result, nil
 }
 
 func (as *ActionSiegfried) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
@@ -65,29 +92,11 @@ func (as *ActionSiegfried) Do(uri *url.URL, mimetype string, width *uint, height
 	}
 	defer fp.Close()
 
-	ident, err := as.sf.Identify(fp, filepath.Base(filename), "")
+	result, err := as.Stream("", fp, filename)
 	if err != nil {
-		return nil, nil, nil, errors.Wrapf(err, "cannot identify file %s", filename)
+		return nil, nil, nil, errors.WithStack(err)
 	}
-	mimetypes := []string{}
-	pronoms := []string{}
-	for _, id := range ident {
-		if pid, ok := id.(pronom.Identification); ok {
-			if pid.MIME != "" {
-				mimetypes = append(mimetypes, pid.MIME)
-			}
-			if pid.ID != "" {
-				pronoms = append(pronoms, pid.ID)
-				if mime, ok := as.mimeMap[pid.ID]; ok {
-					if mime != "" {
-						mimetypes = append(mimetypes, mime)
-					}
-				}
-			}
-
-		}
-	}
-	return ident, mimetypes, pronoms, nil
+	return result.Metadata[as.GetName()], result.Mimetypes, result.Pronoms, nil
 }
 
 var (

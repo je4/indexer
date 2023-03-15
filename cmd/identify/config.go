@@ -113,6 +113,7 @@ type Config struct {
 	ErrorTemplate   string
 	Logfile         string
 	Loglevel        string
+	LogFormat       string
 	AccessLog       string
 	CertPEM         string
 	KeyPEM          string
@@ -138,16 +139,20 @@ type Config struct {
 	MimeRelevance   map[string]MimeWeight
 }
 
-func LoadConfig(fp string) Config {
-	var conf Config
-	conf.InsecureCert = false
+func LoadConfig(fp string) *Config {
 	user, err := user.Current()
 	if err != nil {
 		log.Fatalln("cannot get current user", err)
 	}
-	conf.Siegfried.SignatureFile = filepath.Join(user.HomeDir, "siegfried", "default.sig")
+	var conf = &Config{
+		LogFormat:    `%{time:2006-01-02T15:04:05.000} %{shortpkg}::%{longfunc} [%{shortfile}] > %{level:.5s} - %{message}`,
+		InsecureCert: false,
+		Siegfried: ConfigSiegfried{
+			SignatureFile: filepath.Join(user.HomeDir, "siegfried", "default.sig"),
+		},
+	}
 
-	if _, err := toml.DecodeFile(fp, &conf); err != nil {
+	if _, err := toml.DecodeFile(fp, conf); err != nil {
 		log.Fatalln("Error on loading config: ", err)
 	}
 	pwd := os.Getenv("SFTP_PASSWORD")

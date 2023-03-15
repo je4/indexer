@@ -38,6 +38,10 @@ type ActionNSRL struct {
 	nsrldb *badger.DB
 }
 
+func (aNSRL *ActionNSRL) Stream(dataType string, reader io.Reader, filename string) (*ResultV2, error) {
+	return nil, errors.New("nsrl actions does not support streaming")
+}
+
 type ActionNSRLMeta struct {
 	File    map[string]string
 	FileMfG map[string]string
@@ -47,9 +51,9 @@ type ActionNSRLMeta struct {
 	ProdMfg map[string]string
 }
 
-func NewActionNSRL(name string, nsrldb *badger.DB, server *Server) Action {
+func NewActionNSRL(name string, nsrldb *badger.DB, server *Server, ad *ActionDispatcher) Action {
 	an := &ActionNSRL{name: name, nsrldb: nsrldb, server: server, caps: ACTFILE}
-	server.AddAction(an)
+	ad.RegisterAction(an)
 	return an
 }
 

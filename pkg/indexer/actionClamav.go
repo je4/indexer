@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"emperror.dev/errors"
+	"io"
 	"net/url"
 	"os/exec"
 	"strings"
@@ -33,10 +34,14 @@ type ActionClamAV struct {
 	server  *Server
 }
 
-func NewActionClamAV(clamav string, wsl bool, timeout time.Duration, server *Server) Action {
+func (ac *ActionClamAV) Stream(dataType string, reader io.Reader, filename string) (*ResultV2, error) {
+	return nil, errors.New("clamav does not support streaming")
+}
+
+func NewActionClamAV(clamav string, wsl bool, timeout time.Duration, server *Server, ad *ActionDispatcher) Action {
 	var caps = ACTFILEFULL
 	ac := &ActionClamAV{name: "clamav", clamav: clamav, wsl: wsl, timeout: timeout, caps: caps, server: server}
-	server.AddAction(ac)
+	ad.RegisterAction(ac)
 	return ac
 }
 
