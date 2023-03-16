@@ -1,12 +1,14 @@
 package indexer
 
 import (
+	"bufio"
 	"emperror.dev/errors"
 	iou "github.com/je4/utils/v2/pkg/io"
 	"golang.org/x/exp/slices"
 	"io"
 	"regexp"
 	"sort"
+	"strings"
 	"sync"
 )
 
@@ -69,16 +71,12 @@ func (ad *ActionDispatcher) GetActionNamesByCaps(caps ActionCapability) []string
 func (ad *ActionDispatcher) Stream(reader io.Reader, filename string) (*ResultV2, error) {
 	var writer = []*iou.WriteIgnoreCloser{}
 	wg := sync.WaitGroup{}
-	/*
-		mimeReader, err := iou.NewMimeReader(reader)
-		if err != nil {
-			return nil, errors.Wrapf(err, "cannot create MimeReader for %s", filename)
-		}
-		mimeType, _ := mimeReader.DetectContentType()
-		dataType := mimeType[:strings.IndexByte(mimeType, '/')]
-	*/
-	dataType := ""
-	mimeReader := reader
+	mimeReader, err := iou.NewMimeReader(reader)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot create MimeReader for %s", filename)
+	}
+	mimeType, _ := mimeReader.DetectContentType()
+	dataType := mimeType[:strings.IndexByte(mimeType, '/')]
 	results := make(chan *ResultV2, len(ad.actions))
 	for _, action := range ad.actions {
 		if action.GetCaps()&ACTSTREAM != 0 {
@@ -104,13 +102,21 @@ func (ad *ActionDispatcher) Stream(reader io.Reader, filename string) (*ResultV2
 	}
 	var ws = []io.Writer{}
 	for _, w := range writer {
-		ws = append(ws, w)
+		ws = append(ws, bufio.NewWriterSize(w, 1024*1024))
+		//		ws = append(ws, w)
 	}
 	multiWriter := io.MultiWriter(ws...)
 	written, err := io.Copy(multiWriter, mimeReader)
+	for _, w := range ws {
+		// it's sure, that w is a bufio.Writer
+		if err1 := w.(*bufio.Writer).Flush(); err1 != nil {
+			return nil, errors.Wrap(err1, "cannot flush buffer")
+		}
+	}
 	for _, w := range writer {
 		w.ForceClose()
 	}
+	// error of copy
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot copy stream to actions")
 	}
