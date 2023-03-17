@@ -38,6 +38,10 @@ type ActionNSRL struct {
 	nsrldb *badger.DB
 }
 
+func (aNSRL *ActionNSRL) CanHandle(contentType string, filename string) bool {
+	return true
+}
+
 func (aNSRL *ActionNSRL) Stream(contentType string, reader io.Reader, filename string) (*ResultV2, error) {
 	return nil, errors.New("nsrl actions does not support streaming")
 }

@@ -39,6 +39,16 @@ type ActionTika struct {
 	field         string
 }
 
+func (at *ActionTika) CanHandle(contentType string, filename string) bool {
+	if at.regexpMime != nil && !at.regexpMime.MatchString(contentType) {
+		return false
+	}
+	if at.regexpMimeNot != nil && at.regexpMimeNot.MatchString(contentType) {
+		return false
+	}
+	return true
+}
+
 func NewActionTika(name, uri string, timeout time.Duration, regexpMime, regexpMimeNot, field string, online bool, server *Server, ad *ActionDispatcher) Action {
 	var caps ActionCapability = ACTFILEHEAD
 	if online {
@@ -75,10 +85,7 @@ func (at *ActionTika) GetName() string {
 }
 
 func (at *ActionTika) Stream(contentType string, reader io.Reader, filename string) (*ResultV2, error) {
-	if at.regexpMime != nil && !at.regexpMime.MatchString(contentType) {
-		return nil, nil
-	}
-	if at.regexpMimeNot != nil && at.regexpMimeNot.MatchString(contentType) {
+	if !at.CanHandle(contentType, filename) {
 		return nil, nil
 	}
 	client := &http.Client{}
@@ -136,13 +143,9 @@ func (at *ActionTika) Stream(contentType string, reader io.Reader, filename stri
 }
 
 func (at *ActionTika) Do(uri *url.URL, contentType string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
-	if at.regexpMime != nil && !at.regexpMime.MatchString(contentType) {
+	if !at.CanHandle(contentType, uri.String()) {
 		return nil, nil, nil, nil
 	}
-	if at.regexpMimeNot != nil && at.regexpMimeNot.MatchString(contentType) {
-		return nil, nil, nil, nil
-	}
-
 	var dataOut io.Reader
 	// local files need some adjustments...
 	if uri.Scheme == "file" {

@@ -40,6 +40,10 @@ type ActionIdentify struct {
 	mimeMap  map[string]string
 }
 
+func (ai *ActionIdentify) CanHandle(contentType string, filename string) bool {
+	return regexIdentifyMime.MatchString(contentType)
+}
+
 func (ai *ActionIdentify) Stream(contentType string, reader io.Reader, filename string) (*ResultV2, error) {
 	return nil, errors.New("identify actions does not support streaming")
 }
@@ -99,7 +103,7 @@ func (ai *ActionIdentify) Do(uri *url.URL, contentType string, width *uint, heig
 	var filename string
 	var err error
 
-	if !regexIdentifyMime.MatchString(contentType) {
+	if !ai.CanHandle(contentType, uri.String()) {
 		return nil, nil, nil, ErrMimeNotApplicable
 	}
 

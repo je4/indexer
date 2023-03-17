@@ -80,6 +80,10 @@ type ActionFFProbe struct {
 	mime    []FFMPEGMime
 }
 
+func (as *ActionFFProbe) CanHandle(contentType string, filename string) bool {
+	return regexFFProbeMime.MatchString(contentType)
+}
+
 func NewActionFFProbe(name string, ffprobe string, wsl bool, timeout time.Duration, online bool, mime []FFMPEGMime, server *Server, ad *ActionDispatcher) Action {
 	var caps ActionCapability = ACTFILEHEAD | ACTSTREAM
 	if online {
@@ -103,6 +107,9 @@ func (as *ActionFFProbe) GetName() string {
 }
 
 func (as *ActionFFProbe) Stream(contentType string, reader io.Reader, filename string) (*ResultV2, error) {
+	if !as.CanHandle(contentType, filename) {
+		return nil, nil
+	}
 	if slices.Contains([]string{"image", "pdf"}, contentType) {
 		return nil, nil
 	}
@@ -162,13 +169,12 @@ func (as *ActionFFProbe) Stream(contentType string, reader io.Reader, filename s
 }
 
 func (as *ActionFFProbe) Do(uri *url.URL, contentType string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
+	if !as.CanHandle(contentType, uri.String()) {
+		return nil, nil, nil, nil
+	}
 	var metadata ffmpeg_models.Metadata
 	var filename string
 	var err error
-
-	if !regexFFProbeMime.MatchString(contentType) {
-		return nil, nil, nil, ErrMimeNotApplicable
-	}
 
 	// local files need some adjustments...
 	if uri.Scheme == "file" {

@@ -81,7 +81,7 @@ func (ad *ActionDispatcher) Stream(reader io.Reader, filename string) (*ResultV2
 
 	results := make(chan *ResultV2, len(ad.actions))
 	for _, action := range ad.actions {
-		if action.GetCaps()&ACTSTREAM != 0 {
+		if action.GetCaps()&ACTSTREAM != 0 && action.CanHandle(contentType, filename) {
 			wg.Add(1)
 			pr, pw := io.Pipe()
 			writer = append(writer, iou.NewWriteIgnoreCloser(pw))

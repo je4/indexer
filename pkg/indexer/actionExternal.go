@@ -68,6 +68,10 @@ type ActionExternal struct {
 	mimetype   *regexp.Regexp
 }
 
+func (as *ActionExternal) CanHandle(contentType string, filename string) bool {
+	return true
+}
+
 func (as *ActionExternal) Stream(contentType string, reader io.Reader, filename string) (*ResultV2, error) {
 	return nil, errors.New("external actions does not support streaming")
 }

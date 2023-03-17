@@ -32,6 +32,10 @@ type ActionSiegfried struct {
 	server  *Server
 }
 
+func (as *ActionSiegfried) CanHandle(contentType string, filename string) bool {
+	return true
+}
+
 func NewActionSiegfried(name string, signatureFile string, mimeMap map[string]string, server *Server, ad *ActionDispatcher) Action {
 	sf, err := siegfried.Load(signatureFile)
 	if err != nil {

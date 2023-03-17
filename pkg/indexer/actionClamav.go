@@ -34,6 +34,10 @@ type ActionClamAV struct {
 	server  *Server
 }
 
+func (ac *ActionClamAV) CanHandle(contentType string, filename string) bool {
+	return true
+}
+
 func (ac *ActionClamAV) Stream(contentType string, reader io.Reader, filename string) (*ResultV2, error) {
 	return nil, errors.New("clamav does not support streaming")
 }

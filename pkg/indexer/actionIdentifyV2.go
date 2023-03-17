@@ -45,6 +45,10 @@ type ActionIdentifyV2 struct {
 	extensionMap map[*regexp.Regexp]string
 }
 
+func (ai *ActionIdentifyV2) CanHandle(contentType string, filename string) bool {
+	return regexIdentifyMime.MatchString(contentType)
+}
+
 func NewActionIdentifyV2(name, identify, convert string, wsl bool, timeout time.Duration, online bool, server *Server, ad *ActionDispatcher) Action {
 	var caps ActionCapability = ACTFILEHEAD
 	if online {
