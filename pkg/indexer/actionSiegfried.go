@@ -54,7 +54,7 @@ func (as *ActionSiegfried) GetName() string {
 	return as.name
 }
 
-func (as *ActionSiegfried) Stream(dataType string, reader io.Reader, filename string) (*ResultV2, error) {
+func (as *ActionSiegfried) Stream(contentType string, reader io.Reader, filename string) (*ResultV2, error) {
 	ident, err := as.sf.Identify(reader, filepath.Base(filename), "")
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot identify file %s", filename)
@@ -80,7 +80,7 @@ func (as *ActionSiegfried) Stream(dataType string, reader io.Reader, filename st
 	return result, nil
 }
 
-func (as *ActionSiegfried) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
+func (as *ActionSiegfried) Do(uri *url.URL, contentType string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
 	filename, err := as.server.fm.Get(uri)
 	if err != nil {
 		return nil, nil, nil, errors.Wrapf(err, "no file url")

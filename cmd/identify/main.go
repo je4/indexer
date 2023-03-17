@@ -185,7 +185,7 @@ func main() {
 	}
 
 	if config.Tika.Enabled {
-		indexer.NewActionTika("tika", config.Tika.Address, config.Tika.Timeout.Duration, config.Tika.RegexpMime, config.Tika.Online, srv, ad)
+		indexer.NewActionTika("tika", config.Tika.Address, config.Tika.Timeout.Duration, config.Tika.RegexpMime, config.Tika.RegexpMimeNot, "", config.Tika.Online, srv, ad)
 		//srv.AddActions(tika)
 	}
 

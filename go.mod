@@ -2,10 +2,7 @@ module github.com/je4/indexer
 
 go 1.20
 
-replace (
-	github.com/google/flatbuffers => github.com/google/flatbuffers v1.12.1
-	github.com/je4/indexer => ./
-)
+replace github.com/google/flatbuffers => github.com/google/flatbuffers v1.12.1
 
 require (
 	emperror.dev/errors v0.8.1
@@ -17,13 +14,13 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/hooklift/iso9660 v1.0.0
 	github.com/je4/goffmpeg v0.0.0-20220114092308-33ab9986404d
-	github.com/je4/utils/v2 v2.0.6
+	github.com/je4/utils/v2 v2.0.7
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/phayes/freeport v0.0.0-20220201140144-74d24b5ae9f5
 	github.com/pkg/sftp v1.13.5
 	github.com/richardlehane/siegfried v1.9.6
 	golang.org/x/crypto v0.7.0
-	golang.org/x/exp v0.0.0-20230310171629-522b1b587ee0
+	golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0
 )
 
 require (
@@ -50,11 +47,10 @@ require (
 	github.com/ross-spencer/spargo v0.4.1 // indirect
 	github.com/ross-spencer/wikiprov v0.2.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/image v0.6.0 // indirect
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
-	google.golang.org/protobuf v1.29.1 // indirect
+	google.golang.org/protobuf v1.30.0 // indirect
 )

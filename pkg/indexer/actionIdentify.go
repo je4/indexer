@@ -40,7 +40,7 @@ type ActionIdentify struct {
 	mimeMap  map[string]string
 }
 
-func (ai *ActionIdentify) Stream(dataType string, reader io.Reader, filename string) (*ResultV2, error) {
+func (ai *ActionIdentify) Stream(contentType string, reader io.Reader, filename string) (*ResultV2, error) {
 	return nil, errors.New("identify actions does not support streaming")
 }
 
@@ -92,14 +92,14 @@ func (ai *ActionIdentify) GetName() string {
 	return ai.name
 }
 
-func (ai *ActionIdentify) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
+func (ai *ActionIdentify) Do(uri *url.URL, contentType string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
 	var metadata = make(map[string]interface{})
 	var metadataInt interface{}
 	//	var metadatalist = []map[string]interface{}{}
 	var filename string
 	var err error
 
-	if !regexIdentifyMime.MatchString(mimetype) {
+	if !regexIdentifyMime.MatchString(contentType) {
 		return nil, nil, nil, ErrMimeNotApplicable
 	}
 
@@ -130,10 +130,10 @@ func (ai *ActionIdentify) Do(uri *url.URL, mimetype string, width *uint, height 
 	}
 
 	infile := "-"
-	if t, ok := ai.mimeMap[mimetype]; ok {
+	if t, ok := ai.mimeMap[contentType]; ok {
 		infile = t + ":-"
 	} else {
-		t := strings.TrimPrefix(mimetype, "image/")
+		t := strings.TrimPrefix(contentType, "image/")
 		if len(t) > 0 {
 			infile = t + ":-"
 		}

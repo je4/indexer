@@ -48,11 +48,12 @@ type ConfigSiegfried struct {
 }
 
 type ConfigTika struct {
-	Address    string
-	Timeout    duration
-	RegexpMime string
-	Online     bool
-	Enabled    bool
+	Address       string
+	Timeout       duration
+	RegexpMime    string
+	RegexpMimeNot string
+	Online        bool
+	Enabled       bool
 }
 
 type FFMPEGMime struct {

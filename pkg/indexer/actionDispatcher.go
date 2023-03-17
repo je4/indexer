@@ -75,8 +75,10 @@ func (ad *ActionDispatcher) Stream(reader io.Reader, filename string) (*ResultV2
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot create MimeReader for %s", filename)
 	}
-	mimeType, _ := mimeReader.DetectContentType()
-	dataType := mimeType[:strings.IndexByte(mimeType, '/')]
+	contentType, _ := mimeReader.DetectContentType()
+	parts := strings.Split(contentType, ";")
+	contentType = parts[0]
+
 	results := make(chan *ResultV2, len(ad.actions))
 	for _, action := range ad.actions {
 		if action.GetCaps()&ACTSTREAM != 0 {
@@ -84,8 +86,9 @@ func (ad *ActionDispatcher) Stream(reader io.Reader, filename string) (*ResultV2
 			pr, pw := io.Pipe()
 			writer = append(writer, iou.NewWriteIgnoreCloser(pw))
 			go func(r io.Reader, a Action) {
+				defer wg.Done()
 				// stream to actions
-				result, err := a.Stream(dataType, r, filename)
+				result, err := a.Stream(contentType, r, filename)
 				if err != nil {
 					result = NewResultV2()
 					result.Errors[a.GetName()] = err.Error()
@@ -96,7 +99,6 @@ func (ad *ActionDispatcher) Stream(reader io.Reader, filename string) (*ResultV2
 				}
 				// discard remaining data
 				_, _ = io.Copy(io.Discard, r)
-				wg.Done()
 			}(iou.NewReadIgnoreCloser(pr), action)
 		}
 	}

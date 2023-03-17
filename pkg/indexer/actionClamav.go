@@ -34,7 +34,7 @@ type ActionClamAV struct {
 	server  *Server
 }
 
-func (ac *ActionClamAV) Stream(dataType string, reader io.Reader, filename string) (*ResultV2, error) {
+func (ac *ActionClamAV) Stream(contentType string, reader io.Reader, filename string) (*ResultV2, error) {
 	return nil, errors.New("clamav does not support streaming")
 }
 
@@ -57,7 +57,7 @@ func (ac *ActionClamAV) GetName() string {
 	return ac.name
 }
 
-func (ac *ActionClamAV) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
+func (ac *ActionClamAV) Do(uri *url.URL, contentType string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
 	var filename string
 	var err error
 

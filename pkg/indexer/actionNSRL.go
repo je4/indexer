@@ -38,7 +38,7 @@ type ActionNSRL struct {
 	nsrldb *badger.DB
 }
 
-func (aNSRL *ActionNSRL) Stream(dataType string, reader io.Reader, filename string) (*ResultV2, error) {
+func (aNSRL *ActionNSRL) Stream(contentType string, reader io.Reader, filename string) (*ResultV2, error) {
 	return nil, errors.New("nsrl actions does not support streaming")
 }
 
@@ -160,7 +160,7 @@ func (aNSRL *ActionNSRL) GetName() string {
 	return aNSRL.name
 }
 
-func (aNSRL *ActionNSRL) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
+func (aNSRL *ActionNSRL) Do(uri *url.URL, contentType string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
 	if checksums == nil {
 		checksums = make(map[string]string)
 	}

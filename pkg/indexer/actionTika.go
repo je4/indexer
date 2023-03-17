@@ -18,7 +18,6 @@ import (
 	"emperror.dev/errors"
 	"encoding/json"
 	"fmt"
-	"golang.org/x/exp/slices"
 	"io"
 	"net/http"
 	"net/url"
@@ -30,26 +29,34 @@ import (
 // java -jar tika-server-1.24.jar -enableUnsecureFeatures -enableFileUrl --port=9997
 
 type ActionTika struct {
-	name       string
-	url        string
-	timeout    time.Duration
-	regexpMime *regexp.Regexp
-	caps       ActionCapability
-	server     *Server
+	name          string
+	url           string
+	timeout       time.Duration
+	regexpMime    *regexp.Regexp
+	regexpMimeNot *regexp.Regexp
+	caps          ActionCapability
+	server        *Server
+	field         string
 }
 
-func NewActionTika(name string, uri string, timeout time.Duration, regexpMime string, online bool, server *Server, ad *ActionDispatcher) Action {
+func NewActionTika(name, uri string, timeout time.Duration, regexpMime, regexpMimeNot, field string, online bool, server *Server, ad *ActionDispatcher) Action {
 	var caps ActionCapability = ACTFILEHEAD
 	if online {
 		caps |= ACTALLPROTO
 	}
 	at := &ActionTika{
-		name:       name,
-		url:        uri,
-		timeout:    timeout,
-		regexpMime: regexp.MustCompile(regexpMime),
-		caps:       caps,
-		server:     server,
+		name:    name,
+		url:     uri,
+		timeout: timeout,
+		caps:    caps,
+		server:  server,
+		field:   field,
+	}
+	if regexpMime != "" {
+		at.regexpMime = regexp.MustCompile(regexpMime)
+	}
+	if regexpMimeNot != "" {
+		at.regexpMimeNot = regexp.MustCompile(regexpMimeNot)
 	}
 	ad.RegisterAction(at)
 	return at
@@ -67,8 +74,11 @@ func (at *ActionTika) GetName() string {
 	return at.name
 }
 
-func (at *ActionTika) Stream(dataType string, reader io.Reader, filename string) (*ResultV2, error) {
-	if slices.Contains([]string{"audio", "video", "image"}, dataType) {
+func (at *ActionTika) Stream(contentType string, reader io.Reader, filename string) (*ResultV2, error) {
+	if at.regexpMime != nil && !at.regexpMime.MatchString(contentType) {
+		return nil, nil
+	}
+	if at.regexpMimeNot != nil && at.regexpMimeNot.MatchString(contentType) {
 		return nil, nil
 	}
 	client := &http.Client{}
@@ -104,7 +114,16 @@ func (at *ActionTika) Stream(dataType string, reader io.Reader, filename string)
 		return nil, errors.Wrapf(err, "error decoding json - %v", string(bodyBytes))
 	}
 	var result = NewResultV2()
-	result.Metadata[at.GetName()] = meta
+	if at.field != "" {
+		if len(meta) > 0 {
+			fls, ok := meta[0][at.field]
+			if ok {
+				result.Metadata[at.GetName()] = fls
+			}
+		}
+	} else {
+		result.Metadata[at.GetName()] = meta
+	}
 
 	if len(meta) > 0 {
 		if mtype, ok := meta[0]["Content-Type"]; ok {
@@ -116,9 +135,12 @@ func (at *ActionTika) Stream(dataType string, reader io.Reader, filename string)
 	return result, nil
 }
 
-func (at *ActionTika) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
-	if !at.regexpMime.MatchString(mimetype) {
-		return nil, nil, nil, ErrMimeNotApplicable
+func (at *ActionTika) Do(uri *url.URL, contentType string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
+	if at.regexpMime != nil && !at.regexpMime.MatchString(contentType) {
+		return nil, nil, nil, nil
+	}
+	if at.regexpMimeNot != nil && at.regexpMimeNot.MatchString(contentType) {
+		return nil, nil, nil, nil
 	}
 
 	var dataOut io.Reader

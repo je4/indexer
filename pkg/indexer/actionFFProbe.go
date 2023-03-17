@@ -102,8 +102,8 @@ func (as *ActionFFProbe) GetName() string {
 	return as.name
 }
 
-func (as *ActionFFProbe) Stream(dataType string, reader io.Reader, filename string) (*ResultV2, error) {
-	if slices.Contains([]string{"image"}, dataType) {
+func (as *ActionFFProbe) Stream(contentType string, reader io.Reader, filename string) (*ResultV2, error) {
+	if slices.Contains([]string{"image", "pdf"}, contentType) {
 		return nil, nil
 	}
 	cmdparam := []string{"-i", "-", "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", "-show_error"}
@@ -161,12 +161,12 @@ func (as *ActionFFProbe) Stream(dataType string, reader io.Reader, filename stri
 	return result, nil
 }
 
-func (as *ActionFFProbe) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
+func (as *ActionFFProbe) Do(uri *url.URL, contentType string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
 	var metadata ffmpeg_models.Metadata
 	var filename string
 	var err error
 
-	if !regexFFProbeMime.MatchString(mimetype) {
+	if !regexFFProbeMime.MatchString(contentType) {
 		return nil, nil, nil, ErrMimeNotApplicable
 	}
 

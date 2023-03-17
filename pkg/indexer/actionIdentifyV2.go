@@ -97,8 +97,8 @@ func (ai *ActionIdentifyV2) GetName() string {
 	return ai.name
 }
 
-func (ai *ActionIdentifyV2) Stream(dataType string, reader io.Reader, filename string) (*ResultV2, error) {
-	if slices.Contains([]string{"audio", "video"}, dataType) {
+func (ai *ActionIdentifyV2) Stream(contentType string, reader io.Reader, filename string) (*ResultV2, error) {
+	if slices.Contains([]string{"audio", "video", "pdf"}, contentType) {
 		return nil, nil
 	}
 	infile := "-"
@@ -170,14 +170,14 @@ func (ai *ActionIdentifyV2) Stream(dataType string, reader io.Reader, filename s
 	return result, nil
 }
 
-func (ai *ActionIdentifyV2) Do(uri *url.URL, mimetype string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
+func (ai *ActionIdentifyV2) Do(uri *url.URL, contentType string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
 	var metadata = FullMagickResult{
 		Frames: []*Geometry{},
 	}
 	var filename string
 	var err error
 
-	if !regexIdentifyMime.MatchString(mimetype) {
+	if !regexIdentifyMime.MatchString(contentType) {
 		return nil, nil, nil, ErrMimeNotApplicable
 	}
 
@@ -208,7 +208,7 @@ func (ai *ActionIdentifyV2) Do(uri *url.URL, mimetype string, width *uint, heigh
 	}
 
 	infile := "-"
-	if t, ok := ai.mimeMap[mimetype]; ok {
+	if t, ok := ai.mimeMap[contentType]; ok {
 		infile = t + ":-"
 	}
 	cmdparam := []string{infile, "json:-"}
