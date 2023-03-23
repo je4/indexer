@@ -1,4 +1,4 @@
-module github.com/je4/indexer
+module github.com/je4/indexer/v2
 
 go 1.20
 
@@ -36,6 +36,7 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/flatbuffers v23.3.3+incompatible // indirect
 	github.com/hooklift/assert v0.1.0 // indirect
+	github.com/je4/indexer v0.0.0-20230317101220-dbdc214894c4 // indirect
 	github.com/klauspost/compress v1.16.3 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect

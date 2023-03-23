@@ -93,6 +93,8 @@ github.com/hooklift/iso9660 v1.0.0/go.mod h1:sOC47ru8lB0DlU0EZ7BJ0KCP5rDqOvx0c/5
 github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
 github.com/je4/goffmpeg v0.0.0-20220114092308-33ab9986404d h1:elX95ncLvCbNgkfD03bfTUhm0cdqdVYuuo5ETIOftoA=
 github.com/je4/goffmpeg v0.0.0-20220114092308-33ab9986404d/go.mod h1:AU6NEns8+WYmI/UYzllN8CWM2jsIVO7jDz2FeCf7Ssw=
+github.com/je4/indexer v0.0.0-20230317101220-dbdc214894c4 h1:cDt3TzCmVaBw8TpZYKEQEOz7cWABvnP8INztQbWnAe0=
+github.com/je4/indexer v0.0.0-20230317101220-dbdc214894c4/go.mod h1:1QF1LW78M8U1BwiAxEDV1RrrjwJA2B7Fuk0omqTkxCQ=
 github.com/je4/utils/v2 v2.0.7 h1:sGRhNU4RoRutLwl7nczXGYmDYfkidrwZUi+QKWV4bpg=
 github.com/je4/utils/v2 v2.0.7/go.mod h1:6CqX6slKRbqTS+EYgxALR4nFpzULZ2An809kIhXw3mw=
 github.com/kisielk/errcheck v1.5.0/go.mod h1:pFxgyoBC7bSaBwPgfKdkLd5X25qrDl4LWUI2bnpBCr8=
