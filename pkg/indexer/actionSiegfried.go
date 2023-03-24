@@ -14,6 +14,7 @@
 package indexer
 
 import (
+	"bytes"
 	"emperror.dev/errors"
 	"github.com/richardlehane/siegfried"
 	"github.com/richardlehane/siegfried/pkg/pronom"
@@ -36,8 +37,8 @@ func (as *ActionSiegfried) CanHandle(contentType string, filename string) bool {
 	return true
 }
 
-func NewActionSiegfried(name string, signatureFile string, mimeMap map[string]string, server *Server, ad *ActionDispatcher) Action {
-	sf, err := siegfried.Load(signatureFile)
+func NewActionSiegfried(name string, signatureData []byte, mimeMap map[string]string, server *Server, ad *ActionDispatcher) Action {
+	sf, err := siegfried.LoadReader(bytes.NewBuffer(signatureData))
 	if err != nil {
 		log.Fatalln(err)
 	}

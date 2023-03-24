@@ -18,7 +18,7 @@ import (
 	"flag"
 	"fmt"
 	badger "github.com/dgraph-io/badger/v3"
-	"github.com/je4/indexer/pkg/indexer"
+	"github.com/je4/indexer/v2/pkg/indexer"
 	lm "github.com/je4/utils/v2/pkg/logger"
 	"html/template"
 	"io"
@@ -162,7 +162,11 @@ func main() {
 		if _, err := os.Stat(config.Siegfried.SignatureFile); err != nil {
 			log.Panicf("siegfried signature file at %s not found. Please use 'sf -update' to download it: %v", config.Siegfried.SignatureFile, err)
 		}
-		indexer.NewActionSiegfried("siegfried", config.Siegfried.SignatureFile, config.Siegfried.MimeMap, srv, ad)
+		signatureData, err := os.ReadFile(config.Siegfried.SignatureFile)
+		if err != nil {
+			log.Panicf("cannot read signature file at %s: %v", config.Siegfried.SignatureFile, err)
+		}
+		indexer.NewActionSiegfried("siegfried", signatureData, config.Siegfried.MimeMap, srv, ad)
 		//srv.AddActions(sf)
 	}
 
@@ -199,11 +203,11 @@ func main() {
 	}
 
 	for _, eaconfig := range config.External {
-		var caps indexer.ActionCapability
+		var caps uint
 		for _, c := range eaconfig.ActionCapabilities {
-			caps |= c
+			caps |= uint(c)
 		}
-		indexer.NewActionExternal(eaconfig.Name, eaconfig.Address, caps, eaconfig.CallType, eaconfig.Mimetype, srv, ad)
+		indexer.NewActionExternal(eaconfig.Name, eaconfig.Address, indexer.ActionCapability(caps), eaconfig.CallType, eaconfig.Mimetype, srv, ad)
 		//srv.AddActions(ea)
 	}
 

@@ -15,7 +15,7 @@ package main
 
 import (
 	"github.com/BurntSushi/toml"
-	"github.com/je4/indexer/pkg/indexer"
+	"github.com/je4/indexer/v2/pkg/indexer"
 	"log"
 	"os"
 	"os/user"

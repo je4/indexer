@@ -68,7 +68,7 @@ func (ad *ActionDispatcher) GetActionNamesByCaps(caps ActionCapability) []string
 	return names
 }
 
-func (ad *ActionDispatcher) Stream(reader io.Reader, filename string) (*ResultV2, error) {
+func (ad *ActionDispatcher) Stream(reader io.Reader, filename string, actions []string) (*ResultV2, error) {
 	var writer = []*iou.WriteIgnoreCloser{}
 	wg := sync.WaitGroup{}
 	mimeReader, err := iou.NewMimeReader(reader)
@@ -81,7 +81,7 @@ func (ad *ActionDispatcher) Stream(reader io.Reader, filename string) (*ResultV2
 
 	results := make(chan *ResultV2, len(ad.actions))
 	for _, action := range ad.actions {
-		if action.GetCaps()&ACTSTREAM != 0 && action.CanHandle(contentType, filename) {
+		if slices.Contains(actions, action.GetName()) && action.GetCaps()&ACTSTREAM != 0 && action.CanHandle(contentType, filename) {
 			wg.Add(1)
 			pr, pw := io.Pipe()
 			writer = append(writer, iou.NewWriteIgnoreCloser(pw))
