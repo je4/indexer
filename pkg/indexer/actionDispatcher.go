@@ -83,26 +83,33 @@ func (ad *ActionDispatcher) Stream(reader io.Reader, stateFiles []string, action
 	contentType = parts[0]
 
 	results := make(chan *ResultV2, len(ad.actions))
-	for _, action := range ad.actions {
-		if slices.Contains(actions, action.GetName()) && action.GetCaps()&ACTSTREAM != 0 && action.CanHandle(contentType, stateFiles[0]) {
-			wg.Add(1)
-			pr, pw := io.Pipe()
-			writer = append(writer, iou.NewWriteIgnoreCloser(pw))
-			go func(r io.Reader, a Action) {
-				defer wg.Done()
-				// stream to actions
-				result, err := a.Stream(contentType, r, stateFiles[0])
-				if err != nil {
-					result = NewResultV2()
-					result.Errors[a.GetName()] = err.Error()
-				}
-				// send result to channel
-				if result != nil {
-					results <- result
-				}
-				// discard remaining data
-				_, _ = io.Copy(io.Discard, r)
-			}(iou.NewReadIgnoreCloser(pr), action)
+	for _, actionStr := range actions {
+		var found bool
+		for _, action := range ad.actions {
+			if actionStr == action.GetName() && action.GetCaps()&ACTSTREAM != 0 && action.CanHandle(contentType, stateFiles[0]) {
+				found = true
+				wg.Add(1)
+				pr, pw := io.Pipe()
+				writer = append(writer, iou.NewWriteIgnoreCloser(pw))
+				go func(r io.Reader, a Action) {
+					defer wg.Done()
+					// stream to actions
+					result, err := a.Stream(contentType, r, stateFiles[0])
+					if err != nil {
+						result = NewResultV2()
+						result.Errors[a.GetName()] = err.Error()
+					}
+					// send result to channel
+					if result != nil {
+						results <- result
+					}
+					// discard remaining data
+					_, _ = io.Copy(io.Discard, r)
+				}(iou.NewReadIgnoreCloser(pr), action)
+			}
+		}
+		if !found {
+			return nil, errors.Errorf("action '%s' not configured", actionStr)
 		}
 	}
 	var ws = []io.Writer{}
