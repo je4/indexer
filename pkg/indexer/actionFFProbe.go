@@ -24,6 +24,7 @@ import (
 	"io"
 	"net/url"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"time"
@@ -81,7 +82,25 @@ type ActionFFProbe struct {
 }
 
 func (as *ActionFFProbe) CanHandle(contentType string, filename string) bool {
-	return regexFFProbeMime.MatchString(contentType)
+	if regexFFProbeMime.MatchString(contentType) {
+		return true
+	}
+	return slices.Contains(
+		[]string{
+			".3g2", ".3gp", ".amv", ".asf", ".avi", ".drc", ".flv",
+			".flv", ".flv", ".f4v", ".f4p", ".f4a", ".f4b", ".gif",
+			".gifv", ".m4v", ".mkv", ".mng", ".mov", ".qt", ".mp4",
+			".m4v", ".mpg", ".mp2", ".mpeg", ".mpe", ".mpv", ".mpg",
+			".mpeg", ".m2v", ".MTS", ".M2TS", ".TS", ".mxf", ".nsv",
+			".ogv", ".ogg", ".rm", ".rmvb", ".roq", ".svi", ".viv",
+			".vob", ".webm", ".wmv", ".yuv", ".3gp", ".aa", ".aac",
+			".aax", ".act", ".aiff", ".alac", ".amr", ".ape", ".au",
+			".awb", ".dss", ".dvf", ".flac", ".gsm", ".iklax", ".ivs",
+			".m4a", ".m4b", ".m4p", ".mmf", ".mp3", ".mpc", ".msv",
+			".nmf", ".ogg", ".oga", ".mogg", ".opus", ".ra", ".rm",
+			".raw", ".rf64", ".sln", ".tta", ".voc", ".vox", ".wav",
+			".wma", ".wv", ".webm", ".8svx", ".cda"},
+		filepath.Ext(filename))
 }
 
 func NewActionFFProbe(name string, ffprobe string, wsl bool, timeout time.Duration, online bool, mime []FFMPEGMime, server *Server, ad *ActionDispatcher) Action {
