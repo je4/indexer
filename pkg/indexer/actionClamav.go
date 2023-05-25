@@ -34,6 +34,11 @@ type ActionClamAV struct {
 	server  *Server
 }
 
+func (ac *ActionClamAV) DoV2(filename string) (*ResultV2, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (ac *ActionClamAV) CanHandle(contentType string, filename string) bool {
 	return true
 }

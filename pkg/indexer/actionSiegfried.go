@@ -85,6 +85,37 @@ func (as *ActionSiegfried) Stream(contentType string, reader io.Reader, filename
 	return result, nil
 }
 
+func (as *ActionSiegfried) DoV2(filename string) (*ResultV2, error) {
+	reader, err := os.Open(filename)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot open file '%s'", filename)
+	}
+	defer reader.Close()
+	ident, err := as.sf.Identify(reader, filepath.Base(filename), "")
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot identify file %s", filename)
+	}
+	var result = NewResultV2()
+	for _, id := range ident {
+		if pid, ok := id.(pronom.Identification); ok {
+			if pid.MIME != "" {
+				result.Mimetypes = append(result.Mimetypes, pid.MIME)
+			}
+			if pid.ID != "" {
+				result.Pronoms = append(result.Pronoms, pid.ID)
+				if mime, ok := as.mimeMap[pid.ID]; ok {
+					if mime != "" {
+						result.Mimetypes = append(result.Mimetypes, mime)
+					}
+				}
+			}
+
+		}
+	}
+	result.Metadata[as.GetName()] = ident
+	return result, nil
+}
+
 func (as *ActionSiegfried) Do(uri *url.URL, contentType string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
 	filename, err := as.server.fm.Get(uri)
 	if err != nil {

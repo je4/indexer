@@ -38,6 +38,11 @@ type ActionNSRL struct {
 	nsrldb *badger.DB
 }
 
+func (aNSRL *ActionNSRL) DoV2(filename string) (*ResultV2, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (aNSRL *ActionNSRL) CanHandle(contentType string, filename string) bool {
 	return true
 }

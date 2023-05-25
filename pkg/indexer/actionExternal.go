@@ -68,6 +68,11 @@ type ActionExternal struct {
 	mimetype   *regexp.Regexp
 }
 
+func (as *ActionExternal) DoV2(filename string) (*ResultV2, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (as *ActionExternal) CanHandle(contentType string, filename string) bool {
 	return true
 }

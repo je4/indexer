@@ -174,6 +174,75 @@ func (ai *ActionIdentifyV2) Stream(contentType string, reader io.Reader, filenam
 	return result, nil
 }
 
+func (ai *ActionIdentifyV2) DoV2(filename string) (*ResultV2, error) {
+	infile := filename
+	for re, t := range ai.extensionMap {
+		if re.MatchString(filename) {
+			infile = t + ":" + filename
+			break
+		}
+	}
+	cmdparam := []string{infile, "json:-"}
+	cmdfile := ai.convert
+	if ai.wsl {
+		cmdparam = append([]string{cmdfile}, cmdparam...)
+		cmdfile = "wsl"
+	}
+
+	var out bytes.Buffer
+	out.Grow(1024 * 1024) // 1MB size
+	ctx, cancel := context.WithTimeout(context.Background(), ai.timeout)
+	defer cancel()
+
+	cmd := exec.CommandContext(ctx, cmdfile, cmdparam...)
+	cmd.Stdout = &out
+
+	if err := cmd.Run(); err != nil {
+		return nil, errors.Wrapf(err, "error executing (%s %s) for file '%s': %v", cmdfile, cmdparam, filename, out.String())
+	}
+
+	var meta = []*MagickResult{}
+	if err := json.Unmarshal([]byte(out.String()), &meta); err != nil {
+		return nil, errors.Wrapf(err, "cannot unmarshall metadata: %s", out.String())
+	}
+	if len(meta) == 0 {
+		return nil, errors.New("no metadata from imagemagick found")
+	}
+
+	var metadata = FullMagickResult{
+		Frames: []*Geometry{},
+	}
+
+	metadata.Magick = meta[0]
+	if metadata.Magick.Image != nil {
+		metadata.Magick.Image.Name = filename
+	}
+	var result = NewResultV2()
+	mimetypes := []string{}
+	for _, m := range meta {
+		if m.Image == nil {
+			continue
+		}
+		if m.Image.MimeType != "" {
+			mimetypes = append(mimetypes, m.Image.MimeType)
+		}
+		if m.Image.Geometry != nil {
+			metadata.Frames = append(metadata.Frames, m.Image.Geometry)
+			if uint(m.Image.Geometry.Width+m.Image.Geometry.X) > result.Width {
+				result.Width = uint(m.Image.Geometry.Width + m.Image.Geometry.X)
+			}
+			if uint(m.Image.Geometry.Height+m.Image.Geometry.Y) > result.Height {
+				result.Height = uint(m.Image.Geometry.Height + m.Image.Geometry.Y)
+			}
+		}
+	}
+	slices.Sort(mimetypes)
+	result.Mimetypes = slices.Compact(mimetypes)
+	result.Metadata[ai.GetName()] = metadata
+
+	return result, nil
+}
+
 func (ai *ActionIdentifyV2) Do(uri *url.URL, contentType string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
 	var metadata = FullMagickResult{
 		Frames: []*Geometry{},

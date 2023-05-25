@@ -40,6 +40,11 @@ type ActionIdentify struct {
 	mimeMap  map[string]string
 }
 
+func (ai *ActionIdentify) DoV2(filename string) (*ResultV2, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (ai *ActionIdentify) CanHandle(contentType string, filename string) bool {
 	return regexIdentifyMime.MatchString(contentType)
 }

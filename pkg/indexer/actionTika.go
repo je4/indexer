@@ -142,6 +142,66 @@ func (at *ActionTika) Stream(contentType string, reader io.Reader, filename stri
 	return result, nil
 }
 
+func (at *ActionTika) DoV2(filename string) (*ResultV2, error) {
+	reader, err := os.Open(filename)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot open file '%s'", filename)
+	}
+	defer reader.Close()
+	client := &http.Client{}
+	ctx, cancel := context.WithTimeout(context.Background(), at.timeout)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, at.url, reader)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot create tika request - %v", at.url)
+	}
+	req.Header.Add("Accept", "application/json")
+	//req.Header.Add("fileUrl", uri.String())
+	tresp, err := client.Do(req)
+	if err != nil {
+		return nil, errors.Wrapf(err, "error in tika request - %v", at.url)
+	}
+	defer tresp.Body.Close()
+	bodyBytes, err := io.ReadAll(tresp.Body)
+	if err != nil {
+		return nil, errors.Wrapf(err, "error reading body - %v", at.url)
+	}
+
+	if tresp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("status not ok - %v -> %v: %s", at.url, tresp.Status, string(bodyBytes)))
+	}
+
+	if bodyBytes[0] == '{' {
+		bodyBytes = append([]byte{'['}, bodyBytes...)
+		bodyBytes = append(bodyBytes, ']')
+	}
+	meta := make([]map[string]interface{}, 0)
+	err = json.Unmarshal(bodyBytes, &meta)
+	if err != nil {
+		return nil, errors.Wrapf(err, "error decoding json - %v", string(bodyBytes))
+	}
+	var result = NewResultV2()
+	if at.field != "" {
+		if len(meta) > 0 {
+			fls, ok := meta[0][at.field]
+			if ok {
+				result.Metadata[at.GetName()] = fls
+			}
+		}
+	} else {
+		result.Metadata[at.GetName()] = meta
+	}
+
+	if len(meta) > 0 {
+		if mtype, ok := meta[0]["Content-Type"]; ok {
+			if mTypeString, ok := mtype.(string); ok {
+				result.Mimetypes = append(result.Mimetypes, mTypeString)
+			}
+		}
+	}
+	return result, nil
+}
+
 func (at *ActionTika) Do(uri *url.URL, contentType string, width *uint, height *uint, duration *time.Duration, checksums map[string]string) (interface{}, []string, []string, error) {
 	if !at.CanHandle(contentType, uri.String()) {
 		return nil, nil, nil, nil
