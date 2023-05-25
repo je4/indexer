@@ -27,6 +27,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -100,7 +101,7 @@ func (as *ActionFFProbe) CanHandle(contentType string, filename string) bool {
 			".nmf", ".ogg", ".oga", ".mogg", ".opus", ".ra", ".rm",
 			".raw", ".rf64", ".sln", ".tta", ".voc", ".vox", ".wav",
 			".wma", ".wv", ".webm", ".8svx", ".cda"},
-		filepath.Ext(filename))
+		strings.ToLower(filepath.Ext(filename)))
 }
 
 func NewActionFFProbe(name string, ffprobe string, wsl bool, timeout time.Duration, online bool, mime []FFMPEGMime, server *Server, ad *ActionDispatcher) Action {
