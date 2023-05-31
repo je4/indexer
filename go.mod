@@ -13,7 +13,7 @@ require (
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/hooklift/iso9660 v1.0.0
-	github.com/je4/filesystem/v2 v2.0.0-20230530114632-2e633ae17a09
+	github.com/je4/filesystem/v2 v2.0.0-20230531115802-9780dd7c06d9
 	github.com/je4/goffmpeg v0.0.0-20220114092308-33ab9986404d
 	github.com/je4/indexer v0.0.0-20230317101220-dbdc214894c4
 	github.com/je4/utils/v2 v2.0.8-0.20230429090351-3cef63b41e76

@@ -94,6 +94,8 @@ github.com/hooklift/iso9660 v1.0.0/go.mod h1:sOC47ru8lB0DlU0EZ7BJ0KCP5rDqOvx0c/5
 github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
 github.com/je4/filesystem/v2 v2.0.0-20230530114632-2e633ae17a09 h1:lKe/Y7gSNDg3SRBOvSZmxZMcB10X2KglzcebufCG8ts=
 github.com/je4/filesystem/v2 v2.0.0-20230530114632-2e633ae17a09/go.mod h1:xglZscdh7JBlPYIMd7e+6UaUhTNZoeqOxbdBZtAHYs8=
+github.com/je4/filesystem/v2 v2.0.0-20230531115802-9780dd7c06d9 h1:vfDPqYWAZqLvZYxZHWmJKfrqXICoX49sr4sq7IsyG6M=
+github.com/je4/filesystem/v2 v2.0.0-20230531115802-9780dd7c06d9/go.mod h1:xglZscdh7JBlPYIMd7e+6UaUhTNZoeqOxbdBZtAHYs8=
 github.com/je4/goffmpeg v0.0.0-20220114092308-33ab9986404d h1:elX95ncLvCbNgkfD03bfTUhm0cdqdVYuuo5ETIOftoA=
 github.com/je4/goffmpeg v0.0.0-20220114092308-33ab9986404d/go.mod h1:AU6NEns8+WYmI/UYzllN8CWM2jsIVO7jDz2FeCf7Ssw=
 github.com/je4/indexer v0.0.0-20230317101220-dbdc214894c4 h1:cDt3TzCmVaBw8TpZYKEQEOz7cWABvnP8INztQbWnAe0=
