@@ -13,18 +13,20 @@ require (
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/hooklift/iso9660 v1.0.0
+	github.com/je4/filesystem/v2 v2.0.0-20230530114632-2e633ae17a09
 	github.com/je4/goffmpeg v0.0.0-20220114092308-33ab9986404d
 	github.com/je4/indexer v0.0.0-20230317101220-dbdc214894c4
-	github.com/je4/utils/v2 v2.0.7
+	github.com/je4/utils/v2 v2.0.8-0.20230429090351-3cef63b41e76
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/phayes/freeport v0.0.0-20220201140144-74d24b5ae9f5
 	github.com/pkg/sftp v1.13.5
 	github.com/richardlehane/siegfried v1.10.0
 	golang.org/x/crypto v0.8.0
-	golang.org/x/exp v0.0.0-20230321023759-10a507213a29
+	golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53
 )
 
 require (
+	github.com/bluele/gcache v0.0.2 // indirect
 	github.com/c4milo/gotoolkit v0.0.0-20190525173301-67483a18c17a // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
@@ -36,8 +38,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/flatbuffers v23.3.3+incompatible // indirect
-	github.com/hooklift/assert v0.1.0 // indirect
-	github.com/klauspost/compress v1.16.4 // indirect
+	github.com/klauspost/compress v1.16.5 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/richardlehane/characterize v1.0.0 // indirect
