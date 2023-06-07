@@ -169,6 +169,13 @@ func (ad *ActionDispatcher) Stream(reader io.Reader, stateFiles []string, action
 		result.Pronom = result.Pronoms[0]
 	}
 
+	if result.Type == "" {
+		idx := strings.IndexByte(result.Mimetype, ':')
+		if idx >= 0 {
+			result.Type = result.Mimetype[:idx]
+		}
+	}
+
 	result.Size = uint64(written)
 	return result, nil
 }

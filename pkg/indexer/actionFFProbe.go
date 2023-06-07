@@ -185,6 +185,14 @@ func (as *ActionFFProbe) Stream(contentType string, reader io.Reader, filename s
 		}
 	}
 	result.Metadata[as.GetName()] = metadata
+	if hasVideo {
+		result.Type = "video"
+	} else {
+		if hasAudio {
+			result.Type = "audio"
+		}
+	}
+	result.Subtype = metadata.Format.FormatName
 	return result, nil
 }
 

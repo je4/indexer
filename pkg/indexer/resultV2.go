@@ -13,6 +13,8 @@ type ResultV2 struct {
 	Duration  uint              `json:"duration,omitempty"`
 	Size      uint64            `json:"size"`
 	Metadata  map[string]any    `json:"metadata"`
+	Type      string            `json:"type"`
+	Subtype   string            `json:"subtype"`
 }
 
 func NewResultV2() *ResultV2 {
@@ -66,6 +68,10 @@ func (v *ResultV2) Merge(r *ResultV2) {
 		for k, e := range r.Errors {
 			v.Errors[k] = e
 		}
+	}
+	if r.Type != "" {
+		v.Type = r.Type
+		v.Subtype = r.Subtype
 	}
 }
 

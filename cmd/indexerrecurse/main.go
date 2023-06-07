@@ -15,6 +15,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
 //go:embed minimal.toml
@@ -22,18 +23,23 @@ var configToml []byte
 
 var folder = flag.String("path", "", "path to iterate")
 
+var waiter sync.WaitGroup
+
 func worker(id int, fsys fs.FS, idx *util.Indexer, logger *logging.Logger, jobs <-chan string, results chan<- string) {
 	for path := range jobs {
 		fmt.Println("worker", id, "processing job", path)
-		stop := strings.HasSuffix(path, "content~fcr-desc.nt")
-		_ = stop
 		r, cs, err := idx.Index(fsys, path, []string{"siegfried", "identify", "ffprobe", "tika"}, []checksum.DigestAlgorithm{checksum.DigestSHA512}, io.Discard, logger)
 		if err != nil {
 			logger.Errorf("cannot index (%s)%s: %v", fsys, path, err)
+			waiter.Done()
 			return
 		}
 		fmt.Printf("#%03d: %s/%s\n           [%s] - %s\n", id, fsys, path, r.Mimetype, cs[checksum.DigestSHA512])
+		if r.Type == "image" {
+			fmt.Printf("#           image: %vx%v", r.Width, r.Height)
+		}
 		results <- path + " done"
+		waiter.Done()
 	}
 }
 
@@ -99,9 +105,10 @@ func main() {
 		fmt.Printf("[f] %s/%s\n", zipFS, path)
 		isZip := strings.Contains(path, ".zip")
 		if !isZip {
-			return nil
+			//			return nil
 		}
 
+		waiter.Add(1)
 		jobs <- path
 
 		return nil
@@ -109,5 +116,6 @@ func main() {
 		panic(fmt.Errorf("cannot walkd folder %v: %v", dirFS, err))
 	}
 
+	waiter.Wait()
 	close(jobs)
 }

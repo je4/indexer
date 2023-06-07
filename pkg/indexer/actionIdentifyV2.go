@@ -46,7 +46,15 @@ type ActionIdentifyV2 struct {
 }
 
 func (ai *ActionIdentifyV2) CanHandle(contentType string, filename string) bool {
-	return regexIdentifyMime.MatchString(contentType)
+	if regexIdentifyMime.MatchString(contentType) {
+		return true
+	}
+	for re, _ := range ai.extensionMap {
+		if re.MatchString(filename) {
+			return true
+		}
+	}
+	return false
 }
 
 func NewActionIdentifyV2(name, identify, convert string, wsl bool, timeout time.Duration, online bool, server *Server, ad *ActionDispatcher) Action {
@@ -170,6 +178,8 @@ func (ai *ActionIdentifyV2) Stream(contentType string, reader io.Reader, filenam
 	slices.Sort(mimetypes)
 	result.Mimetypes = slices.Compact(mimetypes)
 	result.Metadata[ai.GetName()] = metadata
+	result.Type = "image"
+	result.Subtype = metadata.Magick.Image.Type
 
 	return result, nil
 }
