@@ -28,7 +28,7 @@ var waiter sync.WaitGroup
 func worker(id int, fsys fs.FS, idx *util.Indexer, logger *logging.Logger, jobs <-chan string, results chan<- string) {
 	for path := range jobs {
 		fmt.Println("worker", id, "processing job", path)
-		r, cs, err := idx.Index(fsys, path, []string{"siegfried", "identify", "ffprobe", "tika"}, []checksum.DigestAlgorithm{checksum.DigestSHA512}, io.Discard, logger)
+		r, cs, err := idx.Index(fsys, path, "", []string{"siegfried", "identify", "ffprobe", "tika"}, []checksum.DigestAlgorithm{checksum.DigestSHA512}, io.Discard, logger)
 		if err != nil {
 			logger.Errorf("cannot index (%s)%s: %v", fsys, path, err)
 			waiter.Done()

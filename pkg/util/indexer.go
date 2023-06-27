@@ -11,7 +11,10 @@ import (
 
 type Indexer indexer.ActionDispatcher
 
-func (idx *Indexer) Index(fsys fs.FS, path string, actions []string, digestAlgs []checksum.DigestAlgorithm, writer io.Writer, logger *logging.Logger) (*indexer.ResultV2, map[checksum.DigestAlgorithm]string, error) {
+func (idx *Indexer) Index(fsys fs.FS, path string, realname string, actions []string, digestAlgs []checksum.DigestAlgorithm, writer io.Writer, logger *logging.Logger) (*indexer.ResultV2, map[checksum.DigestAlgorithm]string, error) {
+	if realname == "" {
+		realname = path
+	}
 	ad := (*indexer.ActionDispatcher)(idx)
 	fp, err := fsys.Open(path)
 	if err != nil {
@@ -34,7 +37,7 @@ func (idx *Indexer) Index(fsys fs.FS, path string, actions []string, digestAlgs 
 		idxWrite.Close()
 		fp.Close()
 	}()
-	result, err := ad.Stream(idxRead, []string{path}, actions)
+	result, err := ad.Stream(idxRead, []string{realname}, actions)
 	if err != nil {
 		return nil, nil, errors.Wrapf(err, "cannot index '%s/%s'", fsys, path)
 	}
