@@ -8,6 +8,7 @@ type ResultV2 struct {
 	Mimetypes []string          `json:"mimetypes"`
 	Pronom    string            `json:"pronom"`
 	Pronoms   []string          `json:"pronoms"`
+	Checksum  map[string]string `json:"checksum"`
 	Width     uint              `json:"width,omitempty"`
 	Height    uint              `json:"height,omitempty"`
 	Duration  uint              `json:"duration,omitempty"`
@@ -22,6 +23,7 @@ func NewResultV2() *ResultV2 {
 		Errors:    map[string]string{},
 		Mimetypes: []string{},
 		Pronoms:   []string{},
+		Checksum:  map[string]string{},
 		Metadata:  map[string]any{},
 	}
 }
@@ -39,6 +41,9 @@ func (v *ResultV2) Merge(r *ResultV2) {
 		v.Pronoms = append(v.Pronoms, r.Pronoms...)
 		slices.Sort(v.Pronoms)
 		v.Pronoms = slices.Compact(v.Pronoms)
+	}
+	for key, val := range r.Checksum {
+		v.Checksum[key] = val
 	}
 	if r.Mimetype != "" {
 		v.Mimetype = r.Mimetype
