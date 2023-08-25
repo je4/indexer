@@ -3,6 +3,7 @@ package indexer
 import (
 	"bufio"
 	"bytes"
+	"cmp"
 	"emperror.dev/errors"
 	iou "github.com/je4/utils/v2/pkg/io"
 	"golang.org/x/exp/slices"
@@ -71,13 +72,11 @@ func (ad *ActionDispatcher) GetActionNamesByCaps(caps ActionCapability) []string
 	return names
 }
 
-func (ad *ActionDispatcher) Stream(reader io.Reader, stateFiles []string, actions []string) (*ResultV2, error) {
+func (ad *ActionDispatcher) Stream(sourceReader io.Reader, stateFiles []string, actions []string) (*ResultV2, error) {
 	if len(stateFiles) == 0 {
-		stateFiles = append(stateFiles, "")
+		stateFiles = []string{""}
 	}
-	var writer = []*iou.WriteIgnoreCloser{}
-	wg := sync.WaitGroup{}
-	mimeReader, err := iou.NewMimeReader(reader)
+	mimeReader, err := iou.NewMimeReader(sourceReader)
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot create MimeReader for %s", stateFiles)
 	}
@@ -85,6 +84,8 @@ func (ad *ActionDispatcher) Stream(reader io.Reader, stateFiles []string, action
 	parts := strings.Split(contentType, ";")
 	contentType = parts[0]
 
+	var actionWriters = []*iou.WriteIgnoreCloser{}
+	var wg = sync.WaitGroup{}
 	results := make(chan *ResultV2, len(ad.actions))
 	for _, actionStr := range actions {
 		var found bool
@@ -96,11 +97,11 @@ func (ad *ActionDispatcher) Stream(reader io.Reader, stateFiles []string, action
 				}
 				wg.Add(1)
 				pr, pw := io.Pipe()
-				writer = append(writer, iou.NewWriteIgnoreCloser(pw))
-				go func(r io.Reader, a Action) {
+				actionWriters = append(actionWriters, iou.NewWriteIgnoreCloser(pw))
+				go func(actionReader io.Reader, a Action) {
 					defer wg.Done()
 					// stream to actions
-					result, err := a.Stream(contentType, r, stateFiles[0])
+					result, err := a.Stream(contentType, actionReader, stateFiles[0])
 					if err != nil {
 						result = NewResultV2()
 						result.Errors[a.GetName()] = err.Error()
@@ -110,7 +111,7 @@ func (ad *ActionDispatcher) Stream(reader io.Reader, stateFiles []string, action
 						results <- result
 					}
 					// discard remaining data
-					_, _ = io.Copy(io.Discard, r)
+					_, _ = io.Copy(io.Discard, actionReader)
 				}(iou.NewReadIgnoreCloser(pr), action)
 			}
 		}
@@ -118,25 +119,31 @@ func (ad *ActionDispatcher) Stream(reader io.Reader, stateFiles []string, action
 			return nil, errors.Errorf("action '%s' not configured", actionStr)
 		}
 	}
-	var ws = []io.Writer{}
-	for _, w := range writer {
-		ws = append(ws, bufio.NewWriterSize(w, 1024*1024))
+	var actionBufferWriters = []io.Writer{}
+	for _, w := range actionWriters {
+		actionBufferWriters = append(actionBufferWriters, bufio.NewWriterSize(w, 1024*1024))
 		//		ws = append(ws, w)
 	}
-	multiWriter := io.MultiWriter(ws...)
+	multiWriter := io.MultiWriter(actionBufferWriters...)
+	errorList := []error{}
 	written, err := io.Copy(multiWriter, mimeReader)
-	for _, w := range ws {
+	if err != nil {
+		errorList = append(errorList, errors.Wrap(err, "cannot copy mimereader to actionwriter"))
+	}
+	for _, actionBufferWriter := range actionBufferWriters {
 		// it's sure, that w is a bufio.Writer
-		if err1 := w.(*bufio.Writer).Flush(); err1 != nil {
-			return nil, errors.Wrap(err1, "cannot flush buffer")
+		if err := actionBufferWriter.(*bufio.Writer).Flush(); err != nil {
+			errorList = append(errorList, errors.Wrap(err, "cannot flush buffer"))
 		}
 	}
-	for _, w := range writer {
-		w.ForceClose()
+	for _, w := range actionWriters {
+		if err := w.ForceClose(); err != nil {
+			errorList = append(errorList, errors.Wrap(err, "cannot close buffer"))
+		}
 	}
 	// error of copy
-	if err != nil {
-		return nil, errors.Wrap(err, "cannot copy stream to actions")
+	if len(errorList) > 0 {
+		return nil, errors.Wrap(errors.Combine(errorList...), "cannot copy stream to actions")
 	}
 	// wait for all actions to finish
 	wg.Wait()
@@ -158,9 +165,9 @@ func (ad *ActionDispatcher) Stream(reader io.Reader, stateFiles []string, action
 			}
 		}
 	}
-	slices.SortFunc(result.Mimetypes, func(a, b string) bool {
+	slices.SortFunc(result.Mimetypes, func(a, b string) int {
 		// higher weight means less in sorting
-		return mimeMap[a] > mimeMap[b]
+		return cmp.Compare(mimeMap[a], mimeMap[b])
 	})
 	if len(result.Mimetypes) > 0 {
 		result.Mimetype = result.Mimetypes[0]
@@ -246,9 +253,9 @@ func (ad *ActionDispatcher) DoV2(filename string, stateFiles []string, actions [
 			}
 		}
 	}
-	slices.SortFunc(results.Mimetypes, func(a, b string) bool {
+	slices.SortFunc(results.Mimetypes, func(a, b string) int {
 		// higher weight means less in sorting
-		return mimeMap[a] > mimeMap[b]
+		return cmp.Compare(mimeMap[a], mimeMap[b])
 	})
 	if len(results.Mimetypes) > 0 {
 		results.Mimetype = results.Mimetypes[0]

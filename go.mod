@@ -1,28 +1,28 @@
 module github.com/je4/indexer/v2
 
-go 1.20
+go 1.21
 
 replace github.com/google/flatbuffers => github.com/google/flatbuffers v1.12.1
 
 require (
 	emperror.dev/errors v0.8.1
-	github.com/BurntSushi/toml v1.2.1
+	github.com/BurntSushi/toml v1.3.2
 	github.com/dgraph-io/badger/v3 v3.2103.5
 	github.com/gabriel-vasile/mimetype v1.4.2
 	github.com/golang/snappy v0.0.4
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/hooklift/iso9660 v1.0.0
-	github.com/je4/filesystem/v2 v2.0.0-20230531115802-9780dd7c06d9
+	github.com/je4/filesystem/v2 v2.0.0-20230614153916-3cbfc6c61a3e
 	github.com/je4/goffmpeg v0.0.0-20220114092308-33ab9986404d
 	github.com/je4/indexer v0.0.0-20230317101220-dbdc214894c4
-	github.com/je4/utils/v2 v2.0.8-0.20230429090351-3cef63b41e76
+	github.com/je4/utils/v2 v2.0.8-0.20230609135718-aed149c118d2
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/phayes/freeport v0.0.0-20220201140144-74d24b5ae9f5
-	github.com/pkg/sftp v1.13.5
-	github.com/richardlehane/siegfried v1.10.0
-	golang.org/x/crypto v0.8.0
-	golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53
+	github.com/pkg/sftp v1.13.6
+	github.com/richardlehane/siegfried v1.10.1
+	golang.org/x/crypto v0.12.0
+	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63
 )
 
 require (
@@ -34,11 +34,11 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang/glog v1.1.1 // indirect
+	github.com/golang/glog v1.1.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/google/flatbuffers v23.3.3+incompatible // indirect
-	github.com/klauspost/compress v1.16.5 // indirect
+	github.com/google/flatbuffers v23.5.26+incompatible // indirect
+	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/richardlehane/characterize v1.0.0 // indirect
@@ -50,9 +50,9 @@ require (
 	github.com/ross-spencer/wikiprov v0.2.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/image v0.7.0 // indirect
-	golang.org/x/net v0.9.0 // indirect
-	golang.org/x/sys v0.7.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
-	google.golang.org/protobuf v1.30.0 // indirect
+	golang.org/x/image v0.11.0 // indirect
+	golang.org/x/net v0.14.0 // indirect
+	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/text v0.12.0 // indirect
+	google.golang.org/protobuf v1.31.0 // indirect
 )
