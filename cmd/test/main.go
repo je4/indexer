@@ -53,6 +53,14 @@ func InitActionDispatcher(conf indexerConfig.Indexer, logger *logging.Logger) (*
 		actionDispatcher)
 	logger.Info("indexer action siegfried added")
 
+	if conf.Checksum.Enabled {
+		_ = ironmaiden.NewActionChecksum(
+			"checksum",
+			conf.Checksum.Digest,
+			nil,
+			actionDispatcher,
+		)
+	}
 	if conf.FFMPEG.Enabled {
 		_ = ironmaiden.NewActionFFProbe(
 			"ffprobe",
@@ -138,12 +146,12 @@ func main() {
 		if err != nil {
 			logger.Panicf("cannot open %s/%s: %v", folder, file.Name(), err)
 		}
-		result, err := ad.Stream(fp, []string{file.Name()}, []string{"siegfried", "identify", "ffprobe"})
+		result, err := ad.Stream(fp, []string{file.Name()}, []string{"siegfried", "identify", "ffprobe", "checksum"})
 		if err != nil {
 			fp.Close()
 			logger.Panicf("cannot index %s/%s: %v", folder, file.Name(), err)
 		}
 		fp.Close()
-		logger.Infof("%s - %s - w:%v h:%v", result.Mimetype, result.Pronom, result.Width, result.Height)
+		logger.Infof("%s - %s - w:%v h:%v - %v", result.Mimetype, result.Pronom, result.Width, result.Height, result.Checksum)
 	}
 }

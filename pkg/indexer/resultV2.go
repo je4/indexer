@@ -8,7 +8,7 @@ type ResultV2 struct {
 	Mimetypes []string          `json:"mimetypes"`
 	Pronom    string            `json:"pronom"`
 	Pronoms   []string          `json:"pronoms"`
-	Checksum  map[string]string `json:"checksum"`
+	Checksum  map[string]string `json:"checksum,omitempty"`
 	Width     uint              `json:"width,omitempty"`
 	Height    uint              `json:"height,omitempty"`
 	Duration  uint              `json:"duration,omitempty"`

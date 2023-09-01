@@ -15,6 +15,7 @@ package config
 
 import (
 	"github.com/je4/indexer/v2/pkg/indexer"
+	"github.com/je4/utils/v2/pkg/checksum"
 	"time"
 )
 
@@ -70,6 +71,12 @@ type ConfigFFMPEG struct {
 	Mime    []indexer.FFMPEGMime
 }
 
+type ConfigChecksum struct {
+	Name    string
+	Digest  []checksum.DigestAlgorithm
+	Enabled bool
+}
+
 type ConfigImageMagick struct {
 	Identify string
 	Convert  string
@@ -117,6 +124,7 @@ type Indexer struct {
 	DownloadMime    string `toml:"forcedownload"`
 	MaxDownloadSize int64
 	Siegfried       ConfigSiegfried
+	Checksum        ConfigChecksum
 	FFMPEG          ConfigFFMPEG
 	ImageMagick     ConfigImageMagick
 	Tika            ConfigTika

@@ -15,6 +15,7 @@
 package indexer
 
 import (
+	"cmp"
 	"context"
 	"crypto/tls"
 	"emperror.dev/errors"
@@ -580,9 +581,9 @@ func (s *Server) doIndex(param ActionParam, version string) (any, error) {
 				}
 			}
 		}
-		slices.SortFunc(mimetypes, func(a, b string) bool {
+		slices.SortFunc(mimetypes, func(a, b string) int {
 			// higher weight means less in sorting
-			return mimeMap[a] > mimeMap[b]
+			return cmp.Compare(mimeMap[a], mimeMap[b])
 		})
 		if len(mimetypes) > 0 {
 			mimetype = mimetypes[0]
