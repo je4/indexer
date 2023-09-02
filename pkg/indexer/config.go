@@ -11,10 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package config
+package indexer
 
 import (
-	"github.com/je4/indexer/v2/pkg/indexer"
 	"github.com/je4/utils/v2/pkg/checksum"
 	"time"
 )
@@ -39,7 +38,7 @@ type ConfigClamAV struct {
 type ConfigSiegfried struct {
 	//Address string
 	Enabled       bool
-	SignatureFile string
+	SignatureFile string `toml:"signature"`
 	MimeMap       map[string]string
 }
 
@@ -68,7 +67,7 @@ type ConfigFFMPEG struct {
 	Timeout duration
 	Online  bool
 	Enabled bool
-	Mime    []indexer.FFMPEGMime
+	Mime    []FFMPEGMime
 }
 
 type ConfigChecksum struct {
@@ -86,20 +85,20 @@ type ConfigImageMagick struct {
 	Enabled  bool
 }
 
-type ExternalAction struct {
+type ConfigExternalAction struct {
 	Name,
 	Address,
 	Mimetype string
-	ActionCapabilities []indexer.ActionCapability
-	CallType           indexer.ExternalActionCalltype
+	ActionCapabilities []ActionCapability
+	CallType           ExternalActionCalltype
 }
 
-type FileMap struct {
+type ConfigFileMap struct {
 	Alias  string
 	Folder string
 }
 
-type SFTP struct {
+type ConfigSFTP struct {
 	Knownhosts string
 	Password   string
 	PrivateKey []string
@@ -110,12 +109,12 @@ type ConfigNSRL struct {
 	Badger  string
 }
 
-type MimeWeight struct {
+type ConfigMimeWeight struct {
 	Regexp string
 	Weight int
 }
 
-type Indexer struct {
+type IndexerConfig struct {
 	Enabled         bool
 	LocalCache      bool
 	TempDir         string
@@ -128,10 +127,10 @@ type Indexer struct {
 	FFMPEG          ConfigFFMPEG
 	ImageMagick     ConfigImageMagick
 	Tika            ConfigTika
-	External        []ExternalAction
-	FileMap         []FileMap
+	External        []ConfigExternalAction
+	FileMap         []ConfigFileMap
 	URLRegexp       []string
 	NSRL            ConfigNSRL
 	Clamav          ConfigClamAV
-	MimeRelevance   map[string]MimeWeight
+	MimeRelevance   map[string]ConfigMimeWeight
 }

@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/BurntSushi/toml"
-	indexerConfig "github.com/je4/indexer/v2/pkg/config"
+	"github.com/je4/indexer/v2/pkg/indexer"
 	"log"
 	"os"
 	"os/user"
@@ -14,7 +14,7 @@ type Config struct {
 	Logfile       string
 	Loglevel      string
 	LogFormat     string
-	Indexer       indexerConfig.Indexer `toml:"indexer"`
+	Indexer       indexer.IndexerConfig `toml:"indexer"`
 }
 
 func LoadConfig(fp string) *Config {
@@ -25,8 +25,8 @@ func LoadConfig(fp string) *Config {
 	var conf = &Config{
 		Loglevel:  "DEBUG",
 		LogFormat: `%{time:2006-01-02T15:04:05.000} %{shortpkg}::%{longfunc} [%{shortfile}] > %{level:.5s} - %{message}`,
-		Indexer: indexerConfig.Indexer{
-			Siegfried: indexerConfig.ConfigSiegfried{
+		Indexer: indexer.IndexerConfig{
+			Siegfried: indexer.ConfigSiegfried{
 				SignatureFile: filepath.Join(user.HomeDir, "siegfried", "default.sig"),
 			},
 			TempDir: os.TempDir(),

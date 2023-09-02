@@ -31,13 +31,6 @@ import (
 	"time"
 )
 
-type FFMPEGMime struct {
-	Video  bool
-	Audio  bool
-	Format string
-	Mime   string
-}
-
 var regexpFFProbeDuration = regexp.MustCompile("^([0-9]+):([0-9]+):([0-9]+).([0-9]{2})$")
 var regexFFProbeMime = regexp.MustCompile("^((audio|video)/.*)|(application/mp4)|(application/mpeg)$")
 

@@ -1,0 +1,582 @@
+2023-08-25T18:21:39.889 main::InitActionDispatcher [main.go:54] > INFO - indexer action siegfried added
+2023-08-25T18:21:39.890 main::InitActionDispatcher [main.go:66] > INFO - indexer action ffprobe added
+2023-08-25T18:21:39.904 main::InitActionDispatcher [main.go:75] > INFO - indexer action identify added
+2023-08-25T18:21:39.904 main::InitActionDispatcher [main.go:86] > INFO - indexer action tika added
+2023-08-25T18:21:39.904 main::InitActionDispatcher [main.go:97] > INFO - indexer action fulltext added
+2023-08-25T18:23:26.459 main::main [main.go:143] > CRITI - cannot index 10_3931_e-rara-100893_20221027T085444_master_ver1.zip/10_3931_e-rara-100893/image/27910239.tif: action 'imagemagick' not configured
+2023-08-25T18:23:32.673 main::InitActionDispatcher [main.go:54] > INFO - indexer action siegfried added
+2023-08-25T18:23:32.682 main::InitActionDispatcher [main.go:66] > INFO - indexer action ffprobe added
+2023-08-25T18:23:32.696 main::InitActionDispatcher [main.go:75] > INFO - indexer action identify added
+2023-08-25T18:23:32.696 main::InitActionDispatcher [main.go:86] > INFO - indexer action tika added
+2023-08-25T18:23:32.696 main::InitActionDispatcher [main.go:97] > INFO - indexer action fulltext added
+2023-08-25T18:23:49.536 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 951 1318 0 3761379 map[identify:{0xc000a9a018 [0xc000c1f5c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:23:54.164 main::InitActionDispatcher [main.go:54] > INFO - indexer action siegfried added
+2023-08-25T18:23:54.164 main::InitActionDispatcher [main.go:66] > INFO - indexer action ffprobe added
+2023-08-25T18:23:54.178 main::InitActionDispatcher [main.go:75] > INFO - indexer action identify added
+2023-08-25T18:23:54.178 main::InitActionDispatcher [main.go:86] > INFO - indexer action tika added
+2023-08-25T18:23:54.179 main::InitActionDispatcher [main.go:97] > INFO - indexer action fulltext added
+2023-08-25T18:25:42.942 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 951 1318 0 3761379 map[identify:{0xc00085e0c0 [0xc004f0f2c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:46.227 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 976 1314 0 3848517 map[identify:{0xc000b001b0 [0xc0043fe2e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:46.433 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 924 1226 0 3399597 map[identify:{0xc0054840d8 [0xc004f0e3a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:46.636 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 887 1220 0 3247545 map[identify:{0xc0010c60d8 [0xc000744140]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:46.837 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 891 1213 0 3243475 map[identify:{0xc005a16150 [0xc000780c20]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:47.040 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 886 1213 0 3225279 map[identify:{0xc00085e480 [0xc005a1aa40]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:47.245 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 877 1214 0 3195159 map[identify:{0xc0006fae58 [0xc003038300]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:47.446 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 894 1227 0 3291939 map[identify:{0xc00085e8e8 [0xc005a1acc0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:47.632 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 880 1217 0 3214005 map[identify:{0xc0006fb290 [0xc003038520]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:47.836 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 900 1222 0 3300525 map[identify:{0xc000b00240 [0xc000b884e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:48.038 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 875 1214 0 3187875 map[identify:{0xc00085ee28 [0xc005a1b240]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:48.242 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 901 1223 0 3306895 map[identify:{0xc005484678 [0xc004f0ea40]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:48.446 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1218 0 3212991 map[identify:{0xc0010c6630 [0xc000744700]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:48.664 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 899 1223 0 3299557 map[identify:{0xc005484ab0 [0xc004f0eca0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:48.882 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 874 1213 0 3181611 map[identify:{0xc0010c6a08 [0xc000744840]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:49.099 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 901 1225 0 3312301 map[identify:{0xc0010c6e40 [0xc000744bc0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:49.349 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 881 1218 0 3220299 map[identify:{0xc0006faed0 [0xc000b88580]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:49.551 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 903 1208 0 3273597 map[identify:{0xc0010c60f0 [0xc0003482c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:49.770 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 882 1219 0 3226599 map[identify:{0xc000b00228 [0xc0007443a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:49.974 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 910 1209 0 3301695 map[identify:{0xc00085e2a0 [0xc000781380]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:50.176 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 881 1220 0 3225585 map[identify:{0xc00085e708 [0xc000781600]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:50.378 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 878 1199 0 3159291 map[identify:{0xc00085ea80 [0xc000781720]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:50.581 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 874 1213 0 3181611 map[identify:{0xc000b00780 [0xc000744840]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:50.784 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 888 1202 0 3203253 map[identify:{0xc00085edf8 [0xc000781860]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:50.986 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1216 0 3207717 map[identify:{0xc0054842a0 [0xc004f0e760]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:51.173 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 880 1207 0 3187605 map[identify:{0xc0054846a8 [0xc004f0e880]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:51.376 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 875 1214 0 3187875 map[identify:{0xc000b00bb8 [0xc000744be0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:51.562 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 888 1204 0 3208581 map[identify:{0xc005a161e0 [0xc000b084c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:51.749 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 875 1214 0 3187875 map[identify:{0xc0010c66a8 [0xc000349b40]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:51.936 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 885 1207 0 3205711 map[identify:{0xc005a16648 [0xc000b08720]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:52.138 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 867 1216 0 3163941 map[identify:{0xc00085e0f0 [0xc000744140]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:52.341 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 888 1207 0 3216573 map[identify:{0xc000b00240 [0xc000a92da0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:52.544 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 864 1213 0 3145221 map[identify:{0xc005484228 [0xc000b08500]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:52.749 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 883 1202 0 3185223 map[identify:{0xc005a16108 [0xc000b88320]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:52.936 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 868 1206 0 3141541 map[identify:{0xc0006fae10 [0xc0003483a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:53.121 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 893 1200 0 3215925 map[identify:{0xc005a165a0 [0xc000b887e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:53.324 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 864 1201 0 3114109 map[identify:{0xc0010c6138 [0xc004f0e580]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:53.527 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 889 1199 0 3198859 map[identify:{0xc0054848b8 [0xc000b08a00]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:53.715 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 864 1201 0 3114109 map[identify:{0xc0006fb320 [0xc000349900]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:53.916 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1204 0 3176073 map[identify:{0xc00085e4f8 [0xc0007442e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:54.104 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 865 1203 0 3122903 map[identify:{0xc005484db0 [0xc000b08e80]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:54.306 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 892 1207 0 3231057 map[identify:{0xc000b007e0 [0xc000a93a40]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:54.504 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 868 1204 0 3136333 map[identify:{0xc0010c6600 [0xc004f0e940]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:54.690 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 878 1213 0 3196167 map[identify:{0xc0054852a8 [0xc000b092e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:54.890 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 864 1201 0 3114109 map[identify:{0xc0006fb968 [0xc000780e20]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:55.095 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 884 1196 0 3172917 map[identify:{0xc005484150 [0xc004f0e4e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:55.297 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 864 1201 0 3114109 map[identify:{0xc0010c6138 [0xc000b882a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:55.487 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 880 1200 0 3169125 map[identify:{0xc000b00258 [0xc00110ef80]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:55.676 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 868 1206 0 3141541 map[identify:{0xc000b006a8 [0xc00110f220]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:55.865 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 883 1201 0 3182575 map[identify:{0xc0006fae28 [0xc000b08320]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:56.053 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 844 1202 0 3044581 map[identify:{0xc0010c6540 [0xc000b88580]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:56.239 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 873 1198 0 3138687 map[identify:{0xc0054846d8 [0xc004f0e9a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:56.442 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 853 1208 0 3092389 map[identify:{0xc000b00ca8 [0xc00110fd40]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:56.627 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 863 1202 0 3113095 map[identify:{0xc005a16240 [0xc000780c80]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:56.814 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 843 1201 0 3038447 map[identify:{0xc0006fb338 [0xc000b086a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:57.003 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 873 1196 0 3133441 map[identify:{0xc000b01068 [0xc00110fe80]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:57.190 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 845 1201 0 3045653 map[identify:{0xc0006fb770 [0xc000b08820]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:57.393 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1190 0 3139155 map[identify:{0xc00085e228 [0xc0007443a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:57.580 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 848 1207 0 3071725 map[identify:{0xc005484ca8 [0xc004f0f1a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:57.767 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 877 1193 0 3139909 map[identify:{0xc0010c6d38 [0xc000b89240]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:57.955 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 847 1203 0 3057941 map[identify:{0xc005a16030 [0xc004f0e280]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:58.142 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 868 1200 0 3125917 map[identify:{0xc005484150 [0xc000b88260]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:58.328 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 846 1213 0 3079711 map[identify:{0xc00085e228 [0xc000781280]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:58.516 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 867 1200 0 3122317 map[identify:{0xc00085e600 [0xc0007813c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:58.717 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 860 1202 0 3102277 map[identify:{0xc0010c6138 [0xc00110e580]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:58.920 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 880 1208 0 3190245 map[identify:{0xc005a16690 [0xc004f0e9c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:59.122 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 854 1200 0 3075517 map[identify:{0xc005484720 [0xc000b88880]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:59.326 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 887 1205 0 3207631 map[identify:{0xc00085ea98 [0xc000781b80]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:59.531 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 851 1201 0 3067271 map[identify:{0xc0010c6738 [0xc00110f3a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:59.716 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 888 1202 0 3203253 map[identify:{0xc00085eeb8 [0xc000781e80]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:25:59.905 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 845 1199 0 3040583 map[identify:{0xc0006fad80 [0xc000744120]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:00.107 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 867 1207 0 3140533 map[identify:{0xc000b003d8 [0xc000b08760]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:00.311 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 843 1199 0 3033389 map[identify:{0xc005484af8 [0xc000b889e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:00.513 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 857 1206 0 3101743 map[identify:{0xc0010c6b40 [0xc00110fa60]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:00.699 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 847 1201 0 3052859 map[identify:{0xc000b00918 [0xc000b08d60]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:00.900 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 857 1204 0 3096601 map[identify:{0xc0010c60c0 [0xc00110e500]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:01.103 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 841 1201 0 3031241 map[identify:{0xc00085e0d8 [0xc000834220]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:01.306 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 855 1204 0 3089377 map[identify:{0xc0010c6480 [0xc00110e760]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:01.493 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 839 1200 0 3021517 map[identify:{0xc0006fadf8 [0xc0007441a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:01.694 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 865 1203 0 3122903 map[identify:{0xc000b00228 [0xc000b08860]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:01.881 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 834 1199 0 3001015 map[identify:{0xc0006fb1d0 [0xc000744300]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:02.086 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 867 1208 0 3143133 map[identify:{0xc00860c078 [0xc000348540]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:02.286 main::main [main.go:146] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 844 1200 0 3039517 map[identify:{0xc00860c4b0 [0xc0003487a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:54.029 main::InitActionDispatcher [main.go:54] > INFO - indexer action siegfried added
+2023-08-25T18:26:54.029 main::InitActionDispatcher [main.go:66] > INFO - indexer action ffprobe added
+2023-08-25T18:26:54.036 main::InitActionDispatcher [main.go:75] > INFO - indexer action identify added
+2023-08-25T18:26:54.036 main::InitActionDispatcher [main.go:86] > INFO - indexer action tika added
+2023-08-25T18:26:54.036 main::InitActionDispatcher [main.go:97] > INFO - indexer action fulltext added
+2023-08-25T18:26:54.037 main::main [main.go:136] > INFO - file: 27910239.tif
+2023-08-25T18:26:54.280 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 951 1318 0 3761379 map[identify:{0xc000b0a120 [0xc0043d1fa0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:54.280 main::main [main.go:136] > INFO - file: 27910240.tif
+2023-08-25T18:26:54.497 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 976 1314 0 3848517 map[identify:{0xc000a8c1f8 [0xc004ef85c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:54.497 main::main [main.go:136] > INFO - file: 27910241.tif
+2023-08-25T18:26:54.700 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 924 1226 0 3399597 map[identify:{0xc00540c1e0 [0xc005430380]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:54.700 main::main [main.go:136] > INFO - file: 27910242.tif
+2023-08-25T18:26:54.902 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 887 1220 0 3247545 map[identify:{0xc005d94180 [0xc005d921a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:54.902 main::main [main.go:136] > INFO - file: 27910243.tif
+2023-08-25T18:26:55.105 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 891 1213 0 3243475 map[identify:{0xc005d945d0 [0xc005d92400]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:55.105 main::main [main.go:136] > INFO - file: 27910244.tif
+2023-08-25T18:26:55.309 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 886 1213 0 3225279 map[identify:{0xc000b0a168 [0xc0008422a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:55.310 main::main [main.go:136] > INFO - file: 27910245.tif
+2023-08-25T18:26:55.496 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 877 1214 0 3195159 map[identify:{0xc00540c0d8 [0xc005c9c2a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:55.496 main::main [main.go:136] > INFO - file: 27910246.tif
+2023-08-25T18:26:55.699 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 894 1227 0 3291939 map[identify:{0xc00540c5a0 [0xc005c9c500]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:55.699 main::main [main.go:136] > INFO - file: 27910247.tif
+2023-08-25T18:26:55.886 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 880 1217 0 3214005 map[identify:{0xc0006e2af8 [0xc004f545c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:55.886 main::main [main.go:136] > INFO - file: 27910248.tif
+2023-08-25T18:26:56.072 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 900 1222 0 3300525 map[identify:{0xc005b9c150 [0xc001306260]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:56.072 main::main [main.go:136] > INFO - file: 27910249.tif
+2023-08-25T18:26:56.260 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 875 1214 0 3187875 map[identify:{0xc00540c9d8 [0xc005c9c760]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:56.260 main::main [main.go:136] > INFO - file: 27910250.tif
+2023-08-25T18:26:56.448 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 901 1223 0 3306895 map[identify:{0xc000a8c3a8 [0xc004ef8840]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:56.448 main::main [main.go:136] > INFO - file: 27910251.tif
+2023-08-25T18:26:56.635 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1218 0 3212991 map[identify:{0xc0006e2f90 [0xc004f54aa0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:56.635 main::main [main.go:136] > INFO - file: 27910252.tif
+2023-08-25T18:26:56.821 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 899 1223 0 3299557 map[identify:{0xc0006e3338 [0xc004f54bc0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:56.821 main::main [main.go:136] > INFO - file: 27910253.tif
+2023-08-25T18:26:57.006 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 874 1213 0 3181611 map[identify:{0xc0006e3758 [0xc004f54de0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:57.006 main::main [main.go:136] > INFO - file: 27910254.tif
+2023-08-25T18:26:57.195 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 901 1225 0 3312301 map[identify:{0xc000a8c948 [0xc004ef8dc0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:57.195 main::main [main.go:136] > INFO - file: 27910255.tif
+2023-08-25T18:26:57.383 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 881 1218 0 3220299 map[identify:{0xc005b9c678 [0xc001306ee0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:57.383 main::main [main.go:136] > INFO - file: 27910256.tif
+2023-08-25T18:26:57.571 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 903 1208 0 3273597 map[identify:{0xc000a8ce58 [0xc004ef9220]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:57.571 main::main [main.go:136] > INFO - file: 27910257.tif
+2023-08-25T18:26:57.758 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 882 1219 0 3226599 map[identify:{0xc005c90168 [0xc004ef8380]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:57.758 main::main [main.go:136] > INFO - file: 27910258.tif
+2023-08-25T18:26:57.944 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 910 1209 0 3301695 map[identify:{0xc000b0a0d8 [0xc005c9c2e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:57.945 main::main [main.go:136] > INFO - file: 27910259.tif
+2023-08-25T18:26:58.131 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 881 1220 0 3225585 map[identify:{0xc005c90588 [0xc004ef85a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:58.131 main::main [main.go:136] > INFO - file: 27910260.tif
+2023-08-25T18:26:58.319 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 878 1199 0 3159291 map[identify:{0xc005c909a8 [0xc004ef87c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:58.319 main::main [main.go:136] > INFO - file: 27910261.tif
+2023-08-25T18:26:58.506 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 874 1213 0 3181611 map[identify:{0xc005c90d50 [0xc004ef88e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:58.506 main::main [main.go:136] > INFO - file: 27910262.tif
+2023-08-25T18:26:58.710 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 888 1202 0 3203253 map[identify:{0xc005c91170 [0xc004ef8b00]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:58.710 main::main [main.go:136] > INFO - file: 27910263.tif
+2023-08-25T18:26:58.897 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1216 0 3207717 map[identify:{0xc000b0a630 [0xc005c9c640]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:58.897 main::main [main.go:136] > INFO - file: 27910264.tif
+2023-08-25T18:26:59.083 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 880 1207 0 3187605 map[identify:{0xc0006e2b28 [0xc000814d40]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:59.083 main::main [main.go:136] > INFO - file: 27910265.tif
+2023-08-25T18:26:59.271 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 875 1214 0 3187875 map[identify:{0xc005c914d0 [0xc004ef8c00]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:59.271 main::main [main.go:136] > INFO - file: 27910266.tif
+2023-08-25T18:26:59.459 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 888 1204 0 3208581 map[identify:{0xc0006e2f78 [0xc0008154a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:59.459 main::main [main.go:136] > INFO - file: 27910267.tif
+2023-08-25T18:26:59.645 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 875 1214 0 3187875 map[identify:{0xc000a8c798 [0xc0008432e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:59.646 main::main [main.go:136] > INFO - file: 27910268.tif
+2023-08-25T18:26:59.832 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 885 1207 0 3205711 map[identify:{0xc000b0ab88 [0xc005c9cde0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:26:59.832 main::main [main.go:136] > INFO - file: 27910269.tif
+2023-08-25T18:27:00.020 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 867 1216 0 3163941 map[identify:{0xc000b0af30 [0xc005c9cf40]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:00.020 main::main [main.go:136] > INFO - file: 27910270.tif
+2023-08-25T18:27:00.221 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 888 1207 0 3216573 map[identify:{0xc005c91ae8 [0xc004ef91a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:00.221 main::main [main.go:136] > INFO - file: 27910271.tif
+2023-08-25T18:27:00.423 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 864 1213 0 3145221 map[identify:{0xc005b9c0d8 [0xc000772160]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:00.423 main::main [main.go:136] > INFO - file: 27910272.tif
+2023-08-25T18:27:00.626 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 883 1202 0 3185223 map[identify:{0xc005c900c0 [0xc001306140]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:00.626 main::main [main.go:136] > INFO - file: 27910273.tif
+2023-08-25T18:27:00.814 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 868 1206 0 3141541 map[identify:{0xc000b0a0c0 [0xc00082a140]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:00.814 main::main [main.go:136] > INFO - file: 27910274.tif
+2023-08-25T18:27:01.001 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 893 1200 0 3215925 map[identify:{0xc005c904e0 [0xc0013063a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:01.001 main::main [main.go:136] > INFO - file: 27910275.tif
+2023-08-25T18:27:01.191 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 864 1201 0 3114109 map[identify:{0xc00540c1e0 [0xc0008422e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:01.191 main::main [main.go:136] > INFO - file: 27910276.tif
+2023-08-25T18:27:01.378 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 889 1199 0 3198859 map[identify:{0xc005c90900 [0xc0013069a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:01.379 main::main [main.go:136] > INFO - file: 27910277.tif
+2023-08-25T18:27:01.566 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 864 1201 0 3114109 map[identify:{0xc005b9c0f0 [0xc000772040]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:01.566 main::main [main.go:136] > INFO - file: 27910278.tif
+2023-08-25T18:27:01.753 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1204 0 3176073 map[identify:{0xc005b9c4f8 [0xc0007721c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:01.753 main::main [main.go:136] > INFO - file: 27910279.tif
+2023-08-25T18:27:01.941 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 865 1203 0 3122903 map[identify:{0xc000b0a5e8 [0xc00082a6e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:01.941 main::main [main.go:136] > INFO - file: 27910280.tif
+2023-08-25T18:27:02.143 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 892 1207 0 3231057 map[identify:{0xc00540c8a0 [0xc000842d60]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:02.143 main::main [main.go:136] > INFO - file: 27910281.tif
+2023-08-25T18:27:02.344 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 868 1204 0 3136333 map[identify:{0xc005c90d98 [0xc001307240]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:02.345 main::main [main.go:136] > INFO - file: 27910282.tif
+2023-08-25T18:27:02.532 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 878 1213 0 3196167 map[identify:{0xc005b9cac8 [0xc00082ac20]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:02.533 main::main [main.go:136] > INFO - file: 27910283.tif
+2023-08-25T18:27:02.721 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 864 1201 0 3114109 map[identify:{0xc000b0af00 [0xc00082b160]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:02.721 main::main [main.go:136] > INFO - file: 27910284.tif
+2023-08-25T18:27:02.908 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 884 1196 0 3172917 map[identify:{0xc005c91200 [0xc001307f80]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:02.908 main::main [main.go:136] > INFO - file: 27910285.tif
+2023-08-25T18:27:03.109 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 864 1201 0 3114109 map[identify:{0xc005b9ccd8 [0xc000772ca0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:03.109 main::main [main.go:136] > INFO - file: 27910286.tif
+2023-08-25T18:27:03.296 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 880 1200 0 3169125 map[identify:{0xc0006e2b58 [0xc005c9c680]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:03.296 main::main [main.go:136] > INFO - file: 27910287.tif
+2023-08-25T18:27:03.484 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 868 1206 0 3141541 map[identify:{0xc0006e2fa8 [0xc005c9c7e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:03.484 main::main [main.go:136] > INFO - file: 27910288.tif
+2023-08-25T18:27:03.670 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 883 1201 0 3182575 map[identify:{0xc0006e3338 [0xc005c9c900]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:03.670 main::main [main.go:136] > INFO - file: 27910289.tif
+2023-08-25T18:27:03.858 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 844 1202 0 3044581 map[identify:{0xc00540c150 [0xc000842140]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:03.858 main::main [main.go:136] > INFO - file: 27910290.tif
+2023-08-25T18:27:04.046 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 873 1198 0 3138687 map[identify:{0xc0006e2a08 [0xc005c9c140]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:04.046 main::main [main.go:136] > INFO - file: 27910291.tif
+2023-08-25T18:27:04.249 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 853 1208 0 3092389 map[identify:{0xc000a8c0f0 [0xc004ef8480]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:04.249 main::main [main.go:136] > INFO - file: 27910292.tif
+2023-08-25T18:27:04.434 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 863 1202 0 3113095 map[identify:{0xc005c901f8 [0xc000b844e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:04.434 main::main [main.go:136] > INFO - file: 27910293.tif
+2023-08-25T18:27:04.623 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 843 1201 0 3038447 map[identify:{0xc000a8c6f0 [0xc004ef8900]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:04.623 main::main [main.go:136] > INFO - file: 27910294.tif
+2023-08-25T18:27:04.825 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 873 1196 0 3133441 map[identify:{0xc005c905e8 [0xc000b847a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:04.825 main::main [main.go:136] > INFO - file: 27910295.tif
+2023-08-25T18:27:05.011 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 845 1201 0 3045653 map[identify:{0xc00540c690 [0xc000842740]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:05.011 main::main [main.go:136] > INFO - file: 27910296.tif
+2023-08-25T18:27:05.230 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1190 0 3139155 map[identify:{0xc000b0a2a0 [0xc00082a560]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:05.230 main::main [main.go:136] > INFO - file: 27910297.tif
+2023-08-25T18:27:05.432 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 848 1207 0 3071725 map[identify:{0xc0006e3020 [0xc005c9c740]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:05.432 main::main [main.go:136] > INFO - file: 27910298.tif
+2023-08-25T18:27:05.636 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 877 1193 0 3139909 map[identify:{0xc000a8cb10 [0xc004ef8b40]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:05.636 main::main [main.go:136] > INFO - file: 27910299.tif
+2023-08-25T18:27:05.839 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 847 1203 0 3057941 map[identify:{0xc005c90c60 [0xc000b85000]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:05.839 main::main [main.go:136] > INFO - file: 27910300.tif
+2023-08-25T18:27:06.027 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 868 1200 0 3125917 map[identify:{0xc005b9c018 [0xc000772020]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:06.027 main::main [main.go:136] > INFO - file: 27910301.tif
+2023-08-25T18:27:06.241 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 846 1213 0 3079711 map[identify:{0xc005c91170 [0xc000b85460]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:06.241 main::main [main.go:136] > INFO - file: 27910302.tif
+2023-08-25T18:27:06.460 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 867 1200 0 3122317 map[identify:{0xc005c915a8 [0xc000b856c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:06.460 main::main [main.go:136] > INFO - file: 27910303.tif
+2023-08-25T18:27:06.645 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 860 1202 0 3102277 map[identify:{0xc005c91938 [0xc000b85820]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:06.646 main::main [main.go:136] > INFO - file: 27910304.tif
+2023-08-25T18:27:06.848 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 880 1208 0 3190245 map[identify:{0xc005b9c678 [0xc000772640]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:06.849 main::main [main.go:136] > INFO - file: 27910305.tif
+2023-08-25T18:27:07.036 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 854 1200 0 3075517 map[identify:{0xc0006e35d8 [0xc005c9d220]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:07.036 main::main [main.go:136] > INFO - file: 27910306.tif
+2023-08-25T18:27:07.224 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 887 1205 0 3207631 map[identify:{0xc005c91e30 [0xc000b85c80]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:07.224 main::main [main.go:136] > INFO - file: 27910307.tif
+2023-08-25T18:27:07.412 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 851 1201 0 3067271 map[identify:{0xc000a8c030 [0xc004ef8280]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:07.412 main::main [main.go:136] > INFO - file: 27910308.tif
+2023-08-25T18:27:07.598 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 888 1202 0 3203253 map[identify:{0xc000a8c450 [0xc004ef84c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:07.598 main::main [main.go:136] > INFO - file: 27910309.tif
+2023-08-25T18:27:07.786 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 845 1199 0 3040583 map[identify:{0xc0006e2af8 [0xc005c9c380]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:07.786 main::main [main.go:136] > INFO - file: 27910310.tif
+2023-08-25T18:27:07.974 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 867 1207 0 3140533 map[identify:{0xc005d44120 [0xc001306280]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:07.974 main::main [main.go:136] > INFO - file: 27910311.tif
+2023-08-25T18:27:08.162 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 843 1199 0 3033389 map[identify:{0xc005b9c240 [0xc000772480]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:08.162 main::main [main.go:136] > INFO - file: 27910312.tif
+2023-08-25T18:27:08.336 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 857 1206 0 3101743 map[identify:{0xc0006e30f8 [0xc005c9cc60]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:08.336 main::main [main.go:136] > INFO - file: 27910313.tif
+2023-08-25T18:27:08.509 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 847 1201 0 3052859 map[identify:{0xc0006e34b8 [0xc005c9cde0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:08.509 main::main [main.go:136] > INFO - file: 27910314.tif
+2023-08-25T18:27:08.695 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 857 1204 0 3096601 map[identify:{0xc005d446a8 [0xc0013070a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:08.695 main::main [main.go:136] > INFO - file: 27910315.tif
+2023-08-25T18:27:08.897 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 841 1201 0 3031241 map[identify:{0xc00540c090 [0xc000b840a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:08.897 main::main [main.go:136] > INFO - file: 27910316.tif
+2023-08-25T18:27:09.085 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 855 1204 0 3089377 map[identify:{0xc000a8c9c0 [0xc004ef8aa0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:09.085 main::main [main.go:136] > INFO - file: 27910317.tif
+2023-08-25T18:27:09.270 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 839 1200 0 3021517 map[identify:{0xc0006e3b48 [0xc005c9d5e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:09.270 main::main [main.go:136] > INFO - file: 27910318.tif
+2023-08-25T18:27:09.458 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 865 1203 0 3122903 map[identify:{0xc00540c4e0 [0xc000b842c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:09.458 main::main [main.go:136] > INFO - file: 27910319.tif
+2023-08-25T18:27:09.645 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 834 1199 0 3001015 map[identify:{0xc005b9c9d8 [0xc000772e60]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:09.645 main::main [main.go:136] > INFO - file: 27910320.tif
+2023-08-25T18:27:09.832 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 867 1208 0 3143133 map[identify:{0xc0006e3ed8 [0xc005c9d700]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:09.832 main::main [main.go:136] > INFO - file: 27910321.tif
+2023-08-25T18:27:10.022 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 844 1200 0 3039517 map[identify:{0xc005b9ce10 [0xc0007732a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:10.022 main::main [main.go:136] > INFO - file: 27910322.tif
+2023-08-25T18:27:10.208 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 853 1197 0 3064241 map[identify:{0xc000a8cf00 [0xc004ef8f80]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:10.208 main::main [main.go:136] > INFO - file: 27910323.tif
+2023-08-25T18:27:10.410 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 867 1203 0 3130121 map[identify:{0xc007eb02d0 [0xc005c9d860]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:10.410 main::main [main.go:136] > INFO - file: 27910324.tif
+2023-08-25T18:27:10.599 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 870 1199 0 3130515 map[identify:{0xc0080280f0 [0xc000f24140]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:10.599 main::main [main.go:136] > INFO - file: 27910325.tif
+2023-08-25T18:27:10.785 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 859 1211 0 3121865 map[identify:{0xc005b9d3f8 [0xc000814860]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:10.785 main::main [main.go:136] > INFO - file: 27910326.tif
+2023-08-25T18:27:10.986 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 864 1197 0 3103741 map[identify:{0xc008028540 [0xc000f243c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:10.986 main::main [main.go:136] > INFO - file: 27910327.tif
+2023-08-25T18:27:11.190 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 858 1208 0 3110509 map[identify:{0xc000a8c090 [0xc004ef8280]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:11.190 main::main [main.go:136] > INFO - file: 27910328.tif
+2023-08-25T18:27:11.377 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 864 1197 0 3103741 map[identify:{0xc000a8c468 [0xc000f24100]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:11.377 main::main [main.go:136] > INFO - file: 27910329.tif
+2023-08-25T18:27:11.564 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 854 1205 0 3088327 map[identify:{0xc007eb00d8 [0xc005c9c180]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:11.564 main::main [main.go:136] > INFO - file: 27910330.tif
+2023-08-25T18:27:11.751 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 864 1197 0 3103741 map[identify:{0xc005b9c390 [0xc000815440]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:11.751 main::main [main.go:136] > INFO - file: 27910331.tif
+2023-08-25T18:27:11.939 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 857 1223 0 3145459 map[identify:{0xc005b9c738 [0xc000815600]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:11.939 main::main [main.go:136] > INFO - file: 27910332.tif
+2023-08-25T18:27:12.127 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 871 1196 0 3126265 map[identify:{0xc008028420 [0xc000f24200]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:12.127 main::main [main.go:136] > INFO - file: 27910333.tif
+2023-08-25T18:27:12.315 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 864 1209 0 3134853 map[identify:{0xc007eb06c0 [0xc005c9c780]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:12.315 main::main [main.go:136] > INFO - file: 27910334.tif
+2023-08-25T18:27:12.503 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 874 1206 0 3163257 map[identify:{0xc000a8c540 [0xc004ef8500]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:12.503 main::main [main.go:136] > INFO - file: 27910335.tif
+2023-08-25T18:27:12.689 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 874 1209 0 3171123 map[identify:{0xc00540c330 [0xc000b84700]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:12.689 main::main [main.go:136] > INFO - file: 27910336.tif
+2023-08-25T18:27:12.876 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 873 1203 0 3151783 map[identify:{0xc008028918 [0xc000f24480]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:12.876 main::main [main.go:136] > INFO - file: 27910337.tif
+2023-08-25T18:27:13.063 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 866 1210 0 3144705 map[identify:{0xc005b9cd38 [0xc0013067e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:13.063 main::main [main.go:136] > INFO - file: 27910338.tif
+2023-08-25T18:27:13.251 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 872 1199 0 3137709 map[identify:{0xc005b9d158 [0xc001306ee0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:13.251 main::main [main.go:136] > INFO - file: 27910339.tif
+2023-08-25T18:27:13.437 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1210 0 3191895 map[identify:{0xc00540c7c8 [0xc000b84a80]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:13.437 main::main [main.go:136] > INFO - file: 27910340.tif
+2023-08-25T18:27:13.624 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 888 1210 0 3224565 map[identify:{0xc008028eb8 [0xc000f24a20]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:13.624 main::main [main.go:136] > INFO - file: 27910341.tif
+2023-08-25T18:27:13.812 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 864 1210 0 3137445 map[identify:{0xc005b9d5a8 [0xc001307320]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:13.812 main::main [main.go:136] > INFO - file: 27910342.tif
+2023-08-25T18:27:14.015 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 869 1216 0 3171237 map[identify:{0xc00540ccd8 [0xc000b84fe0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:14.015 main::main [main.go:136] > INFO - file: 27910343.tif
+2023-08-25T18:27:14.217 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 885 1212 0 3218985 map[identify:{0xc000a8cb88 [0xc004ef8de0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:14.217 main::main [main.go:136] > INFO - file: 27910344.tif
+2023-08-25T18:27:14.404 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 876 1211 0 3183633 map[identify:{0xc005d44180 [0xc00082a540]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:14.404 main::main [main.go:136] > INFO - file: 27910345.tif
+2023-08-25T18:27:14.593 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 876 1209 0 3178377 map[identify:{0xc00540d230 [0xc000b855a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:14.593 main::main [main.go:136] > INFO - file: 27910346.tif
+2023-08-25T18:27:14.778 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 868 1208 0 3146757 map[identify:{0xc00540d650 [0xc000b85800]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:14.778 main::main [main.go:136] > INFO - file: 27910347.tif
+2023-08-25T18:27:14.982 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 875 1214 0 3187875 map[identify:{0xc007eb0150 [0xc005c9c140]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:14.982 main::main [main.go:136] > INFO - file: 27910348.tif
+2023-08-25T18:27:15.169 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 873 1206 0 3159639 map[identify:{0xc00540c030 [0xc00082a1a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:15.169 main::main [main.go:136] > INFO - file: 27910349.tif
+2023-08-25T18:27:15.371 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 882 1215 0 3216015 map[identify:{0xc005d44090 [0xc000b84060]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:15.371 main::main [main.go:136] > INFO - file: 27910350.tif
+2023-08-25T18:27:15.560 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 876 1206 0 3170493 map[identify:{0xc00540c480 [0xc00082a9e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:15.560 main::main [main.go:136] > INFO - file: 27910351.tif
+2023-08-25T18:27:15.748 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 886 1210 0 3217305 map[identify:{0xc005b9c480 [0xc001307300]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:15.748 main::main [main.go:136] > INFO - file: 27910352.tif
+2023-08-25T18:27:15.951 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 878 1215 0 3201435 map[identify:{0xc007eb06c0 [0xc005c9c560]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:15.951 main::main [main.go:136] > INFO - file: 27910353.tif
+2023-08-25T18:27:16.136 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 881 1204 0 3183297 map[identify:{0xc007eb0af8 [0xc005c9c7a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:16.136 main::main [main.go:136] > INFO - file: 27910354.tif
+2023-08-25T18:27:16.339 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 886 1223 0 3251859 map[identify:{0xc00540c810 [0xc00082ac20]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:16.339 main::main [main.go:136] > INFO - file: 27910355.tif
+2023-08-25T18:27:16.527 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 881 1206 0 3188583 map[identify:{0xc005b9ca20 [0xc0007724e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:16.527 main::main [main.go:136] > INFO - file: 27910356.tif
+2023-08-25T18:27:16.714 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 884 1220 0 3236565 map[identify:{0xc00540cbd0 [0xc00082b140]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:16.714 main::main [main.go:136] > INFO - file: 27910357.tif
+2023-08-25T18:27:16.903 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1215 0 3205081 map[identify:{0xc005d444e0 [0xc000b84300]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:16.904 main::main [main.go:136] > INFO - file: 27910358.tif
+2023-08-25T18:27:17.105 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 885 1213 0 3221641 map[identify:{0xc007eb0fa8 [0xc005c9cd20]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:17.105 main::main [main.go:136] > INFO - file: 27910359.tif
+2023-08-25T18:27:17.306 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 888 1213 0 3232557 map[identify:{0xc005d44978 [0xc000b84520]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:17.306 main::main [main.go:136] > INFO - file: 27910360.tif
+2023-08-25T18:27:17.495 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 882 1216 0 3218661 map[identify:{0xc000a8c378 [0xc004ef87e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:17.495 main::main [main.go:136] > INFO - file: 27910361.tif
+2023-08-25T18:27:17.683 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 877 1209 0 3182005 map[identify:{0xc008028528 [0xc000f24ac0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:17.683 main::main [main.go:136] > INFO - file: 27910362.tif
+2023-08-25T18:27:17.884 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 885 1202 0 3192435 map[identify:{0xc005d44d68 [0xc000b84640]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:17.884 main::main [main.go:136] > INFO - file: 27910363.tif
+2023-08-25T18:27:18.085 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 886 1209 0 3214647 map[identify:{0xc005d450f8 [0xc000b84760]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:18.085 main::main [main.go:136] > INFO - file: 27910364.tif
+2023-08-25T18:27:18.289 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 888 1209 0 3221901 map[identify:{0xc005d45518 [0xc000b84a20]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:18.289 main::main [main.go:136] > INFO - file: 27910365.tif
+2023-08-25T18:27:18.522 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 881 1216 0 3215013 map[identify:{0xc005d45938 [0xc000b84d00]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:18.522 main::main [main.go:136] > INFO - file: 27910366.tif
+2023-08-25T18:27:18.741 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 890 1209 0 3229155 map[identify:{0xc005d45d58 [0xc000b84f20]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:18.741 main::main [main.go:136] > INFO - file: 27910367.tif
+2023-08-25T18:27:18.989 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 881 1214 0 3209727 map[identify:{0xc008028090 [0xc000f24040]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:18.990 main::main [main.go:136] > INFO - file: 27910368.tif
+2023-08-25T18:27:19.193 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 866 1206 0 3134305 map[identify:{0xc000a8c108 [0xc0008143c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:19.193 main::main [main.go:136] > INFO - file: 27910369.tif
+2023-08-25T18:27:19.383 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 899 1204 0 3248313 map[identify:{0xc0006e2a80 [0xc000b84140]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:19.383 main::main [main.go:136] > INFO - file: 27910370.tif
+2023-08-25T18:27:19.569 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 871 1204 0 3147177 map[identify:{0xc005b9c090 [0xc00082a080]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:19.569 main::main [main.go:136] > INFO - file: 27910371.tif
+2023-08-25T18:27:19.756 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 906 1212 0 3295341 map[identify:{0xc005d44198 [0xc004ef8640]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:19.756 main::main [main.go:136] > INFO - file: 27910372.tif
+2023-08-25T18:27:19.987 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 871 1203 0 3144565 map[identify:{0xc0080285d0 [0xc000f244a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:19.987 main::main [main.go:136] > INFO - file: 27910373.tif
+2023-08-25T18:27:20.192 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 881 1217 0 3217657 map[identify:{0xc007eb0438 [0xc000772b60]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:20.192 main::main [main.go:136] > INFO - file: 27910374.tif
+2023-08-25T18:27:20.396 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 876 1208 0 3175749 map[identify:{0xc007eb0858 [0xc000772e20]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:20.396 main::main [main.go:136] > INFO - file: 27910375.tif
+2023-08-25T18:27:20.584 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 886 1205 0 3204015 map[identify:{0xc005b9c570 [0xc00082a300]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:20.584 main::main [main.go:136] > INFO - file: 27910376.tif
+2023-08-25T18:27:20.772 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 869 1206 0 3145159 map[identify:{0xc008028b70 [0xc000f249a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:20.772 main::main [main.go:136] > INFO - file: 27910377.tif
+2023-08-25T18:27:20.958 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 899 1208 0 3259101 map[identify:{0xc005b9c9f0 [0xc00082a820]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:20.958 main::main [main.go:136] > INFO - file: 27910378.tif
+2023-08-25T18:27:21.145 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 877 1208 0 3179373 map[identify:{0xc000a8c810 [0xc000815620]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:21.145 main::main [main.go:136] > INFO - file: 27910379.tif
+2023-08-25T18:27:21.348 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 890 1212 0 3237165 map[identify:{0xc0006e2f18 [0xc000b84420]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:21.348 main::main [main.go:136] > INFO - file: 27910380.tif
+2023-08-25T18:27:21.536 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1203 0 3173437 map[identify:{0xc005d44600 [0xc004ef89a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:21.536 main::main [main.go:136] > INFO - file: 27910381.tif
+2023-08-25T18:27:21.739 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 874 1207 0 3165879 map[identify:{0xc008028f48 [0xc000f24b40]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:21.739 main::main [main.go:136] > INFO - file: 27910382.tif
+2023-08-25T18:27:21.943 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 882 1203 0 3184263 map[identify:{0xc000a8cdb0 [0xc000418820]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:21.943 main::main [main.go:136] > INFO - file: 27910383.tif
+2023-08-25T18:27:22.148 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1206 0 3181347 map[identify:{0xc007eb0ff0 [0xc001306ac0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:22.148 main::main [main.go:136] > INFO - file: 27910384.tif
+2023-08-25T18:27:22.335 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 877 1200 0 3158325 map[identify:{0xc000a8d158 [0xc000419020]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:22.335 main::main [main.go:136] > INFO - file: 27910385.tif
+2023-08-25T18:27:22.538 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 878 1210 0 3188265 map[identify:{0xc007eb1410 [0xc001307120]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:22.539 main::main [main.go:136] > INFO - file: 27910386.tif
+2023-08-25T18:27:22.739 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 868 1209 0 3149361 map[identify:{0xc005d44b28 [0xc004ef8e00]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:22.739 main::main [main.go:136] > INFO - file: 27910387.tif
+2023-08-25T18:27:22.943 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 884 1212 0 3215349 map[identify:{0xc005b9c168 [0xc00082a140]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:22.943 main::main [main.go:136] > INFO - file: 27910388.tif
+2023-08-25T18:27:23.130 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 874 1205 0 3160635 map[identify:{0xc007eb01b0 [0xc001306380]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:23.130 main::main [main.go:136] > INFO - file: 27910389.tif
+2023-08-25T18:27:23.331 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 867 1214 0 3158739 map[identify:{0xc007eb0600 [0xc0013069a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:23.331 main::main [main.go:136] > INFO - file: 27910390.tif
+2023-08-25T18:27:23.518 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 873 1208 0 3164877 map[identify:{0xc000a8c030 [0xc000b84040]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:23.518 main::main [main.go:136] > INFO - file: 27910391.tif
+2023-08-25T18:27:23.723 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1210 0 3191895 map[identify:{0xc0006e2cd8 [0xc004ef8a40]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:23.723 main::main [main.go:136] > INFO - file: 27910392.tif
+2023-08-25T18:27:23.911 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 870 1208 0 3154005 map[identify:{0xc005d44168 [0xc000f24160]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:23.911 main::main [main.go:136] > INFO - file: 27910393.tif
+2023-08-25T18:27:24.097 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 898 1214 0 3271641 map[identify:{0xc000b0a078 [0xc0004180e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:24.097 main::main [main.go:136] > INFO - file: 27910394.tif
+2023-08-25T18:27:24.300 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 869 1211 0 3158203 map[identify:{0xc000b0a450 [0xc000418580]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:24.300 main::main [main.go:136] > INFO - file: 27910395.tif
+2023-08-25T18:27:24.502 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 892 1210 0 3239085 map[identify:{0xc000b0a870 [0xc000418bc0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:24.502 main::main [main.go:136] > INFO - file: 27910396.tif
+2023-08-25T18:27:24.721 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 880 1208 0 3190245 map[identify:{0xc005b9c660 [0xc00082ab20]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:24.721 main::main [main.go:136] > INFO - file: 27910397.tif
+2023-08-25T18:27:24.939 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 896 1209 0 3250917 map[identify:{0xc000a8c888 [0xc000b84e00]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:24.939 main::main [main.go:136] > INFO - file: 27910398.tif
+2023-08-25T18:27:25.158 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 881 1207 0 3191227 map[identify:{0xc005d447b0 [0xc000f24800]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:25.158 main::main [main.go:136] > INFO - file: 27910399.tif
+2023-08-25T18:27:25.392 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 890 1208 0 3226485 map[identify:{0xc005b9cb28 [0xc00082b4c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:25.392 main::main [main.go:136] > INFO - file: 27910400.tif
+2023-08-25T18:27:25.626 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 894 1203 0 3227571 map[identify:{0xc007eb0a80 [0xc0013071e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:25.626 main::main [main.go:136] > INFO - file: 27910401.tif
+2023-08-25T18:27:25.890 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 874 1211 0 3176367 map[identify:{0xc007eb0de0 [0xc0013072e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:25.890 main::main [main.go:136] > INFO - file: 27910402.tif
+2023-08-25T18:27:26.155 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 876 1226 0 3223053 map[identify:{0xc0006e3428 [0xc004ef9400]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:26.155 main::main [main.go:136] > INFO - file: 27910403.tif
+2023-08-25T18:27:26.388 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 867 1210 0 3148335 map[identify:{0xc000b0ad80 [0xc000419800]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:26.388 main::main [main.go:136] > INFO - file: 27910404.tif
+2023-08-25T18:27:26.622 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 883 1201 0 3182575 map[identify:{0xc0006e37b8 [0xc004ef9520]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:26.622 main::main [main.go:136] > INFO - file: 27910405.tif
+2023-08-25T18:27:26.842 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 876 1203 0 3162609 map[identify:{0xc000a8cf60 [0xc000b85680]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:26.842 main::main [main.go:136] > INFO - file: 27910406.tif
+2023-08-25T18:27:27.045 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 884 1207 0 3202089 map[identify:{0xc007eb1530 [0xc000a871e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:27.045 main::main [main.go:136] > INFO - file: 27910407.tif
+2023-08-25T18:27:27.249 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1207 0 3183985 map[identify:{0xc005d44cc0 [0xc000f24b60]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:27.249 main::main [main.go:136] > INFO - file: 27910408.tif
+2023-08-25T18:27:27.465 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 893 1204 0 3226641 map[identify:{0xc0006e2a50 [0xc000418380]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:27.465 main::main [main.go:136] > INFO - file: 27910409.tif
+2023-08-25T18:27:27.682 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 867 1205 0 3135323 map[identify:{0xc007eb01b0 [0xc000b84380]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:27.682 main::main [main.go:136] > INFO - file: 27910410.tif
+2023-08-25T18:27:27.900 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 871 1202 0 3141951 map[identify:{0xc0006e2f60 [0xc000419460]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:27.900 main::main [main.go:136] > INFO - file: 27910411.tif
+2023-08-25T18:27:28.118 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 890 1213 0 3239835 map[identify:{0xc007eb06c0 [0xc000b847e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:28.118 main::main [main.go:136] > INFO - file: 27910412.tif
+2023-08-25T18:27:28.353 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 877 1212 0 3189897 map[identify:{0xc005d441c8 [0xc000a86c40]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:28.353 main::main [main.go:136] > INFO - file: 27910413.tif
+2023-08-25T18:27:28.602 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 890 1215 0 3245175 map[identify:{0xc005b9c108 [0xc00082a160]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:28.602 main::main [main.go:136] > INFO - file: 27910414.tif
+2023-08-25T18:27:28.851 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1212 0 3197169 map[identify:{0xc007eb0b28 [0xc000b84d60]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:28.851 main::main [main.go:136] > INFO - file: 27910415.tif
+2023-08-25T18:27:29.101 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 892 1202 0 3217677 map[identify:{0xc007eb0f48 [0xc000b84f80]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:29.101 main::main [main.go:136] > INFO - file: 27910416.tif
+2023-08-25T18:27:29.350 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 869 1226 0 3197307 map[identify:{0xc005d446f0 [0xc000a87280]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:29.350 main::main [main.go:136] > INFO - file: 27910417.tif
+2023-08-25T18:27:29.585 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 892 1215 0 3252465 map[identify:{0xc000a8c390 [0xc000f245c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:29.585 main::main [main.go:136] > INFO - file: 27910418.tif
+2023-08-25T18:27:29.803 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 888 1210 0 3224565 map[identify:{0xc000a8c780 [0xc000f24800]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:29.803 main::main [main.go:136] > INFO - file: 27910419.tif
+2023-08-25T18:27:30.022 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 890 1215 0 3245175 map[identify:{0xc000a8cbb8 [0xc000f24a20]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:30.022 main::main [main.go:136] > INFO - file: 27910420.tif
+2023-08-25T18:27:30.225 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 888 1211 0 3227229 map[identify:{0xc0006e34a0 [0xc000419b40]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:30.225 main::main [main.go:136] > INFO - file: 27910421.tif
+2023-08-25T18:27:30.429 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 890 1211 0 3234495 map[identify:{0xc000b0a090 [0xc004ef8360]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:30.429 main::main [main.go:136] > INFO - file: 27910422.tif
+2023-08-25T18:27:30.632 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 882 1209 0 3200139 map[identify:{0xc005d451e8 [0xc0007723a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:30.632 main::main [main.go:136] > INFO - file: 27910423.tif
+2023-08-25T18:27:30.834 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 881 1218 0 3220299 map[identify:{0xc0006e38d8 [0xc000419f00]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:30.834 main::main [main.go:136] > INFO - file: 27910424.tif
+2023-08-25T18:27:31.038 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 892 1207 0 3231057 map[identify:{0xc000a8d1d0 [0xc000f25240]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:31.038 main::main [main.go:136] > INFO - file: 27910425.tif
+2023-08-25T18:27:31.227 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 883 1220 0 3232905 map[identify:{0xc007eb1488 [0xc000b854a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:31.227 main::main [main.go:136] > INFO - file: 27910426.tif
+2023-08-25T18:27:31.432 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 889 1203 0 3209527 map[identify:{0xc005d457b8 [0xc000772a60]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:31.432 main::main [main.go:136] > INFO - file: 27910427.tif
+2023-08-25T18:27:31.649 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 901 1209 0 3269053 map[identify:{0xc0006e2a98 [0xc004ef8380]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:31.649 main::main [main.go:136] > INFO - file: 27910428.tif
+2023-08-25T18:27:31.854 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 890 1208 0 3226485 map[identify:{0xc000b0a150 [0xc0013062e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:31.854 main::main [main.go:136] > INFO - file: 27910429.tif
+2023-08-25T18:27:32.056 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 890 1193 0 3186435 map[identify:{0xc007eb00f0 [0xc000b84140]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:32.056 main::main [main.go:136] > INFO - file: 27910430.tif
+2023-08-25T18:27:32.243 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 885 1202 0 3192435 map[identify:{0xc005b9c1f8 [0xc00082a520]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:32.244 main::main [main.go:136] > INFO - file: 27910431.tif
+2023-08-25T18:27:32.431 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 891 1211 0 3238129 map[identify:{0xc005d440f0 [0xc000772140]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:32.431 main::main [main.go:136] > INFO - file: 27910432.tif
+2023-08-25T18:27:32.621 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 900 1206 0 3257325 map[identify:{0xc007eb0540 [0xc000b84380]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:32.621 main::main [main.go:136] > INFO - file: 27910433.tif
+2023-08-25T18:27:32.807 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 870 1215 0 3172275 map[identify:{0xc0006e3080 [0xc004ef8a40]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:32.807 main::main [main.go:136] > INFO - file: 27910434.tif
+2023-08-25T18:27:32.993 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 868 1210 0 3151965 map[identify:{0xc000b0a7b0 [0xc001307280]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:32.993 main::main [main.go:136] > INFO - file: 27910435.tif
+2023-08-25T18:27:33.196 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 870 1203 0 3140955 map[identify:{0xc007eb0a38 [0xc000b84820]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:33.196 main::main [main.go:136] > INFO - file: 27910436.tif
+2023-08-25T18:27:33.383 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 864 1212 0 3142629 map[identify:{0xc000b0abd0 [0xc001307de0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:33.383 main::main [main.go:136] > INFO - file: 27910437.tif
+2023-08-25T18:27:33.571 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 872 1198 0 3135093 map[identify:{0xc005d445d0 [0xc0007724c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:33.571 main::main [main.go:136] > INFO - file: 27910438.tif
+2023-08-25T18:27:33.759 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 876 1212 0 3186261 map[identify:{0xc000a8c2e8 [0xc000f24780]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:33.759 main::main [main.go:136] > INFO - file: 27910439.tif
+2023-08-25T18:27:33.945 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 896 1214 0 3264357 map[identify:{0xc005b9c798 [0xc00082b4e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:33.945 main::main [main.go:136] > INFO - file: 27910440.tif
+2023-08-25T18:27:34.147 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 878 1215 0 3201435 map[identify:{0xc007eb1050 [0xc000b85140]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:34.147 main::main [main.go:136] > INFO - file: 27910441.tif
+2023-08-25T18:27:34.335 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 884 1205 0 3196785 map[identify:{0xc000b0b188 [0xc000814d20]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:34.335 main::main [main.go:136] > INFO - file: 27910442.tif
+2023-08-25T18:27:34.537 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 875 1210 0 3177375 map[identify:{0xc005b9cbd0 [0xc00082b8c0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:34.537 main::main [main.go:136] > INFO - file: 27910443.tif
+2023-08-25T18:27:34.725 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 882 1209 0 3200139 map[identify:{0xc007eb14d0 [0xc000b854a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:34.725 main::main [main.go:136] > INFO - file: 27910444.tif
+2023-08-25T18:27:34.913 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 887 1213 0 3228919 map[identify:{0xc005b9cf60 [0xc00082ba00]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:34.913 main::main [main.go:136] > INFO - file: 27910445.tif
+2023-08-25T18:27:35.100 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 880 1208 0 3190245 map[identify:{0xc000a8c918 [0xc000f24e20]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:35.100 main::main [main.go:136] > INFO - file: 27910446.tif
+2023-08-25T18:27:35.286 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1214 0 3202443 map[identify:{0xc005b9c0c0 [0xc00082a140]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:35.286 main::main [main.go:136] > INFO - file: 27910447.tif
+2023-08-25T18:27:35.474 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 877 1208 0 3179373 map[identify:{0xc000a8c090 [0xc000f24120]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:35.474 main::main [main.go:136] > INFO - file: 27910448.tif
+2023-08-25T18:27:35.662 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 874 1212 0 3178989 map[identify:{0xc005d44030 [0xc000a86780]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:35.662 main::main [main.go:136] > INFO - file: 27910449.tif
+2023-08-25T18:27:35.849 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 861 1199 0 3098135 map[identify:{0xc005d44420 [0xc000a86fa0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:35.849 main::main [main.go:136] > INFO - file: 27910450.tif
+2023-08-25T18:27:36.036 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 886 1213 0 3225279 map[identify:{0xc00951e378 [0xc004ef8aa0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:36.036 main::main [main.go:136] > INFO - file: 27910451.tif
+2023-08-25T18:27:36.238 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 871 1204 0 3147177 map[identify:{0xc005d44960 [0xc000a87960]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:36.238 main::main [main.go:136] > INFO - file: 27910452.tif
+2023-08-25T18:27:36.425 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 866 1215 0 3157695 map[identify:{0xc005b9c498 [0xc00082a2a0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:36.425 main::main [main.go:136] > INFO - file: 27910453.tif
+2023-08-25T18:27:36.615 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 863 1196 0 3097561 map[identify:{0xc000a8c510 [0xc000f244e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:36.615 main::main [main.go:136] > INFO - file: 27910454.tif
+2023-08-25T18:27:36.804 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 876 1218 0 3202029 map[identify:{0xc0006e2ed0 [0xc000772ac0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:36.805 main::main [main.go:136] > INFO - file: 27910455.tif
+2023-08-25T18:27:37.007 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 877 1200 0 3158325 map[identify:{0xc00951e798 [0xc004ef8ce0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:37.007 main::main [main.go:136] > INFO - file: 27910456.tif
+2023-08-25T18:27:37.195 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 876 1211 0 3183633 map[identify:{0xc0006e3320 [0xc000772d00]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:37.195 main::main [main.go:136] > INFO - file: 27910457.tif
+2023-08-25T18:27:37.383 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 880 1202 0 3174405 map[identify:{0xc005d44f78 [0xc000814140]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:37.383 main::main [main.go:136] > INFO - file: 27910458.tif
+2023-08-25T18:27:37.587 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 872 1214 0 3176949 map[identify:{0xc005d45350 [0xc000814660]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:37.587 main::main [main.go:136] > INFO - file: 27910459.tif
+2023-08-25T18:27:37.774 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 863 1216 0 3149349 map[identify:{0xc000a8c9f0 [0xc000f24940]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:37.774 main::main [main.go:136] > INFO - file: 27910460.tif
+2023-08-25T18:27:37.974 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 872 1211 0 3169101 map[identify:{0xc000a8ce10 [0xc000f24b60]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:37.974 main::main [main.go:136] > INFO - file: 27910461.tif
+2023-08-25T18:27:38.177 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1199 0 3162889 map[identify:{0xc0006e39b0 [0xc000b84200]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:38.177 main::main [main.go:136] > INFO - file: 27910462.tif
+2023-08-25T18:27:38.363 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 886 1213 0 3225279 map[identify:{0xc0006e3dd0 [0xc000b84420]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:38.363 main::main [main.go:136] > INFO - file: 27910463.tif
+2023-08-25T18:27:38.550 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 882 1208 0 3197493 map[identify:{0xc005b9cb28 [0xc00082ae60]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:38.550 main::main [main.go:136] > INFO - file: 27910464.tif
+2023-08-25T18:27:38.737 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 877 1211 0 3187267 map[identify:{0xc005b9cf48 [0xc00082b400]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:38.737 main::main [main.go:136] > INFO - file: 27910465.tif
+2023-08-25T18:27:38.940 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 887 1210 0 3220935 map[identify:{0xc005d44168 [0xc004ef8380]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:38.940 main::main [main.go:136] > INFO - file: 27910466.tif
+2023-08-25T18:27:39.127 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 889 1216 0 3244197 map[identify:{0xc005d44510 [0xc004ef84e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:39.127 main::main [main.go:136] > INFO - file: 27910467.tif
+2023-08-25T18:27:39.315 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 901 1213 0 3279865 map[identify:{0xc005b9c138 [0xc00082a180]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:39.315 main::main [main.go:136] > INFO - file: 27910468.tif
+2023-08-25T18:27:39.503 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 885 1211 0 3216331 map[identify:{0xc000a8c1b0 [0xc000814660]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:39.503 main::main [main.go:136] > INFO - file: 27910469.tif
+2023-08-25T18:27:39.689 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 892 1213 0 3247113 map[identify:{0xc000a8c600 [0xc000814940]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:39.689 main::main [main.go:136] > INFO - file: 27910470.tif
+2023-08-25T18:27:39.877 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 887 1213 0 3228919 map[identify:{0xc005d44a50 [0xc004ef8a80]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:39.877 main::main [main.go:136] > INFO - file: 27910471.tif
+2023-08-25T18:27:40.065 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 882 1197 0 3168387 map[identify:{0xc005b9c5a0 [0xc00082a3e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:40.065 main::main [main.go:136] > INFO - file: 27910472.tif
+2023-08-25T18:27:40.250 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 891 1211 0 3238129 map[identify:{0xc0006e2a20 [0xc000b84160]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:40.250 main::main [main.go:136] > INFO - file: 27910473.tif
+2023-08-25T18:27:40.469 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 879 1206 0 3181347 map[identify:{0xc005b9c900 [0xc00082a4e0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:40.469 main::main [main.go:136] > INFO - file: 27910474.tif
+2023-08-25T18:27:40.656 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 885 1214 0 3224295 map[identify:{0xc000a8cb58 [0xc000815720]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:40.656 main::main [main.go:136] > INFO - file: 27910475.tif
+2023-08-25T18:27:40.859 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 902 1214 0 3286209 map[identify:{0xc005d44e88 [0xc004ef8cc0]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:40.859 main::main [main.go:136] > INFO - file: 27910476.tif
+2023-08-25T18:27:41.045 main::main [main.go:147] > INFO - &{map[] image/tiff [image/tiff] fmt/353 [fmt/353] 888 1209 0 3221901 map[identify:{0xc000b0a4c8 [0xc000f24a60]} siegfried:[fmt/353]] image TrueColor}
+2023-08-25T18:27:41.045 main::main [main.go:136] > INFO - file: 27910477.tif
