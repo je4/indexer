@@ -134,3 +134,119 @@ type IndexerConfig struct {
 	Clamav          ConfigClamAV
 	MimeRelevance   map[string]ConfigMimeWeight
 }
+
+func GetDefaultConfig() *IndexerConfig {
+	var conf = &IndexerConfig{
+		Enabled:    true,
+		LocalCache: false,
+		TempDir:    "",
+		Siegfried: ConfigSiegfried{
+			Enabled:       true,
+			SignatureFile: "internal:/siegfried/default.sig",
+			MimeMap: map[string]string{
+				"x-fmt/92":  "image/psd",
+				"fmt/134":   "audio/mp3",
+				"x-fmt/184": "image/x-sun-raster",
+				"fmt/202":   "image/x-nikon-nef",
+				"fmt/211":   "image/x-photo-cd",
+				"x-fmt/383": "image/fits",
+				"fmt/405":   "image/x-portable-anymap",
+				"fmt/406":   "image/x-portable-graymap",
+				"fmt/408":   "image/x-portable-pixmap",
+				"fmt/436":   "image/x-adobe-dng",
+				"fmt/437":   "image/x-adobe-dng",
+				"fmt/592":   "image/x-canon-cr2",
+				"fmt/642":   "image/x-raw-fuji",
+				"fmt/662":   "image/x-raw-panasonic",
+				"fmt/668":   "image/x-olympus-orf",
+				"fmt/986":   "text/xmp",
+				"fmt/1001":  "image/x-exr",
+				"fmt/1040":  "image/vnd.ms-dds",
+				"fmt/1781":  "image/x-pentax-pef",
+			},
+		},
+		Checksum: ConfigChecksum{
+			Enabled: true,
+			Name:    "checksum",
+			Digest: []checksum.DigestAlgorithm{
+				"sha512",
+			},
+		},
+		FFMPEG: ConfigFFMPEG{
+			Mime: []FFMPEGMime{
+				{
+					Video:  false,
+					Audio:  true,
+					Format: "mov,mp4,m4a,3gp,3g2,mj2",
+					Mime:   "audio/mp4",
+				},
+				{
+					Video:  true,
+					Audio:  true,
+					Format: "mov,mp4,m4a,3gp,3g2,mj2",
+					Mime:   "video/mp4",
+				},
+				{
+					Video:  true,
+					Audio:  false,
+					Format: "mov,mp4,m4a,3gp,3g2,mj2",
+					Mime:   "video/mp4",
+				},
+			},
+		},
+		ImageMagick: ConfigImageMagick{},
+		Tika:        ConfigTika{},
+		External:    []ConfigExternalAction{},
+		FileMap:     []ConfigFileMap{},
+		URLRegexp:   []string{},
+		NSRL:        ConfigNSRL{},
+		Clamav:      ConfigClamAV{},
+		MimeRelevance: map[string]ConfigMimeWeight{
+			"1": {
+				Regexp: "^application/octet-stream",
+				Weight: 1,
+			},
+			"2": {
+				Regexp: "^text/plain",
+				Weight: 3,
+			},
+			"3": {
+				Regexp: "^audio/mpeg",
+				Weight: 6,
+			},
+			"4": {
+				Regexp: "^video/mpeg",
+				Weight: 5,
+			},
+			"5": {
+				Regexp: "^application/vnd\\..+",
+				Weight: 4,
+			},
+			"6": {
+				Regexp: "^application/rtf",
+				Weight: 4,
+			},
+			"7": {
+				Regexp: "^application/.+",
+				Weight: 2,
+			},
+			"8": {
+				Regexp: "^text/.+",
+				Weight: 4,
+			},
+			"9": {
+				Regexp: "^audio/.+",
+				Weight: 5,
+			},
+			"10": {
+				Regexp: "^video/.+",
+				Weight: 4,
+			},
+			"11": {
+				Regexp: "^.+/x-.+",
+				Weight: 80,
+			},
+		},
+	}
+	return conf
+}
