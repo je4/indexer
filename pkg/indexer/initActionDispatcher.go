@@ -45,7 +45,7 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger *logg
 	} else {
 		intFS, ok := fss[found[1]]
 		if !ok {
-			return nil, errors.Wrapf(err, "invalid filesystem %s", found[1])
+			return nil, errors.Errorf("invalid filesystem %s", found[1])
 		}
 		signatureData, err = fs.ReadFile(intFS, strings.TrimLeft(found[2], "/"))
 		if err != nil {
