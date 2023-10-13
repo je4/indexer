@@ -24,18 +24,22 @@ func (idx *Indexer) Index(fsys fs.FS, path string, realname string, actions []st
 	idxRead, idxWrite := io.Pipe()
 	csw, err := checksum.NewChecksumWriter(digestAlgs, io.MultiWriter(idxWrite, writer))
 	if err != nil {
+		idxWrite.Close()
+		fp.Close()
 		return nil, nil, errors.Wrapf(err, "cannot create ChecksumWriter for digests %v", digestAlgs)
 	}
 
 	go func() {
+		defer func() {
+			csw.Close()
+			idxWrite.Close()
+			fp.Close()
+		}()
 		_, err := io.Copy(csw, fp)
 		if err != nil {
 			// todo: channel with error
 			logger.Errorf("cannot copy data: %v", err)
 		}
-		csw.Close()
-		idxWrite.Close()
-		fp.Close()
 	}()
 	result, err := ad.Stream(idxRead, []string{realname}, actions)
 	if err != nil {
