@@ -15,7 +15,6 @@ require (
 	github.com/hooklift/iso9660 v1.0.0
 	github.com/je4/filesystem/v2 v2.0.0-20230825180059-89f6485c112a
 	github.com/je4/goffmpeg v0.0.0-20220114092308-33ab9986404d
-	github.com/je4/indexer v0.0.0-20230317101220-dbdc214894c4
 	github.com/je4/utils/v2 v2.0.8-0.20230609135718-aed149c118d2
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/phayes/freeport v0.0.0-20220201140144-74d24b5ae9f5
@@ -38,6 +37,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/flatbuffers v23.5.26+incompatible // indirect
+	github.com/hooklift/assert v0.1.0 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
