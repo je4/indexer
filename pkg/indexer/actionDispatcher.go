@@ -73,6 +73,7 @@ func (ad *ActionDispatcher) GetActionNamesByCaps(caps ActionCapability) []string
 }
 
 func (ad *ActionDispatcher) Stream(sourceReader io.Reader, stateFiles []string, actions []string) (*ResultV2, error) {
+
 	if len(stateFiles) == 0 {
 		stateFiles = []string{""}
 	}
