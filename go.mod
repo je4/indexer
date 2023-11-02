@@ -15,7 +15,7 @@ require (
 	github.com/hooklift/iso9660 v1.0.0
 	github.com/je4/filesystem/v2 v2.0.0-20230825180059-89f6485c112a
 	github.com/je4/goffmpeg v0.0.0-20220114092308-33ab9986404d
-	github.com/je4/utils/v2 v2.0.14
+	github.com/je4/utils/v2 v2.0.17
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/phayes/freeport v0.0.0-20220201140144-74d24b5ae9f5
 	github.com/pkg/sftp v1.13.6
