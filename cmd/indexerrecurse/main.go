@@ -9,7 +9,7 @@ import (
 	"github.com/je4/indexer/v2/pkg/util"
 	"github.com/je4/utils/v2/pkg/checksum"
 	lm "github.com/je4/utils/v2/pkg/logger"
-	"github.com/op/go-logging"
+	"github.com/je4/utils/v2/pkg/zLogger"
 	"io"
 	"io/fs"
 	"os"
@@ -25,7 +25,7 @@ var folder = flag.String("path", "", "path to iterate")
 
 var waiter sync.WaitGroup
 
-func worker(id int, fsys fs.FS, idx *util.Indexer, logger *logging.Logger, jobs <-chan string, results chan<- string) {
+func worker(id int, fsys fs.FS, idx *util.Indexer, logger zLogger.ZWrapper, jobs <-chan string, results chan<- string) {
 	for path := range jobs {
 		fmt.Println("worker", id, "processing job", path)
 		r, cs, err := idx.Index(fsys, path, "", []string{"siegfried", "identify", "ffprobe", "tika"}, []checksum.DigestAlgorithm{checksum.DigestSHA512}, io.Discard, logger)

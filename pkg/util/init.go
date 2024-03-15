@@ -3,7 +3,7 @@ package util
 import (
 	"emperror.dev/errors"
 	"github.com/je4/indexer/v2/pkg/indexer"
-	"github.com/op/go-logging"
+	"github.com/je4/utils/v2/pkg/zLogger"
 	"os"
 	"strconv"
 )
@@ -11,7 +11,7 @@ import (
 // InitIndexer
 // initializes an ActionDispatcher with Siegfried, ImageMagick, FFPMEG and Tika
 // the actions are named "siegfried", "identify", "ffprobe", "tika" and "fulltext"
-func InitIndexer(conf *Config, logger *logging.Logger) (ad *Indexer, err error) {
+func InitIndexer(conf *Config, logger zLogger.ZWrapper) (ad *Indexer, err error) {
 	var relevance = map[int]indexer.MimeWeightString{}
 	if conf.MimeRelevance != nil {
 		for key, val := range conf.MimeRelevance {

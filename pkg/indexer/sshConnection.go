@@ -15,7 +15,7 @@ package indexer
 
 import (
 	"emperror.dev/errors"
-	"github.com/op/go-logging"
+	"github.com/je4/utils/v2/pkg/zLogger"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
 	"io"
@@ -25,10 +25,10 @@ type SSHConnection struct {
 	client  *ssh.Client
 	config  *ssh.ClientConfig
 	address string
-	log     *logging.Logger
+	log     zLogger.ZWrapper
 }
 
-func NewSSHConnection(address, user string, config *ssh.ClientConfig, log *logging.Logger) (*SSHConnection, error) {
+func NewSSHConnection(address, user string, config *ssh.ClientConfig, log zLogger.ZWrapper) (*SSHConnection, error) {
 	// create copy of config with user
 	newConfig := &ssh.ClientConfig{
 		Config:            config.Config,

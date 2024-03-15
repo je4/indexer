@@ -1,6 +1,6 @@
 module github.com/je4/indexer/v2
 
-go 1.21
+go 1.22
 
 replace github.com/google/flatbuffers => github.com/google/flatbuffers v1.12.1
 
@@ -13,9 +13,9 @@ require (
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/hooklift/iso9660 v1.0.0
-	github.com/je4/filesystem/v2 v2.0.0-20230825180059-89f6485c112a
+	github.com/je4/filesystem/v2 v2.0.5
 	github.com/je4/goffmpeg v0.0.0-20220114092308-33ab9986404d
-	github.com/je4/utils/v2 v2.0.17
+	github.com/je4/utils/v2 v2.0.27
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/phayes/freeport v0.0.0-20220201140144-74d24b5ae9f5
 	github.com/pkg/sftp v1.13.6
@@ -41,6 +41,8 @@ require (
 	github.com/hooklift/assert v0.1.0 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/kr/fs v0.1.0 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/richardlehane/characterize v1.0.0 // indirect
 	github.com/richardlehane/match v1.0.5 // indirect
@@ -49,6 +51,7 @@ require (
 	github.com/richardlehane/xmldetect v1.0.2 // indirect
 	github.com/ross-spencer/spargo v0.4.1 // indirect
 	github.com/ross-spencer/wikiprov v0.2.0 // indirect
+	github.com/rs/zerolog v1.30.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/image v0.11.0 // indirect

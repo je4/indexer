@@ -24,7 +24,7 @@ import (
 	mime "github.com/gabriel-vasile/mimetype"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/op/go-logging"
+	"github.com/je4/utils/v2/pkg/zLogger"
 	"golang.org/x/exp/slices"
 	"html/template"
 	"io"
@@ -59,7 +59,7 @@ type Server struct {
 	srv             *http.Server
 	jwtSecret       string
 	jwtAlg          []string
-	log             *logging.Logger
+	log             zLogger.ZWrapper
 	accesslog       io.Writer
 	errorTemplate   *template.Template
 	actions         *ActionDispatcher
@@ -83,7 +83,7 @@ func NewServer(
 	jwtSecret string,
 	jwtAlg []string,
 	insecureCert bool,
-	log *logging.Logger,
+	log zLogger.ZWrapper,
 	accesslog io.Writer,
 	errorTemplate *template.Template,
 	tempDir string,

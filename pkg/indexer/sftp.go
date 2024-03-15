@@ -16,7 +16,7 @@ package indexer
 import (
 	"emperror.dev/errors"
 	"fmt"
-	"github.com/op/go-logging"
+	"github.com/je4/utils/v2/pkg/zLogger"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/knownhosts"
 	"io"
@@ -26,11 +26,11 @@ import (
 
 type SFTP struct {
 	config *ssh.ClientConfig
-	log    *logging.Logger
+	log    zLogger.ZWrapper
 	pool   *SSHConnectionPool
 }
 
-func NewSFTP(PrivateKey []string, Password, KnownHosts string, log *logging.Logger) (*SFTP, error) {
+func NewSFTP(PrivateKey []string, Password, KnownHosts string, log zLogger.ZWrapper) (*SFTP, error) {
 	var signer []ssh.Signer
 
 	sftp := &SFTP{

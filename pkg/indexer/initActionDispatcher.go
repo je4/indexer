@@ -2,7 +2,7 @@ package indexer
 
 import (
 	"emperror.dev/errors"
-	"github.com/op/go-logging"
+	"github.com/je4/utils/v2/pkg/zLogger"
 	"io/fs"
 	"os"
 	"regexp"
@@ -27,7 +27,7 @@ func stringMapToMimeRelevance(mimeRelevanceInterface map[string]ConfigMimeWeight
 
 var fsRegexp = regexp.MustCompile("^([^:]{2,}):(.+)$")
 
-func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger *logging.Logger) (*ActionDispatcher, error) {
+func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogger.ZWrapper) (*ActionDispatcher, error) {
 	mimeRelevance, err := stringMapToMimeRelevance(conf.MimeRelevance)
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot convert config string map to mime relevance")

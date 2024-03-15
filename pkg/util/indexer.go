@@ -4,14 +4,14 @@ import (
 	"emperror.dev/errors"
 	"github.com/je4/indexer/v2/pkg/indexer"
 	"github.com/je4/utils/v2/pkg/checksum"
-	"github.com/op/go-logging"
+	"github.com/je4/utils/v2/pkg/zLogger"
 	"io"
 	"io/fs"
 )
 
 type Indexer indexer.ActionDispatcher
 
-func (idx *Indexer) Index(fsys fs.FS, path string, realname string, actions []string, digestAlgs []checksum.DigestAlgorithm, writer io.Writer, logger *logging.Logger) (*indexer.ResultV2, map[checksum.DigestAlgorithm]string, error) {
+func (idx *Indexer) Index(fsys fs.FS, path string, realname string, actions []string, digestAlgs []checksum.DigestAlgorithm, writer io.Writer, logger zLogger.ZWrapper) (*indexer.ResultV2, map[checksum.DigestAlgorithm]string, error) {
 	if realname == "" {
 		realname = path
 	}

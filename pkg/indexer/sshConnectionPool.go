@@ -16,7 +16,7 @@ package indexer
 import (
 	"emperror.dev/errors"
 	"fmt"
-	"github.com/op/go-logging"
+	"github.com/je4/utils/v2/pkg/zLogger"
 	"golang.org/x/crypto/ssh"
 	"strings"
 	"sync"
@@ -26,10 +26,10 @@ type SSHConnectionPool struct {
 	// Protects access to fields below
 	mu    sync.Mutex
 	table map[string]*SSHConnection
-	log   *logging.Logger
+	log   zLogger.ZWrapper
 }
 
-func NewSSHConnectionPool(log *logging.Logger) *SSHConnectionPool {
+func NewSSHConnectionPool(log zLogger.ZWrapper) *SSHConnectionPool {
 	return &SSHConnectionPool{
 		mu:    sync.Mutex{},
 		table: map[string]*SSHConnection{},
