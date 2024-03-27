@@ -96,6 +96,7 @@ func (at *ActionTika) Stream(contentType string, reader io.Reader, filename stri
 		return nil, errors.Wrapf(err, "cannot create tika request - %v", at.url)
 	}
 	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
 	//req.Header.Add("fileUrl", uri.String())
 	tresp, err := client.Do(req)
 	if err != nil {
@@ -156,6 +157,7 @@ func (at *ActionTika) DoV2(filename string) (*ResultV2, error) {
 		return nil, errors.Wrapf(err, "cannot create tika request - %v", at.url)
 	}
 	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
 	//req.Header.Add("fileUrl", uri.String())
 	tresp, err := client.Do(req)
 	if err != nil {
@@ -207,9 +209,11 @@ func (at *ActionTika) Do(uri *url.URL, contentType string, width *uint, height *
 		return nil, nil, nil, nil
 	}
 	var dataOut io.Reader
+	var filename string
+	var err error
 	// local files need some adjustments...
 	if uri.Scheme == "file" {
-		filename, err := at.server.fm.Get(uri)
+		filename, err = at.server.fm.Get(uri)
 		if err != nil {
 			return nil, nil, nil, errors.Wrapf(err, "invalid file uri %s", uri.String())
 		}
@@ -237,6 +241,9 @@ func (at *ActionTika) Do(uri *url.URL, contentType string, width *uint, height *
 		return nil, nil, nil, errors.Wrapf(err, "cannot create tika request - %v", at.url)
 	}
 	req.Header.Add("Accept", "application/json")
+	if filename != "" {
+		req.Header.Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
+	}
 	//req.Header.Add("fileUrl", uri.String())
 	tresp, err := client.Do(req)
 	if err != nil {
