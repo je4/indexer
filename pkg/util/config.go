@@ -108,6 +108,7 @@ type Config struct {
 	External      []ExternalAction
 	FileMap       []FileMap
 	URLRegexp     []string
+	XML           indexer.ConfigXML
 	NSRL          *ConfigNSRL
 	Clamav        *ConfigClamAV
 	MimeRelevance map[string]MimeWeight

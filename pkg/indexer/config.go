@@ -85,6 +85,19 @@ type ConfigImageMagick struct {
 	Enabled  bool
 }
 
+type ConfigXMLFormat struct {
+	Attributes map[string]string
+	Pronom     string
+	Mime       string
+	Type       string
+	Subtype    string
+}
+
+type ConfigXML struct {
+	Enabled bool
+	Format  map[string]ConfigXMLFormat
+}
+
 type ConfigExternalAction struct {
 	Name,
 	Address,
@@ -127,6 +140,7 @@ type IndexerConfig struct {
 	FFMPEG          ConfigFFMPEG
 	ImageMagick     ConfigImageMagick
 	Tika            ConfigTika
+	XML             ConfigXML
 	External        []ConfigExternalAction
 	FileMap         []ConfigFileMap
 	URLRegexp       []string

@@ -55,6 +55,11 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 	_ = NewActionSiegfried("siegfried", signatureData, conf.Siegfried.MimeMap, nil, actionDispatcher)
 	logger.Info("indexer action siegfried added")
 
+	if conf.XML.Enabled {
+		_ = NewActionXML("xml", conf.XML.Format, nil, actionDispatcher)
+		logger.Info("indexer action xml added")
+	}
+
 	if conf.Checksum.Enabled {
 		_ = NewActionChecksum(
 			"checksum",

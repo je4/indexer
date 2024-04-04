@@ -15,6 +15,7 @@ package main
 
 import (
 	"archive/zip"
+	"emperror.dev/errors"
 	"encoding/csv"
 	"encoding/json"
 	"flag"

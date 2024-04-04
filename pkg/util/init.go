@@ -37,6 +37,11 @@ func InitIndexer(conf *Config, logger zLogger.ZWrapper) (ad *Indexer, err error)
 	_ = indexer.NewActionSiegfried("siegfried", signature, conf.Siegfried.MimeMap, nil, (*indexer.ActionDispatcher)(ad))
 	logger.Info("indexer action siegfried added")
 
+	if conf.XML.Enabled {
+		_ = indexer.NewActionXML("xml", conf.XML.Format, nil, (*indexer.ActionDispatcher)(ad))
+		logger.Info("indexer action xml added")
+	}
+
 	if conf.FFMPEG != nil && conf.FFMPEG.Enabled {
 		_ = indexer.NewActionFFProbe(
 			"ffprobe",

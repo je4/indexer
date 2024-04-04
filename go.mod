@@ -20,11 +20,13 @@ require (
 	github.com/phayes/freeport v0.0.0-20220201140144-74d24b5ae9f5
 	github.com/pkg/sftp v1.13.6
 	github.com/richardlehane/siegfried v1.11.0
+	github.com/tamerh/xml-stream-parser v1.5.0
 	golang.org/x/crypto v0.21.0
 	golang.org/x/exp v0.0.0-20240314144324-c7f7c6466f7f
 )
 
 require (
+	github.com/antchfx/xpath v1.3.0 // indirect
 	github.com/bluele/gcache v0.0.2 // indirect
 	github.com/c4milo/gotoolkit v0.0.0-20190525173301-67483a18c17a // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
@@ -37,7 +39,6 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/flatbuffers v24.3.7+incompatible // indirect
-	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/hooklift/assert v0.1.0 // indirect
 	github.com/klauspost/compress v1.17.7 // indirect
 	github.com/kr/fs v0.1.0 // indirect
@@ -52,6 +53,7 @@ require (
 	github.com/ross-spencer/spargo v0.4.1 // indirect
 	github.com/ross-spencer/wikiprov v0.2.0 // indirect
 	github.com/rs/zerolog v1.32.0 // indirect
+	github.com/tamerh/xpath v1.0.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/image v0.15.0 // indirect
