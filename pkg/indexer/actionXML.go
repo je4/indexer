@@ -7,19 +7,22 @@ import (
 	xmlparser "github.com/tamerh/xml-stream-parser"
 	"golang.org/x/exp/maps"
 	"io"
+	"log"
 	"mime"
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 	"time"
 )
 
 type ActionXML struct {
-	server *Server
-	name   string
-	format map[string]ConfigXMLFormat
+	server         *Server
+	name           string
+	format         map[string]ConfigXMLFormat
+	compiledRegexp map[string]map[string]*regexp.Regexp
 }
 
 func (as *ActionXML) CanHandle(contentType string, filename string) bool {
@@ -39,6 +42,24 @@ func (as *ActionXML) CanHandle(contentType string, filename string) bool {
 
 func NewActionXML(name string, format map[string]ConfigXMLFormat, server *Server, ad *ActionDispatcher) Action {
 	as := &ActionXML{name: name, format: format, server: server}
+	compiledRegexp := map[string]map[string]*regexp.Regexp{}
+	for elem, format := range as.format {
+		if _, ok := compiledRegexp[elem]; !ok {
+			compiledRegexp[elem] = map[string]*regexp.Regexp{}
+		}
+		if format.Regexp {
+			for attr, val := range format.Attributes {
+				re, err := regexp.Compile(val)
+				if err != nil {
+					log.Printf("cannot compile regexp %s:%s: %v", elem, val, err)
+					continue
+				}
+				compiledRegexp[elem][attr] = re
+			}
+		}
+	}
+	as.compiledRegexp = compiledRegexp
+
 	ad.RegisterAction(as)
 	return as
 }
@@ -65,8 +86,8 @@ func (as *ActionXML) Stream(contentType string, reader io.Reader, filename strin
 		if xml.Err != nil {
 			continue
 		}
-		name := strings.ToLower(xml.Name)
-		format, ok := as.format[name]
+		elem := strings.ToLower(xml.Name)
+		format, ok := as.format[elem]
 		if !ok {
 			continue
 		}
@@ -75,7 +96,16 @@ func (as *ActionXML) Stream(contentType string, reader io.Reader, filename strin
 			if val2, ok := format.Attributes[attr]; !ok {
 				continue
 			} else {
-				if val == val2 {
+				if format.Regexp {
+					re, ok := as.compiledRegexp[elem][attr]
+					if !ok {
+						continue
+					}
+					found = re.MatchString(val)
+				} else {
+					found = val == val2
+				}
+				if found {
 					result.Type = format.Type
 					result.Subtype = format.Subtype
 					if format.Mime != "" {
@@ -87,7 +117,7 @@ func (as *ActionXML) Stream(contentType string, reader io.Reader, filename strin
 						result.Pronom = format.Pronom
 					}
 					result.Metadata[as.GetName()] = map[string]string{
-						"element":   name,
+						"element":   elem,
 						"attribute": fmt.Sprintf("%s=%s", attr, val),
 					}
 					found = true

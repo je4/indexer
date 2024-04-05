@@ -86,6 +86,7 @@ type ConfigImageMagick struct {
 }
 
 type ConfigXMLFormat struct {
+	Regexp     bool
 	Attributes map[string]string
 	Pronom     string
 	Mime       string
