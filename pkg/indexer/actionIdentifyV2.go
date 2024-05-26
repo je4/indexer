@@ -179,7 +179,7 @@ func (ai *ActionIdentifyV2) Stream(contentType string, reader io.Reader, filenam
 	result.Mimetypes = slices.Compact(mimetypes)
 	result.Metadata[ai.GetName()] = metadata
 	result.Type = "image"
-	result.Subtype = metadata.Magick.Image.Type
+	result.Subtype = metadata.Magick.Image.Format
 
 	return result, nil
 }
