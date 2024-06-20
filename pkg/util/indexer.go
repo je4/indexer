@@ -2,7 +2,7 @@ package util
 
 import (
 	"emperror.dev/errors"
-	"github.com/je4/indexer/v2/pkg/indexer"
+	"github.com/je4/indexer/v3/pkg/indexer"
 	"github.com/je4/utils/v2/pkg/checksum"
 	"github.com/je4/utils/v2/pkg/zLogger"
 	"io"
@@ -11,7 +11,7 @@ import (
 
 type Indexer indexer.ActionDispatcher
 
-func (idx *Indexer) Index(fsys fs.FS, path string, realname string, actions []string, digestAlgs []checksum.DigestAlgorithm, writer io.Writer, logger zLogger.ZWrapper) (*indexer.ResultV2, map[checksum.DigestAlgorithm]string, error) {
+func (idx *Indexer) Index(fsys fs.FS, path string, realname string, actions []string, digestAlgs []checksum.DigestAlgorithm, writer io.Writer, logger zLogger.ZLogger) (*indexer.ResultV2, map[checksum.DigestAlgorithm]string, error) {
 	if realname == "" {
 		realname = path
 	}
@@ -38,7 +38,7 @@ func (idx *Indexer) Index(fsys fs.FS, path string, realname string, actions []st
 		_, err := io.Copy(csw, fp)
 		if err != nil {
 			// todo: channel with error
-			logger.Errorf("cannot copy data: %v", err)
+			logger.Error().Err(err).Msg("cannot copy data")
 		}
 	}()
 	result, err := ad.Stream(idxRead, []string{realname}, actions)

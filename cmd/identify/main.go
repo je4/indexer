@@ -18,7 +18,7 @@ import (
 	"flag"
 	"fmt"
 	badger "github.com/dgraph-io/badger/v3"
-	"github.com/je4/indexer/v2/pkg/indexer"
+	"github.com/je4/indexer/v3/pkg/indexer"
 	lm "github.com/je4/utils/v2/pkg/logger"
 	"html/template"
 	"io"

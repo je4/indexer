@@ -2,7 +2,7 @@ package util
 
 import (
 	"emperror.dev/errors"
-	"github.com/je4/indexer/v2/pkg/indexer"
+	"github.com/je4/indexer/v3/pkg/indexer"
 	"github.com/je4/utils/v2/pkg/zLogger"
 	"os"
 	"strconv"
@@ -11,13 +11,13 @@ import (
 // InitIndexer
 // initializes an ActionDispatcher with Siegfried, ImageMagick, FFPMEG and Tika
 // the actions are named "siegfried", "identify", "ffprobe", "tika" and "fulltext"
-func InitIndexer(conf *Config, logger zLogger.ZWrapper) (ad *Indexer, err error) {
+func InitIndexer(conf *Config, logger zLogger.ZLogger) (ad *Indexer, err error) {
 	var relevance = map[int]indexer.MimeWeightString{}
 	if conf.MimeRelevance != nil {
 		for key, val := range conf.MimeRelevance {
 			num, err := strconv.Atoi(key)
 			if err != nil {
-				logger.Errorf("cannot convert mimerelevance key '%s' to int", key)
+				logger.Error().Msgf("cannot convert mimerelevance key '%s' to int", key)
 				continue
 			}
 			relevance[num] = indexer.MimeWeightString(val)
@@ -35,11 +35,11 @@ func InitIndexer(conf *Config, logger zLogger.ZWrapper) (ad *Indexer, err error)
 		}
 	}
 	_ = indexer.NewActionSiegfried("siegfried", signature, conf.Siegfried.MimeMap, nil, (*indexer.ActionDispatcher)(ad))
-	logger.Info("indexer action siegfried added")
+	logger.Info().Msg("indexer action siegfried added")
 
 	if conf.XML.Enabled {
 		_ = indexer.NewActionXML("xml", conf.XML.Format, nil, (*indexer.ActionDispatcher)(ad))
-		logger.Info("indexer action xml added")
+		logger.Info().Msg("indexer action xml added")
 	}
 
 	if conf.FFMPEG != nil && conf.FFMPEG.Enabled {
@@ -52,7 +52,7 @@ func InitIndexer(conf *Config, logger zLogger.ZWrapper) (ad *Indexer, err error)
 			conf.FFMPEG.Mime,
 			nil,
 			(*indexer.ActionDispatcher)(ad))
-		logger.Info("indexer action ffprobe added")
+		logger.Info().Msg("indexer action ffprobe added")
 	}
 	if conf.ImageMagick != nil && conf.ImageMagick.Enabled {
 		_ = indexer.NewActionIdentifyV2("identify",
@@ -63,7 +63,7 @@ func InitIndexer(conf *Config, logger zLogger.ZWrapper) (ad *Indexer, err error)
 			conf.ImageMagick.Online,
 			nil,
 			(*indexer.ActionDispatcher)(ad))
-		logger.Info("indexer action identify added")
+		logger.Info().Msg("indexer action identify added")
 	}
 	if conf.Tika != nil && conf.Tika.Enabled {
 		if conf.Tika.AddressMeta != "" {
@@ -75,7 +75,7 @@ func InitIndexer(conf *Config, logger zLogger.ZWrapper) (ad *Indexer, err error)
 				"",
 				conf.Tika.Online, nil,
 				(*indexer.ActionDispatcher)(ad))
-			logger.Info("indexer action tika added")
+			logger.Info().Msg("indexer action tika added")
 		}
 
 		if conf.Tika.AddressFulltext != "" {
@@ -88,7 +88,7 @@ func InitIndexer(conf *Config, logger zLogger.ZWrapper) (ad *Indexer, err error)
 				conf.Tika.Online,
 				nil,
 				(*indexer.ActionDispatcher)(ad))
-			logger.Info("indexer action fulltext added")
+			logger.Info().Msg("indexer action fulltext added")
 		}
 
 	}

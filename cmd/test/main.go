@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
-	"github.com/je4/filesystem/v2/pkg/osfsrw"
-	"github.com/je4/filesystem/v2/pkg/zipasfolder"
-	"github.com/je4/indexer/v2/internal"
-	"github.com/je4/indexer/v2/pkg/indexer"
+	"github.com/je4/filesystem/v3/pkg/osfsrw"
+	"github.com/je4/filesystem/v3/pkg/zipasfolder"
+	"github.com/je4/indexer/v3/internal"
+	"github.com/je4/indexer/v3/pkg/indexer"
 	lm "github.com/je4/utils/v2/pkg/logger"
 	"io/fs"
 	"path/filepath"

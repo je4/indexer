@@ -27,7 +27,7 @@ func stringMapToMimeRelevance(mimeRelevanceInterface map[string]ConfigMimeWeight
 
 var fsRegexp = regexp.MustCompile("^([^:]{2,}):(.+)$")
 
-func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogger.ZWrapper) (*ActionDispatcher, error) {
+func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogger.ZLogger) (*ActionDispatcher, error) {
 	mimeRelevance, err := stringMapToMimeRelevance(conf.MimeRelevance)
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot convert config string map to mime relevance")
@@ -53,11 +53,11 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 		}
 	}
 	_ = NewActionSiegfried("siegfried", signatureData, conf.Siegfried.MimeMap, nil, actionDispatcher)
-	logger.Info("indexer action siegfried added")
+	logger.Info().Msg("indexer action siegfried added")
 
 	if conf.XML.Enabled {
 		_ = NewActionXML("xml", conf.XML.Format, nil, actionDispatcher)
-		logger.Info("indexer action xml added")
+		logger.Info().Msg("indexer action xml added")
 	}
 
 	if conf.Checksum.Enabled {
@@ -78,7 +78,7 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 			conf.FFMPEG.Mime,
 			nil,
 			actionDispatcher)
-		logger.Info("indexer action ffprobe added")
+		logger.Info().Msg("indexer action ffprobe added")
 	}
 	if conf.ImageMagick.Enabled {
 		_ = NewActionIdentifyV2("identify",
@@ -87,7 +87,7 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 			conf.ImageMagick.Wsl,
 			conf.ImageMagick.Timeout.Duration,
 			conf.ImageMagick.Online, nil, actionDispatcher)
-		logger.Info("indexer action identify added")
+		logger.Info().Msg("indexer action identify added")
 	}
 	if conf.Tika.Enabled {
 		_ = NewActionTika("tika",
@@ -98,7 +98,7 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 			"",
 			conf.Tika.Online,
 			nil, actionDispatcher)
-		logger.Info("indexer action tika added")
+		logger.Info().Msg("indexer action tika added")
 
 		_ = NewActionTika("fulltext",
 			conf.Tika.AddressFulltext,
@@ -109,7 +109,7 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 			conf.Tika.Online,
 			nil,
 			actionDispatcher)
-		logger.Info("indexer action fulltext added")
+		logger.Info().Msg("indexer action fulltext added")
 
 	}
 

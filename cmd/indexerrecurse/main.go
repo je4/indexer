@@ -1,17 +1,22 @@
 package main
 
 import (
+	"crypto/tls"
 	_ "embed"
 	"emperror.dev/errors"
 	"flag"
 	"fmt"
-	"github.com/je4/filesystem/v2/pkg/zipasfolder"
-	"github.com/je4/indexer/v2/pkg/util"
+	"github.com/je4/filesystem/v3/pkg/zipasfolder"
+	"github.com/je4/indexer/v3/pkg/util"
+	"github.com/je4/trustutil/v2/pkg/loader"
 	"github.com/je4/utils/v2/pkg/checksum"
-	lm "github.com/je4/utils/v2/pkg/logger"
 	"github.com/je4/utils/v2/pkg/zLogger"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/pkgerrors"
+	ublogger "gitlab.switch.ch/ub-unibas/go-ublogger"
 	"io"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -25,12 +30,12 @@ var folder = flag.String("path", "", "path to iterate")
 
 var waiter sync.WaitGroup
 
-func worker(id int, fsys fs.FS, idx *util.Indexer, logger zLogger.ZWrapper, jobs <-chan string, results chan<- string) {
+func worker(id int, fsys fs.FS, idx *util.Indexer, logger zLogger.ZLogger, jobs <-chan string, results chan<- string) {
 	for path := range jobs {
 		fmt.Println("worker", id, "processing job", path)
 		r, cs, err := idx.Index(fsys, path, "", []string{"siegfried", "identify", "ffprobe", "tika", "xml"}, []checksum.DigestAlgorithm{checksum.DigestSHA512}, io.Discard, logger)
 		if err != nil {
-			logger.Errorf("cannot index (%s)%s: %v", fsys, path, err)
+			logger.Error().Err(err).Msgf("cannot index (%s)%s", fsys, path)
 			waiter.Done()
 			return
 		}
@@ -47,20 +52,47 @@ func main() {
 	flag.Parse()
 
 	// create logger instance
-	log, lf := lm.CreateLogger(
-		"indexerrecurse",
-		"",
-		nil,
-		"DEBUG",
-		`%{time:2006-01-02T15:04:05.000} %{shortpkg}::%{longfunc} [%{shortfile}] > %{level:.5s} - %{message}`)
-	defer lf.Close()
 
 	conf, err := util.LoadConfig(configToml)
 	if err != nil {
 		panic(fmt.Errorf("cannot load config: %v", err))
 	}
 
-	idx, err := util.InitIndexer(conf, log)
+	// create logger instance
+	hostname, err := os.Hostname()
+	if err != nil {
+		log.Fatalf("cannot get hostname: %v", err)
+	}
+
+	var loggerTLSConfig *tls.Config
+	var loggerLoader io.Closer
+	if conf.Log.Stash.TLS != nil {
+		loggerTLSConfig, loggerLoader, err = loader.CreateClientLoader(conf.Log.Stash.TLS, nil)
+		if err != nil {
+			log.Fatalf("cannot create client loader: %v", err)
+		}
+		defer loggerLoader.Close()
+	}
+
+	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+	_logger, _logstash, _logfile := ublogger.CreateUbMultiLoggerTLS(conf.Log.Level, conf.Log.File,
+		ublogger.SetDataset(conf.Log.Stash.Dataset),
+		ublogger.SetLogStash(conf.Log.Stash.LogstashHost, conf.Log.Stash.LogstashPort, conf.Log.Stash.Namespace, conf.Log.Stash.LogstashTraceLevel),
+		ublogger.SetTLS(conf.Log.Stash.TLS != nil),
+		ublogger.SetTLSConfig(loggerTLSConfig),
+	)
+	if _logstash != nil {
+		defer _logstash.Close()
+	}
+
+	if _logfile != nil {
+		defer _logfile.Close()
+	}
+
+	l2 := _logger.With().Timestamp().Str("host", hostname).Logger() //.Output(output)
+	var logger zLogger.ZLogger = &l2
+
+	idx, err := util.InitIndexer(conf, logger)
 	if err != nil {
 		panic(fmt.Errorf("cannot init indexer: %v", err))
 	}
@@ -76,7 +108,7 @@ func main() {
 		*folder = filepath.Join(currDir, *folder)
 	}
 	dirFS := os.DirFS(*folder)
-	zipFS, err := zipasfolder.NewFS(dirFS, 10)
+	zipFS, err := zipasfolder.NewFS(dirFS, 10, logger)
 	if err != nil {
 		panic(fmt.Errorf("cannot create zip as folder FS: %v", err))
 	}
@@ -85,7 +117,7 @@ func main() {
 	results := make(chan string, 100)
 
 	for w := 1; w <= 1; w++ {
-		go worker(w, zipFS, idx, log, jobs, results)
+		go worker(w, zipFS, idx, logger, jobs, results)
 	}
 
 	go func() {

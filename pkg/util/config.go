@@ -17,7 +17,8 @@ package util
 import (
 	"emperror.dev/errors"
 	"github.com/BurntSushi/toml"
-	"github.com/je4/indexer/v2/pkg/indexer"
+	"github.com/je4/indexer/v3/pkg/indexer"
+	"github.com/je4/utils/v2/pkg/zLogger"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -112,13 +113,20 @@ type Config struct {
 	NSRL          *ConfigNSRL
 	Clamav        *ConfigClamAV
 	MimeRelevance map[string]MimeWeight
+	Log           zLogger.Config `toml:"log"`
 }
 
 func LoadConfig(tomlBytes []byte) (*Config, error) {
 	type confStruct struct {
 		Indexer *Config
 	}
-	var conf = &confStruct{}
+	var conf = &confStruct{
+		Indexer: &Config{
+			Log: zLogger.Config{
+				Level: "DEBUG",
+			},
+		},
+	}
 
 	if err := toml.Unmarshal(tomlBytes, conf); err != nil {
 		return nil, errors.Wrapf(err, "Error unmarshalling config")
