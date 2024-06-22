@@ -93,7 +93,7 @@ func (ad *ActionDispatcher) Stream(sourceReader io.Reader, stateFiles []string, 
 		for _, action := range ad.actions {
 			if actionStr == action.GetName() && action.GetCaps()&ACTSTREAM != 0 {
 				found = true
-				if !action.CanHandle(contentType, stateFiles[0]) {
+				if contentType != "applictation/octet-stream" && !action.CanHandle(contentType, stateFiles[0]) {
 					continue
 				}
 				wg.Add(1)
@@ -181,6 +181,12 @@ func (ad *ActionDispatcher) Stream(sourceReader io.Reader, stateFiles []string, 
 		idx := strings.IndexByte(result.Mimetype, ':')
 		if idx >= 0 {
 			result.Type = result.Mimetype[:idx]
+		} else {
+			parts = strings.Split(result.Mimetype, "/")
+			if len(parts) >= 2 {
+				result.Type = parts[0]
+				result.Subtype = parts[1]
+			}
 		}
 	}
 
