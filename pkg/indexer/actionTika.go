@@ -19,10 +19,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"net/url"
 	"os"
 	"regexp"
+	"strconv"
 	"time"
 )
 
@@ -137,6 +139,13 @@ func (at *ActionTika) Stream(contentType string, reader io.Reader, filename stri
 		if mtype, ok := meta[0]["Content-Type"]; ok {
 			if mTypeString, ok := mtype.(string); ok {
 				result.Mimetypes = append(result.Mimetypes, mTypeString)
+			}
+		}
+		if durationAny, ok := meta[0]["xmpDM:duration"]; ok {
+			if durationStr, ok := durationAny.(string); ok {
+				if durationFloat, err := strconv.ParseFloat(durationStr, 64); err == nil {
+					result.Duration = uint(math.Floor(durationFloat))
+				}
 			}
 		}
 	}
