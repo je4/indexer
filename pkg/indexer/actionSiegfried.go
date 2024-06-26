@@ -73,6 +73,10 @@ func (as *ActionSiegfried) Stream(contentType string, reader io.Reader, filename
 			}
 			if pid.ID != "" {
 				result.Pronoms = append(result.Pronoms, pid.ID)
+				if t, ok := as.typeMap[pid.ID]; ok {
+					result.Type = t.Type
+					result.Subtype = t.Subtype
+				}
 				if mime, ok := as.mimeMap[pid.ID]; ok {
 					if mime != "" {
 						result.Mimetypes = append(result.Mimetypes, mime)
