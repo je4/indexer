@@ -11,7 +11,7 @@ import (
 // InitIndexer
 // initializes an ActionDispatcher with Siegfried, ImageMagick, FFPMEG and Tika
 // the actions are named "siegfried", "identify", "ffprobe", "tika" and "fulltext"
-func InitIndexer(conf *Config, logger zLogger.ZLogger) (ad *Indexer, err error) {
+func InitIndexer(conf *indexer.IndexerConfig, logger zLogger.ZLogger) (ad *Indexer, err error) {
 	var relevance = map[int]indexer.MimeWeightString{}
 	if conf.MimeRelevance != nil {
 		for key, val := range conf.MimeRelevance {
@@ -34,7 +34,7 @@ func InitIndexer(conf *Config, logger zLogger.ZLogger) (ad *Indexer, err error) 
 			return nil, errors.Wrapf(err, "cannot read siegfried signature file '%s'", conf.Siegfried.SignatureFile)
 		}
 	}
-	_ = indexer.NewActionSiegfried("siegfried", signature, conf.Siegfried.MimeMap, nil, (*indexer.ActionDispatcher)(ad))
+	_ = indexer.NewActionSiegfried("siegfried", signature, conf.Siegfried.MimeMap, conf.Siegfried.TypeMap, nil, (*indexer.ActionDispatcher)(ad))
 	logger.Info().Msg("indexer action siegfried added")
 
 	if conf.XML.Enabled {
@@ -42,7 +42,7 @@ func InitIndexer(conf *Config, logger zLogger.ZLogger) (ad *Indexer, err error) 
 		logger.Info().Msg("indexer action xml added")
 	}
 
-	if conf.FFMPEG != nil && conf.FFMPEG.Enabled {
+	if conf.FFMPEG.Enabled {
 		_ = indexer.NewActionFFProbe(
 			"ffprobe",
 			conf.FFMPEG.FFProbe,
@@ -54,7 +54,7 @@ func InitIndexer(conf *Config, logger zLogger.ZLogger) (ad *Indexer, err error) 
 			(*indexer.ActionDispatcher)(ad))
 		logger.Info().Msg("indexer action ffprobe added")
 	}
-	if conf.ImageMagick != nil && conf.ImageMagick.Enabled {
+	if conf.ImageMagick.Enabled {
 		_ = indexer.NewActionIdentifyV2("identify",
 			conf.ImageMagick.Identify,
 			conf.ImageMagick.Convert,
@@ -65,13 +65,13 @@ func InitIndexer(conf *Config, logger zLogger.ZLogger) (ad *Indexer, err error) 
 			(*indexer.ActionDispatcher)(ad))
 		logger.Info().Msg("indexer action identify added")
 	}
-	if conf.Tika != nil && conf.Tika.Enabled {
+	if conf.Tika.Enabled {
 		if conf.Tika.AddressMeta != "" {
 			_ = indexer.NewActionTika("tika",
 				conf.Tika.AddressMeta,
 				conf.Tika.Timeout.Duration,
 				conf.Tika.RegexpMimeMeta,
-				conf.Tika.RegexpMimeNotMeta,
+				conf.Tika.RegexpMimeMetaNot,
 				"",
 				conf.Tika.Online, nil,
 				(*indexer.ActionDispatcher)(ad))
@@ -83,7 +83,7 @@ func InitIndexer(conf *Config, logger zLogger.ZLogger) (ad *Indexer, err error) 
 				conf.Tika.AddressFulltext,
 				conf.Tika.Timeout.Duration,
 				conf.Tika.RegexpMimeFulltext,
-				conf.Tika.RegexpMimeNotFulltext,
+				conf.Tika.RegexpMimeFulltextNot,
 				"X-TIKA:content",
 				conf.Tika.Online,
 				nil,

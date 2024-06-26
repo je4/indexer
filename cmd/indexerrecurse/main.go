@@ -92,7 +92,7 @@ func main() {
 	l2 := _logger.With().Timestamp().Str("host", hostname).Logger() //.Output(output)
 	var logger zLogger.ZLogger = &l2
 
-	idx, err := util.InitIndexer(conf, logger)
+	idx, err := util.InitIndexer(conf.Indexer, logger)
 	if err != nil {
 		panic(fmt.Errorf("cannot init indexer: %v", err))
 	}

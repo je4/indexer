@@ -31,18 +31,19 @@ type ActionSiegfried struct {
 	sf      *siegfried.Siegfried
 	mimeMap map[string]string
 	server  *Server
+	typeMap map[string]TypeSubtype
 }
 
 func (as *ActionSiegfried) CanHandle(contentType string, filename string) bool {
 	return true
 }
 
-func NewActionSiegfried(name string, signatureData []byte, mimeMap map[string]string, server *Server, ad *ActionDispatcher) Action {
+func NewActionSiegfried(name string, signatureData []byte, mimeMap map[string]string, typeMap map[string]TypeSubtype, server *Server, ad *ActionDispatcher) Action {
 	sf, err := siegfried.LoadReader(bytes.NewBuffer(signatureData))
 	if err != nil {
 		log.Fatalln(err)
 	}
-	as := &ActionSiegfried{name: name, sf: sf, mimeMap: mimeMap, server: server}
+	as := &ActionSiegfried{name: name, sf: sf, mimeMap: mimeMap, typeMap: typeMap, server: server}
 	ad.RegisterAction(as)
 	return as
 }
@@ -103,16 +104,20 @@ func (as *ActionSiegfried) DoV2(filename string) (*ResultV2, error) {
 			}
 			if pid.ID != "" {
 				result.Pronoms = append(result.Pronoms, pid.ID)
+				if t, ok := as.typeMap[pid.ID]; ok {
+					result.Type = t.Type
+					result.Subtype = t.Subtype
+				}
 				if mime, ok := as.mimeMap[pid.ID]; ok {
 					if mime != "" {
 						result.Mimetypes = append(result.Mimetypes, mime)
 					}
 				}
 			}
-
 		}
 	}
 	result.Metadata[as.GetName()] = ident
+
 	return result, nil
 }
 

@@ -35,11 +35,17 @@ type ConfigClamAV struct {
 	Wsl      bool
 }
 
+type TypeSubtype struct {
+	Type    string
+	Subtype string
+}
+
 type ConfigSiegfried struct {
 	//Address string
 	Enabled       bool
 	SignatureFile string `toml:"signature"`
 	MimeMap       map[string]string
+	TypeMap       map[string]TypeSubtype
 }
 
 type ConfigTika struct {

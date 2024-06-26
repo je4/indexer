@@ -52,7 +52,7 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 			return nil, errors.Wrapf(err, "no siegfried signature file provided. using default signature file. please provide a recent signature file. %s", conf.Siegfried.SignatureFile)
 		}
 	}
-	_ = NewActionSiegfried("siegfried", signatureData, conf.Siegfried.MimeMap, nil, actionDispatcher)
+	_ = NewActionSiegfried("siegfried", signatureData, conf.Siegfried.MimeMap, conf.Siegfried.TypeMap, nil, actionDispatcher)
 	logger.Info().Msg("indexer action siegfried added")
 
 	if conf.XML.Enabled {

@@ -22,109 +22,18 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
-	"time"
 )
 
-type duration struct {
-	Duration time.Duration
-}
-
-func (d *duration) UnmarshalText(text []byte) error {
-	var err error
-	d.Duration, err = time.ParseDuration(string(text))
-	return err
-}
-
-type ConfigClamAV struct {
-	Enabled  bool
-	Timeout  duration
-	ClamScan string
-	Wsl      bool
-}
-
-type ConfigSiegfried struct {
-	//Address string
-	Enabled       bool
-	SignatureFile string
-	MimeMap       map[string]string
-}
-
-type ConfigTika struct {
-	Timeout               duration
-	AddressMeta           string
-	RegexpMimeMeta        string
-	RegexpMimeNotMeta     string
-	AddressFulltext       string
-	RegexpMimeFulltext    string
-	RegexpMimeNotFulltext string
-	Online                bool
-	Enabled               bool
-}
-
-type ConfigFFMPEG struct {
-	FFProbe string
-	Wsl     bool
-	Timeout duration
-	Online  bool
-	Enabled bool
-	Mime    []indexer.FFMPEGMime
-}
-
-type ConfigImageMagick struct {
-	Identify string
-	Convert  string
-	Wsl      bool
-	Timeout  duration
-	Online   bool
-	Enabled  bool
-}
-
-type ExternalAction struct {
-	Name,
-	Address,
-	Mimetype string
-	ActionCapabilities []indexer.ActionCapability
-	CallType           indexer.ExternalActionCalltype
-}
-
-type FileMap struct {
-	Alias  string
-	Folder string
-}
-type ConfigNSRL struct {
-	Enabled bool
-	Badger  string
-}
-
-type MimeWeight struct {
-	Regexp string
-	Weight int
-}
-
 type Config struct {
-	Siegfried     *ConfigSiegfried
-	FFMPEG        *ConfigFFMPEG
-	ImageMagick   *ConfigImageMagick
-	Tika          *ConfigTika
-	External      []ExternalAction
-	FileMap       []FileMap
-	URLRegexp     []string
-	XML           indexer.ConfigXML
-	NSRL          *ConfigNSRL
-	Clamav        *ConfigClamAV
-	MimeRelevance map[string]MimeWeight
-	Log           zLogger.Config `toml:"log"`
+	Indexer *indexer.IndexerConfig
+	Log     zLogger.Config `toml:"log"`
 }
 
 func LoadConfig(tomlBytes []byte) (*Config, error) {
-	type confStruct struct {
-		Indexer *Config
-	}
-	var conf = &confStruct{
-		Indexer: &Config{
-			Log: zLogger.Config{
-				Level: "DEBUG",
-			},
+	var conf = &Config{
+		Indexer: &indexer.IndexerConfig{},
+		Log: zLogger.Config{
+			Level: "DEBUG",
 		},
 	}
 
@@ -142,5 +51,5 @@ func LoadConfig(tomlBytes []byte) (*Config, error) {
 			conf.Indexer.Siegfried.SignatureFile = fp
 		}
 	}
-	return conf.Indexer, nil
+	return conf, nil
 }
