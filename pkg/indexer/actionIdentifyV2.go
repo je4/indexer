@@ -180,6 +180,9 @@ func (ai *ActionIdentifyV2) Stream(contentType string, reader io.Reader, filenam
 	result.Metadata[ai.GetName()] = metadata
 	result.Type = "image"
 	result.Subtype = metadata.Magick.Image.Format
+	if result.Subtype == "PDF" {
+		result.Type = "text"
+	}
 
 	return result, nil
 }
