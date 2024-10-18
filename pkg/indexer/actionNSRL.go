@@ -18,7 +18,7 @@ import (
 	"emperror.dev/errors"
 	"encoding/json"
 	"fmt"
-	badger "github.com/dgraph-io/badger/v3"
+	badger "github.com/dgraph-io/badger/v4"
 	"github.com/golang/snappy"
 	"io"
 	"net/url"

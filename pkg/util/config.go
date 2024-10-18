@@ -18,7 +18,7 @@ import (
 	"emperror.dev/errors"
 	"github.com/BurntSushi/toml"
 	"github.com/je4/indexer/v3/pkg/indexer"
-	"github.com/je4/utils/v2/pkg/zLogger"
+	"github.com/je4/utils/v2/pkg/stashconfig"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -26,14 +26,14 @@ import (
 
 type Config struct {
 	Indexer *indexer.IndexerConfig
-	Log     zLogger.Config `toml:"log"`
+	Log     stashconfig.Config `toml:"log"`
 }
 
 func LoadConfig(tomlBytes []byte) (*Config, error) {
 	var conf = &Config{
 		Indexer: &indexer.IndexerConfig{},
-		Log: zLogger.Config{
-			Level: "DEBUG",
+		Log: stashconfig.Config{
+			Level: "ERROR",
 		},
 	}
 

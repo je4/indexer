@@ -17,7 +17,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	badger "github.com/dgraph-io/badger/v3"
+	"github.com/dgraph-io/badger/v4"
 	"github.com/je4/indexer/v3/pkg/indexer"
 	lm "github.com/je4/utils/v2/pkg/logger"
 	"html/template"
