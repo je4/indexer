@@ -18,6 +18,16 @@ import (
 	"time"
 )
 
+const (
+	NameSiegfried = "siegfried"
+	NameXML = "xml"
+	NameChecksum ="checksum"
+	NameTika = "tika"
+	NameFFProbe = "ffprobe"
+	NameIdentify = "identify"
+	NameFullText = "fulltext"
+)
+
 type duration struct {
 	Duration time.Duration
 }
