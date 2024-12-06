@@ -52,25 +52,38 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 			return nil, errors.Wrapf(err, "no siegfried signature file provided. using default signature file. please provide a recent signature file. %s", conf.Siegfried.SignatureFile)
 		}
 	}
-	_ = NewActionSiegfried("siegfried", signatureData, conf.Siegfried.MimeMap, conf.Siegfried.TypeMap, nil, actionDispatcher)
-	logger.Info().Msg("indexer action siegfried added")
+	_ = NewActionSiegfried(
+		NameSiegfried,
+		signatureData,
+		conf.Siegfried.MimeMap,
+		conf.Siegfried.TypeMap,
+		nil,
+		actionDispatcher,
+	)
+	logger.Info().Msgf("indexer action %s added", NameSiegfried)
 
 	if conf.XML.Enabled {
-		_ = NewActionXML("xml", conf.XML.Format, nil, actionDispatcher)
-		logger.Info().Msg("indexer action xml added")
+		_ = NewActionXML(
+			NameXML,
+			conf.XML.Format,
+			nil,
+			actionDispatcher,
+		)
+		logger.Info().Msgf("indexer action %s added", NameXML)
 	}
 
 	if conf.Checksum.Enabled {
 		_ = NewActionChecksum(
-			"checksum",
+			NameChecksum,
 			conf.Checksum.Digest,
 			nil,
 			actionDispatcher,
 		)
+		logger.Info().Msgf("indexer action %s added", NameChecksum)
 	}
 	if conf.FFMPEG.Enabled {
 		_ = NewActionFFProbe(
-			"ffprobe",
+			NameFFProbe,
 			conf.FFMPEG.FFProbe,
 			conf.FFMPEG.Wsl,
 			conf.FFMPEG.Timeout.Duration,
@@ -78,19 +91,21 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 			conf.FFMPEG.Mime,
 			nil,
 			actionDispatcher)
-		logger.Info().Msg("indexer action ffprobe added")
+		logger.Info().Msgf("indexer action %s added", NameFFProbe)
 	}
 	if conf.ImageMagick.Enabled {
-		_ = NewActionIdentifyV2("identify",
+		_ = NewActionIdentifyV2(
+			NameIdentify,
 			conf.ImageMagick.Identify,
 			conf.ImageMagick.Convert,
 			conf.ImageMagick.Wsl,
 			conf.ImageMagick.Timeout.Duration,
 			conf.ImageMagick.Online, nil, actionDispatcher)
-		logger.Info().Msg("indexer action identify added")
+		logger.Info().Msgf("indexer action %s added", NameIdentify)
 	}
 	if conf.Tika.Enabled {
-		_ = NewActionTika("tika",
+		_ = NewActionTika(
+			NameTika,
 			conf.Tika.AddressMeta,
 			conf.Tika.Timeout.Duration,
 			conf.Tika.RegexpMimeMeta,
@@ -98,9 +113,10 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 			"",
 			conf.Tika.Online,
 			nil, actionDispatcher)
-		logger.Info().Msg("indexer action tika added")
+		logger.Info().Msgf("indexer action %s added", NameTika)
 
-		_ = NewActionTika("fulltext",
+		_ = NewActionTika(
+			NameFullText,
 			conf.Tika.AddressFulltext,
 			conf.Tika.Timeout.Duration,
 			conf.Tika.RegexpMimeFulltext,
@@ -109,7 +125,7 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 			conf.Tika.Online,
 			nil,
 			actionDispatcher)
-		logger.Info().Msg("indexer action fulltext added")
+		logger.Info().Msgf("indexer action %s added", NameFullText)
 
 	}
 
