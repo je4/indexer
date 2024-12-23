@@ -1,13 +1,15 @@
 package indexer
 
 import (
-	"emperror.dev/errors"
-	"github.com/je4/utils/v2/pkg/zLogger"
+	"fmt"
 	"io/fs"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"emperror.dev/errors"
+	"github.com/je4/utils/v2/pkg/zLogger"
 )
 
 func stringMapToMimeRelevance(mimeRelevanceInterface map[string]ConfigMimeWeight) (map[int]MimeWeightString, error) {
@@ -26,6 +28,15 @@ func stringMapToMimeRelevance(mimeRelevanceInterface map[string]ConfigMimeWeight
 }
 
 var fsRegexp = regexp.MustCompile("^([^:]{2,}):(.+)$")
+
+func logStartup(logger zLogger.ZLogger, tool string) {
+	logger.Info().Any(
+		ErrorFactory.LogError(
+			ErrorIndexerInit,
+			fmt.Sprintf("indexer action %s added", tool),
+			nil),
+	).Msg("")
+}
 
 func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogger.ZLogger) (*ActionDispatcher, error) {
 	mimeRelevance, err := stringMapToMimeRelevance(conf.MimeRelevance)
@@ -52,6 +63,9 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 			return nil, errors.Wrapf(err, "no siegfried signature file provided. using default signature file. please provide a recent signature file. %s", conf.Siegfried.SignatureFile)
 		}
 	}
+
+	configErrorFactory(logger)
+
 	_ = NewActionSiegfried(
 		NameSiegfried,
 		signatureData,
@@ -60,8 +74,7 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 		nil,
 		actionDispatcher,
 	)
-	logger.Info().Msgf("indexer action %s added", NameSiegfried)
-
+	logStartup(logger, NameSiegfried)
 	if conf.XML.Enabled {
 		_ = NewActionXML(
 			NameXML,
@@ -69,9 +82,8 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 			nil,
 			actionDispatcher,
 		)
-		logger.Info().Msgf("indexer action %s added", NameXML)
+		logStartup(logger, NameXML)
 	}
-
 	if conf.Checksum.Enabled {
 		_ = NewActionChecksum(
 			NameChecksum,
@@ -79,7 +91,7 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 			nil,
 			actionDispatcher,
 		)
-		logger.Info().Msgf("indexer action %s added", NameChecksum)
+		logStartup(logger, NameChecksum)
 	}
 	if conf.FFMPEG.Enabled {
 		_ = NewActionFFProbe(
@@ -91,7 +103,7 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 			conf.FFMPEG.Mime,
 			nil,
 			actionDispatcher)
-		logger.Info().Msgf("indexer action %s added", NameFFProbe)
+		logStartup(logger, NameFFProbe)
 	}
 	if conf.ImageMagick.Enabled {
 		_ = NewActionIdentifyV2(
@@ -101,7 +113,7 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 			conf.ImageMagick.Wsl,
 			conf.ImageMagick.Timeout.Duration,
 			conf.ImageMagick.Online, nil, actionDispatcher)
-		logger.Info().Msgf("indexer action %s added", NameIdentify)
+		logStartup(logger, NameIdentify)
 	}
 	if conf.Tika.Enabled {
 		_ = NewActionTika(
@@ -113,8 +125,7 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 			"",
 			conf.Tika.Online,
 			nil, actionDispatcher)
-		logger.Info().Msgf("indexer action %s added", NameTika)
-
+		logStartup(logger, NameTika)
 		_ = NewActionTika(
 			NameFullText,
 			conf.Tika.AddressFulltext,
@@ -125,8 +136,7 @@ func InitActionDispatcher(fss map[string]fs.FS, conf IndexerConfig, logger zLogg
 			conf.Tika.Online,
 			nil,
 			actionDispatcher)
-		logger.Info().Msgf("indexer action %s added", NameFullText)
-
+		logStartup(logger, NameFullText)
 	}
 
 	return actionDispatcher, nil
