@@ -1,0 +1,8 @@
+# Error registry to register errors with the GOCFL error factory.
+# Docs: https://pkg.go.dev/github.com/ocfl-archive/error/pkg/error#Error
+
+[[errors]]
+id = "ErrorIndexerInit"
+type = "INDEXER"
+weight = 50
+message = "indexer startup"
