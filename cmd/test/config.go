@@ -2,7 +2,9 @@ package main
 
 import (
 	"github.com/BurntSushi/toml"
+	"github.com/je4/filesystem/v3/pkg/vfsrw"
 	"github.com/je4/indexer/v3/pkg/indexer"
+	"github.com/je4/utils/v2/pkg/stashconfig"
 	"log"
 	"os"
 	"os/user"
@@ -11,10 +13,9 @@ import (
 
 type Config struct {
 	ErrorTemplate string
-	Logfile       string
-	Loglevel      string
-	LogFormat     string
 	Indexer       indexer.IndexerConfig `toml:"indexer"`
+	VFS           map[string]*vfsrw.VFS `toml:"vfs"`
+	Log           stashconfig.Config    `toml:"log"`
 }
 
 func LoadConfig(fp string) *Config {
@@ -23,8 +24,6 @@ func LoadConfig(fp string) *Config {
 		log.Fatalln("cannot get current user", err)
 	}
 	var conf = &Config{
-		Loglevel:  "DEBUG",
-		LogFormat: `%{time:2006-01-02T15:04:05.000} %{shortpkg}::%{longfunc} [%{shortfile}] > %{level:.5s} - %{message}`,
 		Indexer: indexer.IndexerConfig{
 			Siegfried: indexer.ConfigSiegfried{
 				SignatureFile: filepath.Join(user.HomeDir, "siegfried", "default.sig"),

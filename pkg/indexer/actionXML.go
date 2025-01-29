@@ -5,7 +5,6 @@ import (
 	"emperror.dev/errors"
 	"fmt"
 	xmlparser "github.com/tamerh/xml-stream-parser"
-	"golang.org/x/exp/maps"
 	"io"
 	"log"
 	"mime"
@@ -41,20 +40,27 @@ func (as *ActionXML) CanHandle(contentType string, filename string) bool {
 }
 
 func NewActionXML(name string, format map[string]ConfigXMLFormat, server *Server, ad *ActionDispatcher) Action {
-	as := &ActionXML{name: name, format: format, server: server}
-	compiledRegexp := map[string]map[string]*regexp.Regexp{}
-	for elem, format := range as.format {
-		if _, ok := compiledRegexp[elem]; !ok {
-			compiledRegexp[elem] = map[string]*regexp.Regexp{}
+	as := &ActionXML{name: name, format: map[string]ConfigXMLFormat{}, server: server}
+	// allow old config with element as key
+	for key, value := range format {
+		if value.Element == "" {
+			value.Element = strings.ToLower(key)
 		}
-		if format.Regexp {
-			for attr, val := range format.Attributes {
+		as.format[key] = value
+	}
+	compiledRegexp := map[string]map[string]*regexp.Regexp{}
+	for xmlName, xmlFormat := range as.format {
+		if _, ok := compiledRegexp[xmlName]; !ok {
+			compiledRegexp[xmlName] = map[string]*regexp.Regexp{}
+		}
+		if xmlFormat.Regexp {
+			for attr, val := range xmlFormat.Attributes {
 				re, err := regexp.Compile(val)
 				if err != nil {
-					log.Printf("cannot compile regexp %s:%s: %v", elem, val, err)
+					log.Printf("cannot compile regexp %s:%s: %v", xmlName, val, err)
 					continue
 				}
-				compiledRegexp[elem][attr] = re
+				compiledRegexp[xmlName][attr] = re
 			}
 		}
 	}
@@ -76,9 +82,27 @@ func (as *ActionXML) GetName() string {
 	return as.name
 }
 
+func (as *ActionXML) getElement(elem string) map[string]ConfigXMLFormat {
+	elem = strings.ToLower(elem)
+	result := map[string]ConfigXMLFormat{}
+	for name, format := range as.format {
+		if format.Element == elem {
+			result[name] = format
+		}
+	}
+	return result
+}
 func (as *ActionXML) Stream(contentType string, reader io.Reader, filename string) (*ResultV2, error) {
 	var result = NewResultV2()
-	elements := maps.Keys(as.format)
+	result.Mimetypes = []string{"application/xml"}
+	result.Mimetype = "application/xml"
+	//elements := maps.Keys(as.format)
+	elements := []string{}
+	for _, value := range as.format {
+		elements = append(elements, strings.ToLower(value.Element))
+	}
+	slices.Sort(elements)
+	elements = slices.Compact(elements)
 	br := bufio.NewReaderSize(reader, 4096*4)
 	parser := xmlparser.NewXMLParser(br, elements...).ParseAttributesOnly(elements...)
 	var found bool
@@ -86,41 +110,45 @@ func (as *ActionXML) Stream(contentType string, reader io.Reader, filename strin
 		if xml.Err != nil {
 			continue
 		}
-		elem := strings.ToLower(xml.Name)
-		format, ok := as.format[elem]
-		if !ok {
+		formats := as.getElement(xml.Name)
+		if len(formats) == 0 {
 			continue
 		}
-		for attr, val := range xml.Attrs {
-			attr = strings.ToLower(attr)
-			if val2, ok := format.Attributes[attr]; !ok {
-				continue
-			} else {
-				if format.Regexp {
-					re, ok := as.compiledRegexp[elem][attr]
-					if !ok {
-						continue
-					}
-					found = re.MatchString(val)
+		for formatName, format := range formats {
+			for attr, val := range xml.Attrs {
+				attr = strings.ToLower(attr)
+				if val2, ok := format.Attributes[attr]; !ok {
+					continue
 				} else {
-					found = val == val2
+					if format.Regexp {
+						re, ok := as.compiledRegexp[formatName][attr]
+						if !ok {
+							continue
+						}
+						found = re.MatchString(val)
+					} else {
+						found = val == val2
+					}
+					if found {
+						result.Type = format.Type
+						result.Subtype = format.Subtype
+						if format.Mime != "" {
+							result.Mimetypes = append(result.Mimetypes, format.Mime)
+							result.Mimetype = format.Mime
+						}
+						if format.Pronom != "" {
+							result.Pronoms = []string{format.Pronom}
+							result.Pronom = format.Pronom
+						}
+						result.Metadata[as.GetName()] = map[string]string{
+							"element":   xml.Name,
+							"attribute": fmt.Sprintf("%s=%s", attr, val),
+						}
+						found = true
+						break
+					}
 				}
 				if found {
-					result.Type = format.Type
-					result.Subtype = format.Subtype
-					if format.Mime != "" {
-						result.Mimetypes = []string{format.Mime}
-						result.Mimetype = format.Mime
-					}
-					if format.Pronom != "" {
-						result.Pronoms = []string{format.Pronom}
-						result.Pronom = format.Pronom
-					}
-					result.Metadata[as.GetName()] = map[string]string{
-						"element":   elem,
-						"attribute": fmt.Sprintf("%s=%s", attr, val),
-					}
-					found = true
 					break
 				}
 			}

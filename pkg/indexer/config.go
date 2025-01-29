@@ -92,6 +92,7 @@ type ConfigImageMagick struct {
 }
 
 type ConfigXMLFormat struct {
+	Element    string
 	Regexp     bool
 	Attributes map[string]string
 	Pronom     string

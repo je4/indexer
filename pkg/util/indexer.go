@@ -18,9 +18,8 @@ func (idx *Indexer) Index(fsys fs.FS, path string, realname string, actions []st
 	ad := (*indexer.ActionDispatcher)(idx)
 	fp, err := fsys.Open(path)
 	if err != nil {
-		return nil, nil, errors.Wrapf(err, "cannot open %s/%s", fsys, path)
+		return nil, nil, errors.Wrapf(err, "cannot open '%v/%s'", fsys, path)
 	}
-
 	idxRead, idxWrite := io.Pipe()
 	csw, err := checksum.NewChecksumWriter(digestAlgs, io.MultiWriter(idxWrite, writer))
 	if err != nil {

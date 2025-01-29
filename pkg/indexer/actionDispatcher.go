@@ -157,6 +157,9 @@ func (ad *ActionDispatcher) Stream(sourceReader io.Reader, stateFiles []string, 
 	// sort mimetypes by weight
 	slices.Sort(result.Mimetypes)
 	result.Mimetypes = slices.Compact(result.Mimetypes)
+	if len(result.Mimetypes) == 0 && contentType != "" {
+		result.Mimetypes = []string{contentType}
+	}
 	mimeMap := map[string]int{}
 	for _, mimetype := range result.Mimetypes {
 		mimeMap[mimetype] = 50
