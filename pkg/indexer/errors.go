@@ -11,7 +11,7 @@ var ErrorFactory = archiveerror.NewFactory("INDEXER")
 type errorID = archiveerror.ID
 
 const (
-	ErrorIndexerInit = "ErrorIndexerInit"
+	IndexerInit = "IndexerInit"
 )
 
 func configErrorFactory(logger zLogger.ZLogger) {

@@ -32,7 +32,7 @@ var fsRegexp = regexp.MustCompile("^([^:]{2,}):(.+)$")
 func logStartup(logger zLogger.ZLogger, tool string) {
 	logger.Info().Any(
 		ErrorFactory.LogError(
-			ErrorIndexerInit,
+			IndexerInit,
 			fmt.Sprintf("indexer action %s added", tool),
 			nil),
 	).Msg("")

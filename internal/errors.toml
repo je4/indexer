@@ -2,7 +2,7 @@
 # Docs: https://pkg.go.dev/github.com/ocfl-archive/error/pkg/error#Error
 
 [[errors]]
-id = "ErrorIndexerInit"
+id = "IndexerInit"
 type = "INDEXER"
 weight = 50
 message = "indexer startup"
