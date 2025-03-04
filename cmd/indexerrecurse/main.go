@@ -4,10 +4,12 @@ import (
 	"crypto/tls"
 	_ "embed"
 	"emperror.dev/errors"
+	"encoding/csv"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/je4/filesystem/v3/pkg/zipasfolder"
+	"github.com/je4/indexer/v3/pkg/indexer"
 	"github.com/je4/indexer/v3/pkg/util"
 	"github.com/je4/utils/v2/pkg/checksum"
 	"github.com/je4/utils/v2/pkg/zLogger"
@@ -20,6 +22,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 )
@@ -29,7 +32,9 @@ var configToml []byte
 
 var folder = flag.String("path", "", "path to iterate")
 var jsonFlag = flag.String("json", "", "json file to write")
+var csvFlag = flag.String("csv", "", "csv file to write")
 var concurrentFlag = flag.Uint("n", 3, "number of concurrent workers")
+var actionsFlag = flag.String("actions", "", "comma separated actions to perform")
 
 var waiter sync.WaitGroup
 
@@ -44,10 +49,21 @@ func serialWriteLine(w io.Writer, d []byte) error {
 	return nil
 }
 
-func worker(id uint, fsys fs.FS, idx *util.Indexer, logger zLogger.ZLogger, jobs <-chan string, results chan<- string, outfile io.Writer) {
+func worker(id uint, fsys fs.FS, idx *util.Indexer, logger zLogger.ZLogger, jobs <-chan string, results chan<- string, jsonlWriter io.Writer, csvWriter *csv.Writer) {
 	for path := range jobs {
 		fmt.Println("worker", id, "processing job", path)
-		r, cs, err := idx.Index(fsys, path, "", []string{"siegfried", "identify", "ffprobe", "tika", "xml"}, []checksum.DigestAlgorithm{checksum.DigestSHA512}, io.Discard, logger)
+		actions := []string{"siegfried", "xml"} // , "identify", "ffprobe", "tika"
+		if *actionsFlag != "" {
+			for _, a := range strings.Split(*actionsFlag, ",") {
+				a = strings.ToLower(strings.TrimSpace(a))
+				if a != "" {
+					actions = append(actions, a)
+				}
+			}
+		}
+		slices.Sort(actions)
+		actions = slices.Compact(actions)
+		r, cs, err := idx.Index(fsys, path, "", actions, []checksum.DigestAlgorithm{checksum.DigestSHA512}, io.Discard, logger)
 		if err != nil {
 			logger.Error().Err(err).Msgf("cannot index (%s)%s", fsys, path)
 			waiter.Done()
@@ -57,15 +73,24 @@ func worker(id uint, fsys fs.FS, idx *util.Indexer, logger zLogger.ZLogger, jobs
 		if r.Type == "image" {
 			fmt.Printf("#           image: %vx%v", r.Width, r.Height)
 		}
-		if outfile != nil {
-			data, err := json.Marshal(r)
+		if jsonlWriter != nil {
+			outStruct := struct {
+				Path     string            `json:"path"`
+				Folder   string            `json:"folder"`
+				Basename string            `json:"basename"`
+				Indexer  *indexer.ResultV2 `json:"indexer"`
+			}{path, filepath.Dir(path), filepath.Base(path), r}
+			data, err := json.Marshal(outStruct)
 			if err != nil {
 				logger.Error().Err(err).Msgf("cannot marshal result")
 			} else {
-				if err := serialWriteLine(outfile, data); err != nil {
+				if err := serialWriteLine(jsonlWriter, data); err != nil {
 					logger.Error().Err(err).Msgf("cannot write to output")
 				}
 			}
+		}
+		if csvWriter != nil {
+			csvWriter.Write([]string{path, filepath.Dir(path), filepath.Base(path), fmt.Sprintf("%v", r.Size), r.Mimetype, r.Pronom, r.Type, r.Subtype, cs[checksum.DigestSHA512], fmt.Sprintf("%v", r.Width), fmt.Sprintf("%v", r.Height), fmt.Sprintf("%v", r.Duration)})
 		}
 		results <- path + " done"
 		waiter.Done()
@@ -88,13 +113,26 @@ func main() {
 		log.Fatalf("cannot get hostname: %v", err)
 	}
 
-	var outfile io.WriteCloser
+	var jsonlOutfile io.WriteCloser
 	if *jsonFlag != "" {
-		outfile, err = os.Create(*jsonFlag)
+		jsonlOutfile, err = os.Create(*jsonFlag)
 		if err != nil {
 			log.Fatalf("cannot create json file: %v", err)
 		}
-		defer outfile.Close()
+		defer jsonlOutfile.Close()
+	}
+	var csvOutfile io.WriteCloser
+	var csvWriter *csv.Writer
+	if *csvFlag != "" {
+		csvOutfile, err = os.Create(*csvFlag)
+		if err != nil {
+			log.Fatalf("cannot create csv file: %v", err)
+		}
+		defer csvOutfile.Close()
+
+		csvWriter = csv.NewWriter(csvOutfile)
+		defer csvWriter.Flush()
+		csvWriter.Write([]string{"path", "folder", "basename", "size", "mimetype", "pronom", "type", "subtype", "checksum", "width", "height", "duration"})
 	}
 
 	var loggerTLSConfig *tls.Config
@@ -144,7 +182,7 @@ func main() {
 		*folder = filepath.Join(currDir, *folder)
 	}
 	dirFS := os.DirFS(*folder)
-	zipFS, err := zipasfolder.NewFS(dirFS, 10, logger)
+	zipFS, err := zipasfolder.NewFS(dirFS, 10, true, logger)
 	if err != nil {
 		panic(fmt.Errorf("cannot create zip as folder FS: %v", err))
 	}
@@ -153,7 +191,7 @@ func main() {
 	results := make(chan string, 100)
 
 	for w := uint(1); w <= *concurrentFlag; w++ {
-		go worker(w, zipFS, idx, logger, jobs, results, outfile)
+		go worker(w, zipFS, idx, logger, jobs, results, jsonlOutfile, csvWriter)
 	}
 
 	go func() {
