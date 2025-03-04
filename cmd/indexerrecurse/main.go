@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/je4/filesystem/v3/pkg/zipasfolder"
 	"github.com/je4/indexer/v3/pkg/indexer"
 	"github.com/je4/indexer/v3/pkg/util"
 	"github.com/je4/utils/v2/pkg/checksum"
@@ -182,7 +181,8 @@ func main() {
 		*folder = filepath.Join(currDir, *folder)
 	}
 	dirFS := os.DirFS(*folder)
-	zipFS, err := zipasfolder.NewFS(dirFS, 10, true, logger)
+	//zipFS, err := zipasfolder.NewFS(dirFS, 10, true, logger)
+	zipFS := dirFS
 	if err != nil {
 		panic(fmt.Errorf("cannot create zip as folder FS: %v", err))
 	}
