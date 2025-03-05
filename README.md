@@ -2,6 +2,9 @@
 
 please use https://github.com/ocfl-archive/indexer
 
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+
+
 # indexer
 
 based on the idea of https://github.com/dla-marbach/indexer the go indexer 
