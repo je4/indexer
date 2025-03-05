@@ -1,3 +1,7 @@
+# Deprecated
+
+please use https://github.com/ocfl-archive/indexer
+
 # indexer
 
 based on the idea of https://github.com/dla-marbach/indexer the go indexer 
